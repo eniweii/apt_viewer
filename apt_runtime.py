@@ -65,12 +65,16 @@ class MC:
         return "/".join(reversed(parts))
 
     # ---- transform
-    def _decompose(self):
+    def _decomposed(self):
         a, b, c, d, tx, ty = self.placed
         xs, ys = math.hypot(a, b) * 100.0, math.hypot(c, d) * 100.0
         if a * d - b * c < 0:
             ys = -ys
-        self.tp = {"x": tx, "y": ty, "xs": xs, "ys": ys, "rot": math.degrees(math.atan2(b, a))}
+        return {"x": tx, "y": ty, "xs": xs, "ys": ys, "rot": math.degrees(math.atan2(b, a))}
+
+    def _decompose(self):
+        """The script now owns the transform (a write). Reading a property must not call this."""
+        self.tp = self._decomposed()
 
     def matrix(self):
         if self.tp is None:
@@ -102,9 +106,7 @@ class MC:
         if name in PROPS:
             if name == "_visible":
                 return self.visible
-            if self.tp is None and name != "_alpha":
-                self._decompose()
-            t = self.tp
+            t = self.tp if self.tp is not None else self._decomposed()     # a read does not take the transform from the timeline
             return {"_x": lambda: t["x"], "_y": lambda: t["y"], "_xscale": lambda: t["xs"], "_yscale": lambda: t["ys"],
                     "_rotation": lambda: t["rot"], "_alpha": self.alpha_percent}[name]()
         if name == "_name":
@@ -174,8 +176,7 @@ class MC:
         f = self.vars.get(name)
         if isinstance(f, (VM.Func, VM.Native)):
             return vm.call(f, self, args)
-        vm.note("call %s on a clip (not defined in the movie)" % name)
-        return VM.UNDEF
+        return vm.missing_call(self.path().replace("/", "."), name, args, "call %s on a clip (not defined in the movie)" % name)
 
     # ---- timeline
     def goto(self, target, play):
@@ -283,9 +284,12 @@ class MC:
 
 
 class Runtime:
-    def __init__(self, movie, seed=1):
+    def __init__(self, movie, seed=1, stubs=None, scenario=None):
         self.movie = movie
         self.seed = seed
+        self.stubs = dict(stubs or {})            # name -> JSON value, see apt_vm.from_json
+        self.scenario = list(scenario or [])      # what the game does: [{"at": tick, "op": set|call|goto, ...}]
+        self.stub_log = []                        # (tick, text) for every stub operation
         _main, self.consts = AA.read_consts(movie.const)
         self.streams = {}
         self.reset(seed)
@@ -296,7 +300,9 @@ class Runtime:
             self.seed = seed
         self.tick = 0
         self.vm = VM.VM(self.seed)
+        self.vm.stubs = dict(self.stubs)
         self.vm.hook = self._hook
+        self.stub_log = []
         self.errors = {}
         self.current = None
         root_char = {"id": -1, "type": "Sprite", "frames": self.movie.frames}
@@ -310,6 +316,7 @@ class Runtime:
                 if c["op"] == "initaction" and fi == 0:
                     self.exec_stream(c["ptr"], self.root, "init sprite %d" % c["sprite"])
         self.root.start()
+        self.run_scenario(0)
 
     def step(self, n=1):
         for _ in range(n):
@@ -327,12 +334,92 @@ class Runtime:
                     if flags & (1 << 1):
                         self.exec_stream(ptr, mc, "clip enterFrame")
             self.current = None
+            self.run_scenario(self.tick)
 
     def seek(self, tick):
         if tick < self.tick:
             self.reset()
         if tick > self.tick:
             self.step(tick - self.tick)
+
+    # ---- stubs: what the game would give or do (the scenario is replayed from tick 0 after every reset)
+    def resolve(self, path):
+        """_root.a.b / _global.X.prototype / Name (a variable of _root or a global) -> value."""
+        parts = path.split(".")
+        if parts[0] == "_root":
+            o = self.root
+        elif parts[0] == "_global":
+            o = self.vm.globals
+        else:
+            o = self.root.vm_get_var(parts[0])
+            if o is VM.UNDEF:
+                o = self.vm.globals.props.get(parts[0], VM.UNDEF)
+        for p in parts[1:]:
+            o = self.vm.get_member(o, p)
+        return o
+
+    def run_scenario(self, tick):
+        for op in self.scenario:
+            if int(op.get("at", 0)) == tick:
+                self.apply_op(op)
+
+    def apply_op(self, op):
+        """One game side action. Returns a text for the log. Errors are listed, not raised."""
+        kind, path = op.get("op"), op.get("path", "")
+        prev, self.current = self.current, self.root
+        try:
+            if kind == "set":
+                parent, _dot, name = path.rpartition(".")
+                self.vm.set_member(self.resolve(parent), name, VM.from_json(op.get("value"), path), None)
+                text = "set %s = %s" % (path, op.get("value"))
+            elif kind == "call":
+                f = self.resolve(path)
+                this = self.resolve(op["this"]) if op.get("this") else self.resolve(path.rpartition(".")[0])
+                args = [VM.from_json(a, "arg") for a in op.get("args", [])]
+                if not isinstance(f, (VM.Func, VM.Native)):
+                    text = "call %s: not a function (%s)" % (path, VM.to_str(f))
+                else:
+                    r = self.vm.call(f, this, args)
+                    text = "call %s(%s) -> %s" % (path, ", ".join(VM.to_str(a) for a in args), VM.to_str(r))
+            elif kind == "goto":
+                mc = self.resolve(path)
+                if hasattr(mc, "goto"):
+                    mc.goto(op.get("frame", 1.0), play=bool(op.get("play", False)))
+                    text = "goto %s %s" % (path, op.get("frame", 1.0))
+                else:
+                    text = "goto %s: not a clip" % path
+            else:
+                text = "unknown operation %r" % kind
+        except VM.Unsupported as e:
+            self._error(0, "stub op %s: %s" % (path, e))
+            text = "%s %s: stopped (%s)" % (kind, path, e)
+        finally:
+            self.current = prev
+        self.stub_log.append((self.tick, text))
+        return text
+
+    def functions(self, limit=4000):
+        """[(path, owner path, Func)] for every function reachable from _global and _root, first path wins."""
+        out, seen, found = [], set(), set()
+        queue = collections.deque([("_global", self.vm.globals, 0), ("_root", self.root, 0)])
+        while queue and len(seen) < limit:
+            path, o, d = queue.popleft()
+            if id(o) in seen or d > 6:
+                continue
+            seen.add(id(o))
+            items = list(getattr(o, "props", {}).items())
+            if isinstance(o, MC):
+                items = list(o.vars.items()) + [(ch.name, ch) for ch in o.children.values() if ch.name]
+            owner = path
+            for k, v in items:
+                if isinstance(v, VM.Func):
+                    if id(v) not in found:
+                        found.add(id(v))
+                        out.append(("%s.%s" % (path, k), owner, v))
+                    queue.append(("%s.%s" % (path, k), v, d + 1))
+                elif isinstance(v, (VM.Obj, MC)):
+                    queue.append(("%s.%s" % (path, k), v, d + 1))
+        return out
 
     # ---- streams
     def exec_stream(self, ptr, mc, what):

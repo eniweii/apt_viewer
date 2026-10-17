@@ -13,6 +13,10 @@ Evidence levels used in the viewer:
   inferred   the meaning given to them here (scope rules, the order registers are preloaded, event order)
   placeholder nothing here; art is drawn from the texture packs
 
+Stubs (evidence level "stub"): the game gives a screen data and natives that are not in the file. A stub is a value or a
+return value that the person writes in apt_stubs.json for a name the movie reads or calls and does not define. Nothing
+is invented: with no stub the read gives undefined, and every such read, call and new is listed in vm.externals.
+
 Math.random() comes from a seeded generator (mulberry32). It is a repeatable stand-in, not the game's generator.
 """
 import math
@@ -26,6 +30,27 @@ class Undefined:
 
 
 UNDEF = Undefined()
+MISSING = object()                      # "no stub for this name"
+
+
+def from_json(v, name=""):
+    """A stub value (JSON) as a script value: object -> Obj, list -> array Obj, number -> float."""
+    if isinstance(v, bool) or v is None or isinstance(v, str):
+        return v
+    if isinstance(v, (int, float)):
+        return float(v)
+    if isinstance(v, list):
+        o = Obj(name="Array")
+        for i, x in enumerate(v):
+            o.props[str(i)] = from_json(x, "%s.%d" % (name, i))
+        o.props["length"] = float(len(v))
+        return o
+    if isinstance(v, dict):
+        o = Obj(name=name)
+        for k, x in v.items():
+            o.props[k] = from_json(x, "%s.%s" % (name, k))
+        return o
+    return UNDEF
 
 
 class Unsupported(Exception):
@@ -72,8 +97,7 @@ class Obj:
         f = self.vm_get(name)
         if isinstance(f, (Func, Native)):
             return vm.call(f, self, args)
-        vm.note("call %s.%s (not defined in the movie)" % (self.name or "object", name))
-        return UNDEF
+        return vm.missing_call(self.name or "object", name, args, "call %s.%s (not defined in the movie)" % (self.name or "object", name))
 
     def __repr__(self):
         return "[object %s]" % (self.name or "Object")
@@ -96,8 +120,7 @@ class Func:
         return name in self.props
 
     def vm_call(self, name, args, vm):
-        vm.note("call function.%s" % name)
-        return UNDEF
+        return vm.missing_call("function", name, args, "call function.%s" % name)
 
     def __repr__(self):
         return "[function %s @0x%X]" % (self.name, self.offset)
@@ -165,6 +188,11 @@ class VM:
     def __init__(self, seed=1, max_steps=200000):
         self.rng = Rng(seed)
         self.max_steps = max_steps
+        self.stubs = {}                # name or "name()" or "owner.name()" -> JSON value (see from_json)
+        self.stub_hits = {}            # key -> how often a stub answered
+        self._stub_objs = {}
+        self.externals = {}            # key -> {"kind": read|call|new, "count", "args"} for names the movie does not define
+        self.call_counts = {}          # function offset -> calls so far
         self.unsupported = {}          # description -> count
         self.inferred = {}             # rules applied that are not in the file: description -> count
         self.hook = None               # hook(kind, data): 'branch', 'random', 'set', 'call'
@@ -193,6 +221,31 @@ class VM:
     def note(self, text):
         self.unsupported[text] = self.unsupported.get(text, 0) + 1
 
+    def external(self, kind, key, args=None):
+        e = self.externals.get(key)
+        if e is None:
+            e = self.externals[key] = {"kind": kind, "count": 0, "args": None}
+        e["count"] += 1
+        if args is not None:
+            e["args"] = [to_str(a) for a in args]
+
+    def stub(self, key):
+        """The stub value for key (the same object every time), or MISSING."""
+        if key not in self.stubs:
+            return MISSING
+        self.stub_hits[key] = self.stub_hits.get(key, 0) + 1
+        if key not in self._stub_objs:
+            self._stub_objs[key] = from_json(self.stubs[key], key.rstrip("()"))
+        return self._stub_objs[key]
+
+    def missing_call(self, owner, name, args, note):
+        """A call on something the movie does not define: listed, answered by a stub when there is one."""
+        self.note(note)
+        key = "%s.%s()" % (owner, name)
+        self.external("call", key, args)
+        s = self.stub(key)
+        return UNDEF if s is MISSING else s
+
     def infer(self, text):
         self.inferred[text] = self.inferred.get(text, 0) + 1
 
@@ -202,6 +255,7 @@ class VM:
             return f.fn(self, this, args)
         if not isinstance(f, Func):
             return UNDEF
+        self.call_counts[f.offset] = self.call_counts.get(f.offset, 0) + 1
         fr = Frame(this, f.scope, f.dictionary, {})
         reg, fl = 1, f.flags
         for bit, val in ((0x01, this), (0x04, args), (0x10, UNDEF), (0x40, self.root), (0x80, getattr(this, "parent", UNDEF)),
@@ -239,7 +293,13 @@ class VM:
             v = sc.vm_get(name)
             if v is not UNDEF:
                 return v
-        return self.globals.props.get(name, UNDEF)
+        v = self.globals.props.get(name, UNDEF)
+        if v is UNDEF:
+            s = self.stub(name)
+            if s is not MISSING:
+                return s
+            self.external("read", name)
+        return v
 
     def set_var(self, fr, name, value, offset=None):
         if fr.locals is not None and name in fr.locals:
@@ -442,7 +502,9 @@ class VM:
                     st.append(self.call(f, None, args))
                 else:
                     self.note("call %s() (not defined in the movie)" % name)
-                    st.append(UNDEF)
+                    self.external("call", name + "()", args)
+                    s = self.stub(name + "()")
+                    st.append(UNDEF if s is MISSING else s)
             elif op == 0x52:
                 name, obj, argc = st.pop(), st.pop(), int(to_number(st.pop()))
                 args = [st.pop() for _ in range(argc)]
@@ -457,6 +519,7 @@ class VM:
                     st.append(inst)
                 else:
                     self.note("new %s (not defined in the movie)" % cname)
+                    self.external("new", cname, args)
                     st.append(Obj(name=cname))
             elif op == 0x43:
                 cnt = int(to_number(st.pop()))

@@ -35,15 +35,30 @@ import apt_movie
 import apt_render
 import apt_resources
 import apt_runtime
+import apt_stub_ui
+import apt_stubs
 
 STATUS_TAGS = {"found": "#1b7f2b", "override": "#2a5db0", "dynamic": "#00829b", "missing": "#b0008a",
                "unnamed": "#c86400", "undecodable": "#c00000"}
 
 
+def make_renderer(res, backend="auto"):
+    """skia when installed (much faster), Pillow otherwise or when asked."""
+    if backend in ("auto", "skia"):
+        try:
+            import apt_render_skia
+            return apt_render_skia.SkiaRenderer(res)
+        except ImportError:
+            if backend == "skia":
+                sys.exit("--renderer skia needs: pip install skia-python")
+    return apt_render.Renderer(res)
+
+
 class App:
-    def __init__(self, root, ui_dir, res):
+    def __init__(self, root, ui_dir, res, backend="auto", stubs="apt_stubs.json"):
         self.root, self.res = root, res
-        self.renderer = apt_render.Renderer(res)
+        self.stub_store = apt_stubs.StubStore(stubs)
+        self.renderer = make_renderer(res, backend)
         self.movies = {}                 # name -> Movie or error text
         self.movie = None
         self.hits = []
@@ -79,22 +94,27 @@ class App:
         zoom.bind("<<ComboboxSelected>>", lambda e: self.redraw())
         self.boxes_var = tk.BooleanVar(value=False)
         ttk.Checkbutton(bar, text="Boxes", variable=self.boxes_var, command=self.redraw).pack(side="left", padx=10)
-        self.rt_var = tk.BooleanVar(value=False)
-        ttk.Checkbutton(bar, text="Runtime", variable=self.rt_var, command=self.on_runtime_toggle).pack(side="left")
-        ttk.Label(bar, text="Seed").pack(side="left", padx=(8, 0))
-        self.seed_var = tk.StringVar(value="1")
-        seed = ttk.Entry(bar, textvariable=self.seed_var, width=6)
-        seed.pack(side="left", padx=3)
-        seed.bind("<Return>", lambda e: self.rt_reset())
-        self.play_btn = ttk.Button(bar, text="Play", width=6, command=self.toggle_play)
-        self.play_btn.pack(side="left", padx=2)
-        ttk.Button(bar, text="Step", width=5, command=self.rt_step).pack(side="left")
-        ttk.Button(bar, text="Reset", width=6, command=self.rt_reset).pack(side="left", padx=2)
         self.loop_var = tk.BooleanVar(value=False)
         ttk.Checkbutton(bar, text="Loop sprites", variable=self.loop_var, command=self.redraw).pack(side="left", padx=6)
         self.grid_var, self.anchor_var, self.label_vis_var = tk.BooleanVar(), tk.BooleanVar(), tk.BooleanVar()
         for text, var in (("Grid", self.grid_var), ("Anchors", self.anchor_var), ("Names", self.label_vis_var)):
             ttk.Checkbutton(bar, text=text, variable=var, command=self.redraw).pack(side="left", padx=3)
+
+        bar2 = ttk.Frame(root)                  # runtime controls on their own row, so the window can be narrow
+        bar2.pack(fill="x", padx=4, pady=(0, 3))
+        self.rt_var = tk.BooleanVar(value=False)
+        ttk.Checkbutton(bar2, text="Runtime", variable=self.rt_var, command=self.on_runtime_toggle).pack(side="left")
+        ttk.Label(bar2, text="Seed").pack(side="left", padx=(8, 0))
+        self.seed_var = tk.StringVar(value="1")
+        seed = ttk.Entry(bar2, textvariable=self.seed_var, width=6)
+        seed.pack(side="left", padx=3)
+        seed.bind("<Return>", lambda e: self.rt_reset())
+        self.play_btn = ttk.Button(bar2, text="Play", width=6, command=self.toggle_play)
+        self.play_btn.pack(side="left", padx=2)
+        ttk.Button(bar2, text="Step", width=5, command=self.rt_step).pack(side="left")
+        ttk.Button(bar2, text="Reset", width=6, command=self.rt_reset).pack(side="left", padx=2)
+        ttk.Label(bar2, text="Space: play/pause   Left/Right: step   Wheel: scroll (Shift: sideways)",
+                  foreground="#888").pack(side="left", padx=12)
         self.status = tk.StringVar(value="")
 
         bottom = ttk.Frame(root)
@@ -105,6 +125,8 @@ class App:
         self.tl.bind("<Button-1>", self.on_timeline)
         self.tl.bind("<B1-Motion>", self.on_timeline)
         self.tl.bind("<Configure>", lambda e: self.draw_timeline())
+        self.tl_head = None                                   # playhead items, moved each tick
+        self.tl_movie = None
 
         panes = ttk.Panedwindow(root, orient="horizontal")
         panes.pack(fill="both", expand=True)
@@ -135,6 +157,9 @@ class App:
         vs.pack(side="right", fill="y")
         self.canvas.pack(fill="both", expand=True)
         self.canvas.bind("<Button-1>", self.on_click)
+        self.canvas.bind("<MouseWheel>", lambda e: self.canvas.yview_scroll(-1 if e.delta > 0 else 1, "units"))
+        self.canvas.bind("<Shift-MouseWheel>", lambda e: self.canvas.xview_scroll(-1 if e.delta > 0 else 1, "units"))
+        self.canvas_img, self.canvas_size = None, None        # one image item, updated in place
         panes.add(mid, weight=1)
 
         right = ttk.Notebook(panes, width=430)
@@ -168,10 +193,13 @@ class App:
         scripts.add(self.script_txt, weight=1)
         right.add(scripts, text="Scripts")
         self.behavior_txt = self._text_tab(right, "Behavior")
+        self.stub_panel = apt_stub_ui.StubPanel(right, self)
+        right.add(self.stub_panel, text="Stubs")
         panes.add(right, weight=0)
 
         root.bind("<Left>", lambda e: self.step(-1))
         root.bind("<Right>", lambda e: self.step(1))
+        root.bind("<space>", self.on_space)
         self.fill_movies()
 
     def _text_tab(self, notebook, title):
@@ -288,13 +316,25 @@ class App:
             img, self.hits, labels = self.renderer.render(mv, frame, scale)
             head = "%s  frame %d/%d %s" % (mv.name, frame, len(mv.frames) - 1, labels or "")
         self.scale = scale
-        self.photo = ImageTk.PhotoImage(img.convert("RGB"))
-        self.canvas.delete("all")
-        self.canvas.create_image(0, 0, image=self.photo, anchor="nw")
-        self.canvas.configure(scrollregion=(0, 0, img.width, img.height))
+        rgb = img.convert("RGB")
+        if self.photo is not None and self.canvas_size == rgb.size and self.canvas_img is not None:
+            self.photo.paste(rgb)                                 # same size: no new image, no flicker
+        else:
+            self.photo = ImageTk.PhotoImage(rgb)
+            if self.canvas_img is None:
+                self.canvas_img = self.canvas.create_image(0, 0, image=self.photo, anchor="nw")
+            else:
+                self.canvas.itemconfigure(self.canvas_img, image=self.photo)
+            self.canvas.configure(scrollregion=(0, 0, rgb.width, rgb.height))
+            self.canvas_size = rgb.size
+        self.canvas.delete("sel")
         st = self.renderer.stats
-        self.status.set("%s  |  %s" % (head, "  ".join("%s %d" % kv for kv in sorted(st.items())) or "no images drawn"))
-        self.draw_timeline()
+        self.status.set("%s  |  %s  |  %s" % (head, getattr(self.renderer, "backend", "pillow"), "  ".join("%s %d" % kv for kv in sorted(st.items())) or "no images drawn"))
+        if self.tl_movie is not mv:                               # new movie: draw the static layer of the bar once
+            self.tl_movie = mv
+            self.draw_timeline()
+        else:
+            self.move_playhead()
 
     def on_click(self, e):
         x, y = self.canvas.canvasx(e.x), self.canvas.canvasy(e.y)
@@ -385,6 +425,11 @@ class App:
         if sel:
             self._put(self.script_txt, apt_inspect.disassembly_text(self.streams[sel[0]]))
 
+    def on_space(self, e):
+        if isinstance(e.widget, (tk.Entry, ttk.Entry, ttk.Combobox, tk.Spinbox, tk.Text)):
+            return                                                # typing: leave the key alone
+        self.toggle_play()
+
     # ---- runtime
     def on_runtime_toggle(self):
         if self.rt_var.get():
@@ -404,22 +449,27 @@ class App:
             self.seed_var.set("1")
         self.playing = False
         self.play_btn.configure(text="Play")
-        self.rt = apt_runtime.Runtime(self.movie, seed)
+        cfg = self.stub_store.get(self.movie.name)
+        self.rt = apt_runtime.Runtime(self.movie, seed, cfg["stubs"], cfg["scenario"] if self.stub_panel.run_var.get() else [])
         self.rt_var.set(True)
         self.redraw()
         self.refresh_behavior()
+        self.stub_panel.refresh()
 
     def rt_step(self, n=1):
         if self.rt is None:
             self.rt_reset()
         self.rt.step(n)
         self.redraw()
+        self.stub_panel.refresh()
 
     def toggle_play(self):
         if self.rt is None:
             self.rt_reset()
         self.playing = not self.playing
         self.play_btn.configure(text="Pause" if self.playing else "Play")
+        if not self.playing:
+            self.stub_panel.refresh()
         if self.playing:
             self.last_tick_time = time.time()
             self.root.after(1, self.play_loop)
@@ -456,10 +506,25 @@ class App:
                 if ctl["op"] == "label":
                     c.create_line(sx(fi), 6, sx(fi), 22, fill="#d0a030")
                     c.create_text(sx(fi) + 2, 10, text=ctl["label"], anchor="w", fill="#d0a030", font=("Segoe UI", 8))
+        self.tl_head = None
+        self.move_playhead()
+
+    def move_playhead(self):
+        """Per tick work of the timeline bar: only the red line and the right hand text move."""
+        c, mv = self.tl, self.movie
+        if mv is None:
+            return
+        w = max(50, c.winfo_width())
         tick = self.rt.tick if self.rt is not None else 0
-        c.create_line(sx(tick), 2, sx(tick), 46, fill="#ff4040", width=2)
-        c.create_text(w - 6, 10, anchor="e", fill="#ddd", font=("Segoe UI", 8),
-                      text=("tick %d   root frame %d" % (tick, self.rt.root.frame) if self.rt else "static: frame %d" % self.frame_var.get()))
+        x = 8 + (w - 16) * min(tick, self.horizon) / float(self.horizon)
+        text = ("tick %d   root frame %d" % (tick, self.rt.root.frame) if self.rt else "static: frame %d" % self.frame_var.get())
+        if self.tl_head is None:
+            self.tl_head = (c.create_line(x, 2, x, 46, fill="#ff4040", width=2),
+                            c.create_text(w - 6, 10, anchor="e", fill="#ddd", font=("Segoe UI", 8), text=text))
+        else:
+            c.coords(self.tl_head[0], x, 2, x, 46)
+            c.coords(self.tl_head[1], w - 6, 10)
+            c.itemconfigure(self.tl_head[1], text=text)
 
     def on_timeline(self, e):
         if self.movie is None:
@@ -514,6 +579,28 @@ class App:
         box.bind("<Double-1>", lambda e: done())
 
 
+def run(ui, res_dirs, decomp=None, movie=None, cache="apt_cache", overrides="apt_overrides.json",
+        stubs="apt_stubs.json", renderer="auto"):
+    """Open the viewer. Used by main() (command line) and by launch.py."""
+    sys.path.insert(0, os.getcwd())
+    fn = None
+    try:
+        mod, name = (decomp or "fng_jdlz:decompress").split(":")
+        fn = getattr(importlib.import_module(mod), name)
+    except (ImportError, AttributeError, ValueError):
+        if decomp:
+            sys.exit("cannot load --decomp %s" % decomp)
+    res = apt_resources.Resources(res_dirs, cache_dir=cache, override_file=overrides, decomp=fn)
+    root = tk.Tk()
+    app = App(root, ui, res, renderer, stubs)
+    if movie:
+        name = movie if movie.lower().endswith(".big") else movie + ".big"
+        if name in app.paths:
+            app.movie_tree.selection_set(name)
+            app.movie_tree.see(name)
+    root.mainloop()
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("ui", help="folder with the UI .big files (or one .big)")
@@ -522,25 +609,10 @@ def main():
     ap.add_argument("--movie", default=None, help="movie to open at start, like customizecar")
     ap.add_argument("--cache", default="apt_cache")
     ap.add_argument("--overrides", default="apt_overrides.json")
+    ap.add_argument("--stubs", default="apt_stubs.json", help="what the game would give a screen (stub values and a scenario)")
+    ap.add_argument("--renderer", choices=("auto", "skia", "pillow"), default="auto", help="drawing backend (auto: skia if installed)")
     a = ap.parse_args()
-
-    sys.path.insert(0, os.getcwd())
-    decomp = None
-    try:
-        mod, fn = (a.decomp or "fng_jdlz:decompress").split(":")
-        decomp = getattr(importlib.import_module(mod), fn)
-    except (ImportError, AttributeError, ValueError):
-        if a.decomp:
-            sys.exit("cannot load --decomp %s" % a.decomp)
-    res = apt_resources.Resources(a.res, cache_dir=a.cache, override_file=a.overrides, decomp=decomp)
-    root = tk.Tk()
-    app = App(root, a.ui, res)
-    if a.movie:
-        name = a.movie if a.movie.lower().endswith(".big") else a.movie + ".big"
-        if name in app.paths:
-            app.movie_tree.selection_set(name)
-            app.movie_tree.see(name)
-    root.mainloop()
+    run(a.ui, a.res, a.decomp, a.movie, a.cache, a.overrides, a.stubs, a.renderer)
 
 
 if __name__ == "__main__":

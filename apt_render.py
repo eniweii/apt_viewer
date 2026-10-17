@@ -62,6 +62,7 @@ class Renderer:
         self.labels = False             # instance name or character id next to the anchor
         self.hits = []
         self.stats = {}
+        self._text_cache = {}           # (font, text, align, width, wrap) -> glyph image, kept small
 
     # ---- entry
     def render(self, movie, frame=0, scale=1.0):
@@ -203,6 +204,8 @@ class Renderer:
 
     @staticmethod
     def _tint(region, rgba):
+        if min(rgba) >= 0.999:                              # identity colour transform: nothing to do
+            return region
         r, g, b, a = region.split()
         f = lambda ch, k: ch if k >= 0.999 else ch.point(lambda v: int(v * k))
         return Image.merge("RGBA", (f(r, rgba[0]), f(g, rgba[1]), f(b, rgba[2]), f(a, rgba[3])))
@@ -284,8 +287,14 @@ class Renderer:
                 self.hits.append((self._bbox(corners), info))
             return
         scale = char["height"] / font.nominal if char["height"] > 0 else 1.0
-        img = apt_font.render_text(font, sheet, text, align=char["align"] if char["align"] in (0, 1, 2) else 0,
-                                   box_width=max(1, int((r - l - 4) / scale)), wrap=bool(char["wordwrap"] or char["multiline"]))
+        align = char["align"] if char["align"] in (0, 1, 2) else 0
+        bw, wrap = max(1, int((r - l - 4) / scale)), bool(char["wordwrap"] or char["multiline"])
+        key = (id(font), text, align, bw, wrap)
+        img = self._text_cache.get(key)
+        if img is None:
+            if len(self._text_cache) > 256:
+                self._text_cache.clear()
+            img = self._text_cache[key] = apt_font.render_text(font, sheet, text, align=align, box_width=bw, wrap=wrap)
         mimg = mmul(mat, (scale, 0, 0, scale, l + 2 - 2 * scale, t + 2 - 2 * scale))
         pts = [mapply(mimg, x, y) for x, y in ((0, 0), (img.width, 0), (img.width, img.height), (0, img.height))]
         bx, by, w, h = self._region(layer, pts)

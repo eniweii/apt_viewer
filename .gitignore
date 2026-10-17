@@ -3,3 +3,4 @@ __pycache__/
 apt_overrides.json
 apt_report.json
 missing.csv
+launch_settings.json

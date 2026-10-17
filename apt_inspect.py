@@ -171,6 +171,10 @@ def runtime_evidence(rt):
     lines.append("  [inferred] rules applied: " + ("; ".join("%s x%d" % kv for kv in rt.vm.inferred.items()) or "none yet"))
     lines.append("  [unsupported] calls with no definition in the movie: " +
                  ("; ".join("%s x%d" % kv for kv in rt.vm.unsupported.items()) or "none"))
+    ext = [k for k in rt.vm.externals]
+    lines.append("  [stub] answers from apt_stubs.json: " + ("; ".join("%s x%d" % kv for kv in rt.vm.stub_hits.items()) or "none"))
+    lines.append("  [stub] scenario actions run: %d    names read or called with no definition and no stub: %d" %
+                 (len(rt.stub_log), len([k for k in ext if k not in rt.vm.stubs])))
     if rt.errors:
         lines.append("  [unsupported] stopped handlers: " + "; ".join("%s x%d" % kv for kv in rt.errors.items()))
     lines.append("  Math.random() is a seeded generator (mulberry32), a repeatable stand-in, not the game's generator.")
@@ -200,6 +204,30 @@ def _fmt_v(v):
     return VM.to_str(v)
 
 
+def shape_lines(char, world):
+    """Where the geometry of a shape sits against its own origin (a shape turns around the origin of its clip)."""
+    l, t, r, b = char["bounds"]
+    lines = ["", "shape geometry [file]  (shape space, the clip origin is 0,0)",
+             "  declared bounds   x %.1f .. %.1f   y %.1f .. %.1f" % (l, r, t, b)]
+    pts = [p for blk in (char.get("blocks") or []) for tri in blk["triangles"] for p in tri]
+    if not pts:
+        return lines + ["  fill blocks not decoded: bounds only"]
+    x0, x1 = min(p[0] for p in pts), max(p[0] for p in pts)
+    y0, y1 = min(p[1] for p in pts), max(p[1] for p in pts)
+    lines.append("  triangle extent   x %.1f .. %.1f   y %.1f .. %.1f   (%d blocks)" % (x0, x1, y0, y1, len(char["blocks"])))
+    lines.append("  origin is %s the triangles   centre of triangles (%.1f, %.1f)" % (
+        "inside" if x0 <= 0 <= x1 and y0 <= 0 <= y1 else "OUTSIDE", (x0 + x1) / 2, (y0 + y1) / 2))
+    dx, dy = x0 - l, y0 - t
+    if abs(dx) > 1 or abs(dy) > 1:
+        lines.append("  NOTE: the triangles start (%.1f, %.1f) away from the declared bounds corner" % (dx, dy))
+    ox, oy = apt_render.mapply(world, 0, 0)
+    cx, cy = apt_render.mapply(world, (x0 + x1) / 2, (y0 + y1) / 2)
+    lines.append("  on the stage: origin (%.1f, %.1f)   centre of triangles (%.1f, %.1f)" % (ox, oy, cx, cy))
+    for i, blk in enumerate(char["blocks"][:3]):
+        lines.append("  block %d image %d  texture matrix: %s" % (i, blk["image"], _fmt_m(blk["matrix"])))
+    return lines
+
+
 def inspector_text(rt, info, assign):
     mc = info.get("mc")
     lines = []
@@ -222,7 +250,11 @@ def inspector_text(rt, info, assign):
             c.path().split("/")[-1], c.char_id, c.depth, c.frame + 1, max(1, len(c.frames)), "playing" if c.playing else "stopped"))
     lines.append("")
     lines.append("world matrix (parent x local, worldX = a*x + c*y + tx):")
-    lines.append("  " + _fmt_m(_compose(chain)))
+    world = _compose(chain)
+    lines.append("  " + _fmt_m(world))
+    ch = rt.movie.chars.get(info["char"])
+    if ch is not None and ch["type"] == "Shape":
+        lines += shape_lines(ch, world)
     shown = 0
     for c in reversed(chain):
         if not (c.vars or c.writes or c.tp is not None):
