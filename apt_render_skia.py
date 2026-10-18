@@ -244,7 +244,7 @@ class SkiaRenderer(apt_render.Renderer):
                 images.append(blk["image"])
                 im = self.res.image(movie, blk["image"])
                 self.stats[im["status"]] = self.stats.get(im["status"], 0) + 1
-                tinv = minv(blk["matrix"]) if im["image"] is not None else None
+                tinv = minv(apt_render.fit_matrix(blk, im["image"].size) if self.fit_textures else blk["matrix"]) if im["image"] is not None else None
                 if tinv is not None:
                     c.concat(_matrix(tinv))                                 # image pixels -> shape space
                     c.drawImage(self._sk(im["image"]), 0, 0, SAMPLING, skia.Paint(ColorFilter=_tint_filter(tint)))

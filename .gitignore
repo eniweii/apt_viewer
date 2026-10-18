@@ -4,3 +4,7 @@ apt_overrides.json
 apt_report.json
 missing.csv
 launch_settings.json
+symbols_out/
+apt_hints.json
+patterns.txt
+extract_dev_symbols.py

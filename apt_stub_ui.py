@@ -37,19 +37,22 @@ class StubPanel(ttk.Frame):
         ttk.Button(bar, text="Reset with stubs", command=lambda: self.app.rt_reset()).pack(side="left", padx=3)
         ttk.Button(bar, text="Save file", width=9, command=self.save).pack(side="left")
         ttk.Checkbutton(bar, text="Run scenario on reset", variable=self.run_var).pack(side="left", padx=6)
+        self.hint_lbl = ttk.Label(self, text=self.app.hints.summary(), foreground="#2a7d46")
+        self.hint_lbl.pack(anchor="w", padx=4)
 
         panes = ttk.Panedwindow(self, orient="vertical")
         panes.pack(fill="both", expand=True)
 
         ext = ttk.Frame(panes)
         ttk.Label(ext, text="Externals: read or called by the movie, not defined in it (double click: stub)").pack(anchor="w")
-        self.ext = ttk.Treeview(ext, columns=("kind", "count", "stub", "args"), show="tree headings", height=7)
+        self.ext = ttk.Treeview(ext, columns=("kind", "count", "stub", "args", "dev"), show="tree headings", height=7)
         self.ext.heading("#0", text="name")
         self.ext.column("#0", width=150)
-        for c, w in (("kind", 40), ("count", 40), ("stub", 90), ("args", 110)):
-            self.ext.heading(c, text=c)
+        for c, w in (("kind", 40), ("count", 40), ("stub", 90), ("args", 110), ("dev", 110)):
+            self.ext.heading(c, text="dev (inferred)" if c == "dev" else c)
             self.ext.column(c, width=w)
         self.ext.tag_configure("stub", foreground="#2a5db0")
+        self.ext.tag_configure("hint", foreground="#2a7d46")
         self.ext.pack(fill="both", expand=True)
         self.ext.bind("<Double-1>", self.on_ext)
         panes.add(ext, weight=1)
@@ -61,11 +64,12 @@ class StubPanel(ttk.Frame):
         self.filter_var = tk.StringVar()
         self.filter_var.trace_add("write", lambda *a: self.fill_functions())
         ttk.Entry(row, textvariable=self.filter_var, width=14).pack(side="right")
-        self.fun = ttk.Treeview(fun, columns=("owner", "params", "calls"), show="tree headings", height=7)
+        self.fun = ttk.Treeview(fun, columns=("owner", "params", "calls", "dev"), show="tree headings", height=7)
+        self.fun.tag_configure("hint", foreground="#2a7d46")
         self.fun.heading("#0", text="path")
         self.fun.column("#0", width=190)
-        for c, w in (("owner", 90), ("params", 90), ("calls", 40)):
-            self.fun.heading(c, text=c)
+        for c, w in (("owner", 90), ("params", 90), ("calls", 40), ("dev", 110)):
+            self.fun.heading(c, text="dev (inferred)" if c == "dev" else c)
             self.fun.column(c, width=w)
         self.fun.pack(fill="both", expand=True)
         self.fun.bind("<<TreeviewSelect>>", self.on_fun)
@@ -118,11 +122,13 @@ class StubPanel(ttk.Frame):
         stubs = self.cfg()["stubs"]
         for key, e in sorted(rt.vm.externals.items(), key=lambda kv: -kv[1]["count"]):
             has = key in stubs
-            self.ext.insert("", "end", iid=key, text=key, tags=("stub",) if has else (),
-                            values=(e["kind"], e["count"], json.dumps(stubs[key])[:40] if has else "", ", ".join(e["args"] or [])[:60]))
+            dev = self.app.hints.note(key)
+            self.ext.insert("", "end", iid=key, text=key, tags=("stub",) if has else (("hint",) if dev else ()),
+                            values=(e["kind"], e["count"], json.dumps(stubs[key])[:40] if has else "", ", ".join(e["args"] or [])[:60], dev))
         for key in stubs:                                  # stubs for names not hit (yet)
             if key not in rt.vm.externals:
-                self.ext.insert("", "end", iid=key, text=key, tags=("stub",), values=("", 0, json.dumps(stubs[key])[:40], ""))
+                self.ext.insert("", "end", iid=key, text=key, tags=("stub",),
+                                values=("", 0, json.dumps(stubs[key])[:40], "", self.app.hints.note(key)))
         self.funcs = rt.functions()
         self.fill_functions()
         for op in self.cfg()["scenario"]:
@@ -142,7 +148,9 @@ class StubPanel(ttk.Frame):
             rows.append((rt.vm.call_counts.get(f.offset, 0), path, owner, f))
         rows.sort(key=lambda r: (r[0], r[1]))
         for calls, path, owner, f in rows[:600]:
-            self.fun.insert("", "end", iid=path, text=path, values=(owner, ", ".join(n for _r, n in f.params), calls))
+            dev = self.app.hints.note(path)
+            self.fun.insert("", "end", iid=path, text=path, tags=("hint",) if dev else (),
+                            values=(owner, ", ".join(n for _r, n in f.params), calls, dev))
 
     @staticmethod
     def _op_text(op):

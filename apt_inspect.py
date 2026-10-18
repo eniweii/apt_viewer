@@ -228,6 +228,68 @@ def shape_lines(char, world):
     return lines
 
 
+def texture_text(char, image_id, im):
+    """Decoded image size against the size the shape's texture matrix asks for (a mismatch moves and shrinks the picture)."""
+    if im.get("image") is None:
+        return ""
+    w, h = im["image"].size
+    out = "\n  decoded image %d x %d" % (w, h)
+    for blk in (char.get("blocks") or []) if char else []:
+        if blk["image"] != image_id:
+            continue
+        x0, y0, x1, y1 = apt_render.mapped_extent(blk)
+        out += "\n  the texture matrix maps the shape to image pixels x %.1f .. %.1f  y %.1f .. %.1f  (%.0f x %.0f)" % (
+            x0, x1, y0, y1, x1 - x0, y1 - y0)
+        if min(abs(x0), abs(y0)) <= 1.5 and (abs((x1 - x0) - w) > 1 or abs((y1 - y0) - h) > 1):
+            out += "\n  NOTE: the matrix expects a %.0f x %.0f image from its corner, the decoded one is %d x %d. Try Fit textures." % (
+                x1 - x0, y1 - y0, w, h)
+        break
+    return out
+
+
+def history_lines(rt, c, limit=12):
+    """Where the timeline of the parent places this clip, frame by frame: runs of equal placements."""
+    par = c.parent
+    if par is None or not par.frames:
+        return []
+    runs = []
+    for f in range(len(par.frames)):
+        try:
+            objs, _bg, _lb = rt.movie.display_list(par.frames, f)
+        except Exception:
+            return []
+        m = next((o["matrix"] for o in objs if o["depth"] == c.depth and o["char"] == c.char_id), None)
+        key = None if m is None else tuple(round(v, 3) for v in m)
+        if runs and runs[-1][2] == key:
+            runs[-1][1] = f + 1
+        else:
+            runs.append([f + 1, f + 1, key])
+    name = c.path().split("/")[-1]
+    out = ["", "placement of %s by the frames of %s [file]  (frame numbers start at 1):" % (name, par.path().split("/")[-1])]
+    for a, b, key in runs[:limit]:
+        out.append("  frames %3d..%-3d %s" % (a, b, "not placed" if key is None else _fmt_m(key)))
+    if len(runs) > limit:
+        out.append("  ... %d more runs" % (len(runs) - limit))
+    return out
+
+
+def contents_lines(rt, chain, limit=10):
+    """What each parent clip holds at its current frame (the box and the parts that turn with it), local matrices."""
+    out = []
+    for c in chain[1:-1]:
+        try:
+            objs = c.render_list()
+        except Exception:                                   # a diagnostic must never break the inspector
+            continue
+        out += ["", "contents of %s at frame %d/%d [file]:" % (c.path().split("/")[-1], c.frame + 1, max(1, len(c.frames)))]
+        for o in objs[:limit]:
+            ch = rt.movie.chars.get(o["char"])
+            out.append("  depth %-3d char %-4d %-7s %s" % (o["depth"], o["char"], ch["type"] if ch else "import", _fmt_m(o["matrix"])))
+        if len(objs) > limit:
+            out.append("  ... %d more" % (len(objs) - limit))
+    return out
+
+
 def inspector_text(rt, info, assign):
     mc = info.get("mc")
     lines = []
@@ -248,6 +310,13 @@ def inspector_text(rt, info, assign):
     for c in chain:
         lines.append("  %-28s char %-4d depth %-3d frame %d/%d %s" % (
             c.path().split("/")[-1], c.char_id, c.depth, c.frame + 1, max(1, len(c.frames)), "playing" if c.playing else "stopped"))
+    lines.append("")
+    lines.append("placement of each clip in its parent [file]:")
+    for c in chain[1:]:
+        lines.append("  %-8s %s" % (c.path().split("/")[-1], _fmt_m(c.placed)))
+    if len(chain) > 1:
+        lines += history_lines(rt, chain[1])                  # the clip right under _root
+    lines += contents_lines(rt, chain)
     lines.append("")
     lines.append("world matrix (parent x local, worldX = a*x + c*y + tx):")
     world = _compose(chain)

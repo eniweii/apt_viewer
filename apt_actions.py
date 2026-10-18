@@ -22,6 +22,8 @@ Anything that does not decode is reported (Insn.op = None, with a note), never g
 """
 import struct
 
+import apt_scan as A
+
 OPS = {
     0x00: "end", 0x04: "nextFrame", 0x05: "prevFrame", 0x06: "play", 0x07: "stop", 0x08: "toggleQuality",
     0x09: "stopSounds", 0x0A: "add", 0x0B: "subtract", 0x0C: "multiply", 0x0D: "divide", 0x0E: "equals",
@@ -93,19 +95,19 @@ class Cursor:
         return self.take(1)[0]
 
     def u16(self):
-        return struct.unpack("<H", self.take(2))[0]
+        return struct.unpack(A.ENDIAN + "H", self.take(2))[0]
 
     def i16(self):
-        return struct.unpack("<h", self.take(2))[0]
+        return struct.unpack(A.ENDIAN + "h", self.take(2))[0]
 
     def u32(self):
-        return struct.unpack("<I", self.take(4))[0]
+        return struct.unpack(A.ENDIAN + "I", self.take(4))[0]
 
     def i32(self):
-        return struct.unpack("<i", self.take(4))[0]
+        return struct.unpack(A.ENDIAN + "i", self.take(4))[0]
 
     def f32(self):
-        return struct.unpack("<f", self.take(4))[0]
+        return struct.unpack(A.ENDIAN + "f", self.take(4))[0]
 
     def ptr(self):
         self.align(4)
@@ -268,7 +270,7 @@ def _block(c, end, consts):
                 fix = ("try", after + ts, after + ts + cs, after + ts + cs + fs)
             elif op == 0x94:                                    # with
                 c.align(4)
-                delta = struct.unpack("<i", c.take(4))[0]
+                delta = struct.unpack(A.ENDIAN + "i", c.take(4))[0]
                 fix = ("jump", c.pos + delta)
             elif op in (0x99, 0x9D, 0xB8):
                 c.align(4)
@@ -356,6 +358,7 @@ def collect_streams(movie):
     """All action streams of an apt_movie.Movie: [{'where', 'offset', 'insns', 'error'}].
     where: 'root frame N', 'sprite ID frame N', 'init sprite ID', and '... clip <event>' for PlaceObject handlers."""
     import apt_movie as M
+    A.ENDIAN = getattr(movie, "endian", A.ENDIAN)
     apt, const = movie.apt, movie.const
     _main, consts = read_consts(const)
     found, seen = [], set()
@@ -372,34 +375,34 @@ def collect_streams(movie):
     def walk(frames_ptr_count, label):
         n, arr = frames_ptr_count
         for fi in range(n):
-            count, ctl = struct.unpack_from("<II", apt, arr + 8 * fi)
+            count, ctl = struct.unpack_from(A.ENDIAN + "II", apt, arr + 8 * fi)
             for j in range(count):
-                c = struct.unpack_from("<I", apt, ctl + 4 * j)[0]
-                t = struct.unpack_from("<I", apt, c)[0]
+                c = struct.unpack_from(A.ENDIAN + "I", apt, ctl + 4 * j)[0]
+                t = struct.unpack_from(A.ENDIAN + "I", apt, c)[0]
                 if t == 1:
-                    add("%s frame %d" % (label, fi), struct.unpack_from("<I", apt, c + 4)[0])
+                    add("%s frame %d" % (label, fi), struct.unpack_from(A.ENDIAN + "I", apt, c + 4)[0])
                 elif t == 8:
-                    sid, off = struct.unpack_from("<II", apt, c + 4)
+                    sid, off = struct.unpack_from(A.ENDIAN + "II", apt, c + 4)
                     add("init sprite %d" % sid, off)
                 elif t in (3, 9):
-                    flags = struct.unpack_from("<I", apt, c + 4)[0]
-                    aptr = struct.unpack_from("<I", apt, c + 0x3C)[0]
+                    flags = struct.unpack_from(A.ENDIAN + "I", apt, c + 4)[0]
+                    aptr = struct.unpack_from(A.ENDIAN + "I", apt, c + 0x3C)[0]
                     if flags & 0x80 and aptr:
-                        nb, boff = struct.unpack_from("<II", apt, aptr)
+                        nb, boff = struct.unpack_from(A.ENDIAN + "II", apt, aptr)
                         bp = boff
                         for _ in range(nb):
                             bp = (bp + 3) & ~3
-                            trig, key, soff = struct.unpack_from("<iiI", apt, bp)
+                            trig, key, soff = struct.unpack_from(A.ENDIAN + "iiI", apt, bp)
                             bp += 12
                             ev = [CLIP_EVENTS[i] for i in range(len(CLIP_EVENTS)) if trig & (1 << i)] or [hex(trig)]
                             add("%s frame %d place depth %d char %d clip %s" % (
-                                label, fi, struct.unpack_from("<I", apt, c + 8)[0],
-                                struct.unpack_from("<I", apt, c + 12)[0], "+".join(ev)), soff)
+                                label, fi, struct.unpack_from(A.ENDIAN + "I", apt, c + 8)[0],
+                                struct.unpack_from(A.ENDIAN + "I", apt, c + 12)[0], "+".join(ev)), soff)
 
-    main = struct.unpack_from("<I", const, 20)[0]
-    walk((struct.unpack_from("<I", apt, main + 16)[0], struct.unpack_from("<I", apt, main + 20)[0]), "root")
+    main = struct.unpack_from(A.ENDIAN + "I", const, 20)[0]
+    walk((struct.unpack_from(A.ENDIAN + "I", apt, main + 16)[0], struct.unpack_from(A.ENDIAN + "I", apt, main + 20)[0]), "root")
     for cid, ch in sorted(movie.chars.items()):
         if ch["type"] == "Sprite":
             p = ch["ptr"]
-            walk((struct.unpack_from("<I", apt, p + 16)[0], struct.unpack_from("<I", apt, p + 20)[0]), "sprite %d" % cid)
+            walk((struct.unpack_from(A.ENDIAN + "I", apt, p + 16)[0], struct.unpack_from(A.ENDIAN + "I", apt, p + 20)[0]), "sprite %d" % cid)
     return found

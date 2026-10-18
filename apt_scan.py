@@ -34,6 +34,31 @@ import sys
 
 # ---------------------------------------------------------------- helpers
 
+# Byte order of the apt/const data of the movie being read: '<' PC, '>' x360 (the container, the
+# resource packs and the fonts are not affected). use_endian() sets it for each movie.
+ENDIAN = '<'
+
+
+def use_endian(apt, const):
+    """Set ENDIAN from the data. The 'main' offset in the const file (at 20) must point inside the
+    apt data and be 4-aligned; only the right byte order gives that."""
+    global ENDIAN
+    for e in ('<', '>'):
+        main = struct.unpack_from(e + 'I', const, 20)[0]
+        if 0 < main < len(apt) and main % 4 == 0:
+            ENDIAN = e
+            return e
+    raise ValueError('apt data: byte order not recognised')
+
+
+def au32(b, o):
+    return struct.unpack_from(ENDIAN + 'I', b, o)[0]
+
+
+def af32(b, o):
+    return struct.unpack_from(ENDIAN + 'f', b, o)[0]
+
+
 def u32(b, o):
     return struct.unpack_from('<I', b, o)[0]
 
@@ -87,47 +112,48 @@ def parse_apt(apt, const):
     """Parse the main movie. Offsets observed on Undercover files ("Apt Data:1:7:4")."""
     if not apt.startswith(b'Apt Data') or not const.startswith(b'Apt constant file'):
         raise ValueError('apt/const magic not found')
-    main = u32(const, 20)
-    n_const, a_const = u32(const, 24), u32(const, 28)
+    use_endian(apt, const)
+    main = au32(const, 20)
+    n_const, a_const = au32(const, 24), au32(const, 28)
     strings = []
     for i in range(n_const):
-        t, v = u32(const, a_const + 8 * i), u32(const, a_const + 8 * i + 4)
+        t, v = au32(const, a_const + 8 * i), au32(const, a_const + 8 * i + 4)
         if t == 1:
             s = cstr(const, v)
             if s is not None:
                 strings.append(s)
     m = main
     (n_frames, _af, _lab, n_chars, ap_chars, width, height, ms,
-     n_imp, a_imp, n_exp, a_exp) = [u32(apt, m + 16 + 4 * i) for i in range(12)]
+     n_imp, a_imp, n_exp, a_exp) = [au32(apt, m + 16 + 4 * i) for i in range(12)]
     movie = {'frames': n_frames, 'width': width, 'height': height, 'ms_per_frame': ms,
              'const_strings': strings, 'characters': [], 'imports': [], 'exports': []}
     for i in range(n_chars):
-        p = u32(apt, ap_chars + 4 * i)
+        p = au32(apt, ap_chars + 4 * i)
         if not p:
             continue
-        t = u32(apt, p)
+        t = au32(apt, p)
         c = {'id': i, 'type': TYPES.get(t, str(t))}
         if t == 7:      # Bitmap
-            c['bitmap_id'] = u32(apt, p + 16)
+            c['bitmap_id'] = au32(apt, p + 16)
         elif t == 1:    # Shape
-            c['bounds'] = [round(f32(apt, p + 16 + 4 * k), 2) for k in range(4)]
-            c['geometry_id'] = u32(apt, p + 32)
+            c['bounds'] = [round(af32(apt, p + 16 + 4 * k), 2) for k in range(4)]
+            c['geometry_id'] = au32(apt, p + 32)
         elif t == 3:    # Font
-            c['name'] = cstr(apt, u32(apt, p + 16))
-            c['raw'] = [u32(apt, p + 8 + 4 * k) for k in range(6)]
+            c['name'] = cstr(apt, au32(apt, p + 16))
+            c['raw'] = [au32(apt, p + 8 + 4 * k) for k in range(6)]
         elif t == 2:    # Text
-            c['bounds'] = [round(f32(apt, p + 16 + 4 * k), 2) for k in range(4)]
-            c['font_id'] = u32(apt, p + 32)
-            c['text'] = cstr(apt, u32(apt, p + 60))
-            c['variable'] = cstr(apt, u32(apt, p + 64))
+            c['bounds'] = [round(af32(apt, p + 16 + 4 * k), 2) for k in range(4)]
+            c['font_id'] = au32(apt, p + 32)
+            c['text'] = cstr(apt, au32(apt, p + 60))
+            c['variable'] = cstr(apt, au32(apt, p + 64))
         movie['characters'].append(c)
     for i in range(n_imp):
         q = a_imp + 16 * i
-        movie['imports'].append({'movie': cstr(apt, u32(apt, q)), 'name': cstr(apt, u32(apt, q + 4)),
-                                 'id': u32(apt, q + 8)})
+        movie['imports'].append({'movie': cstr(apt, au32(apt, q)), 'name': cstr(apt, au32(apt, q + 4)),
+                                 'id': au32(apt, q + 8)})
     for i in range(n_exp):
         q = a_exp + 8 * i
-        movie['exports'].append({'name': cstr(apt, u32(apt, q)), 'id': u32(apt, q + 4)})
+        movie['exports'].append({'name': cstr(apt, au32(apt, q)), 'id': au32(apt, q + 4)})
     return movie
 
 # ---------------------------------------------------------------- TPK index
@@ -340,11 +366,11 @@ def geometry_images(blob):
     block: size, ..., colour at +0x20, image id at +0x24 (0 = no image).
     Returns a list of (colour, image_id) or None if the blob does not fit this layout."""
     try:
-        total, n, _, first = struct.unpack_from('<4I', blob, 0)
+        total, n, _, first = struct.unpack_from(ENDIAN + '4I', blob, 0)
         if total != len(blob) or not 1 <= n <= 64:
             return None
-        offs = [first] + [u32(blob, 0x10 + 4 * i) for i in range(n - 1)]
-        return [(u32(blob, o + 0x20), u32(blob, o + 0x24)) for o in offs]
+        offs = [first] + [au32(blob, 0x10 + 4 * i) for i in range(n - 1)]
+        return [(au32(blob, o + 0x20), au32(blob, o + 0x24)) for o in offs]
     except struct.error:
         return None
 

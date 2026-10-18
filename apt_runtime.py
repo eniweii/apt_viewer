@@ -290,6 +290,7 @@ class Runtime:
         self.stubs = dict(stubs or {})            # name -> JSON value, see apt_vm.from_json
         self.scenario = list(scenario or [])      # what the game does: [{"at": tick, "op": set|call|goto, ...}]
         self.stub_log = []                        # (tick, text) for every stub operation
+        M.A.ENDIAN = getattr(movie, "endian", M.A.ENDIAN)
         _main, self.consts = AA.read_consts(movie.const)
         self.streams = {}
         self.reset(seed)

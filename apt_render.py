@@ -52,10 +52,34 @@ def argb(v):
     return ((v >> 16) & 255) / 255.0, ((v >> 8) & 255) / 255.0, (v & 255) / 255.0, ((v >> 24) & 255) / 255.0
 
 
+def mapped_extent(blk):
+    """The triangles of a fill block mapped by its texture matrix: (x0, y0, x1, y1) in image pixels."""
+    xs = [p[0] for tri in blk["triangles"] for p in tri]
+    ys = [p[1] for tri in blk["triangles"] for p in tri]
+    pts = [mapply(blk["matrix"], x, y) for x in (min(xs), max(xs)) for y in (min(ys), max(ys))]
+    return min(p[0] for p in pts), min(p[1] for p in pts), max(p[0] for p in pts), max(p[1] for p in pts)
+
+
+def fit_matrix(blk, size):
+    """Texture matrix of a block, scaled so the decoded image of size (w, h) fills what the matrix gives to a whole image.
+    Only when the shape starts at the image corner (extent from 0,0); a sub part of an image keeps the file matrix.
+    Use: the file matrix may expect another image size than the one decoded."""
+    x0, y0, x1, y1 = mapped_extent(blk)
+    w, h = x1 - x0, y1 - y0
+    if min(abs(x0), abs(y0)) > 1.5 or w < 1 or h < 1:
+        return blk["matrix"]
+    rw, rh = size[0] / w, size[1] / h
+    if abs(rw - 1) < 0.01 and abs(rh - 1) < 0.01:
+        return blk["matrix"]
+    a, b, c, d, tx, ty = blk["matrix"]
+    return (a * rw, b * rh, c * rw, d * rh, tx * rw, ty * rh)
+
+
 class Renderer:
     def __init__(self, resources, boxes=False):
         self.res = resources
         self.boxes = boxes
+        self.fit_textures = True        # stretch a texture to the decoded image size when the shape starts at its corner (see fit_matrix)
         self.loop_sprites = False       # False: a sprite stays on its last frame, True: it starts again
         self.grid = False               # 100 stage pixel grid
         self.anchors = False            # a cross at the origin of every sprite
@@ -248,7 +272,7 @@ class Renderer:
                 im = self.res.image(movie, blk["image"])
                 self.stats[im["status"]] = self.stats.get(im["status"], 0) + 1
                 if im["image"] is not None:
-                    tinv = minv(blk["matrix"])
+                    tinv = minv(fit_matrix(blk, im["image"].size) if self.fit_textures else blk["matrix"])
                     if tinv is not None:
                         region = self._sample(im["image"], mmul(mat, tinv), bx, by, w, h)
                 if region is None:

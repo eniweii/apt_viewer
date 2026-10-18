@@ -36,6 +36,7 @@ import apt_render
 import apt_resources
 import apt_runtime
 import apt_stub_ui
+import apt_hints
 import apt_stubs
 
 STATUS_TAGS = {"found": "#1b7f2b", "override": "#2a5db0", "dynamic": "#00829b", "missing": "#b0008a",
@@ -58,6 +59,7 @@ class App:
     def __init__(self, root, ui_dir, res, backend="auto", stubs="apt_stubs.json"):
         self.root, self.res = root, res
         self.stub_store = apt_stubs.StubStore(stubs)
+        self.hints = apt_hints.Hints(os.path.join(os.path.dirname(os.path.abspath(stubs)), "apt_hints.json"))   # local, see apt_hints.py
         self.renderer = make_renderer(res, backend)
         self.movies = {}                 # name -> Movie or error text
         self.movie = None
@@ -67,6 +69,8 @@ class App:
         self.playing = False
         self.streams, self.assign = [], {}
         self.last_tick_time = 0.0
+        self.tick_acc = 0.0
+        self.t_step = 0.0
         self.horizon = 600                # ticks shown on the timeline
         root.title("APT viewer")
         root.geometry("1500x860")
@@ -300,6 +304,7 @@ class App:
         mv = self.movie
         if mv is None:
             return
+        t_start = time.perf_counter()
         scale = float(self.zoom_var.get())
         self.renderer.boxes = self.boxes_var.get()
         self.renderer.loop_sprites = self.loop_var.get()
@@ -316,6 +321,7 @@ class App:
             img, self.hits, labels = self.renderer.render(mv, frame, scale)
             head = "%s  frame %d/%d %s" % (mv.name, frame, len(mv.frames) - 1, labels or "")
         self.scale = scale
+        t_drawn = time.perf_counter()
         rgb = img.convert("RGB")
         if self.photo is not None and self.canvas_size == rgb.size and self.canvas_img is not None:
             self.photo.paste(rgb)                                 # same size: no new image, no flicker
@@ -329,7 +335,10 @@ class App:
             self.canvas_size = rgb.size
         self.canvas.delete("sel")
         st = self.renderer.stats
-        self.status.set("%s  |  %s  |  %s" % (head, getattr(self.renderer, "backend", "pillow"), "  ".join("%s %d" % kv for kv in sorted(st.items())) or "no images drawn"))
+        t_shown = time.perf_counter()
+        timing = "step %.1f  draw %.1f  show %.1f ms" % (getattr(self, "t_step", 0.0), (t_drawn - t_start) * 1000.0, (t_shown - t_drawn) * 1000.0)
+        self.status.set("%s  |  %s  |  %s  |  %s" % (head, getattr(self.renderer, "backend", "pillow"), timing,
+                                                    "  ".join("%s %d" % kv for kv in sorted(st.items())) or "no images drawn"))
         if self.tl_movie is not mv:                               # new movie: draw the static layer of the bar once
             self.tl_movie = mv
             self.draw_timeline()
@@ -472,6 +481,7 @@ class App:
             self.stub_panel.refresh()
         if self.playing:
             self.last_tick_time = time.time()
+            self.tick_acc = 0.0                                   # milliseconds that did not make a whole tick yet
             self.root.after(1, self.play_loop)
 
     def play_loop(self):
@@ -480,11 +490,19 @@ class App:
             return
         now = time.time()
         ms = max(1, self.movie.ms)
-        k = max(1, min(12, int((now - self.last_tick_time) * 1000.0 / ms)))
+        self.tick_acc += (now - self.last_tick_time) * 1000.0
         self.last_tick_time = now
-        self.rt.step(k)
-        self.redraw()
-        self.root.after(1, self.play_loop)
+        k = int(self.tick_acc // ms)
+        if k > 12:                                                # far behind: drop the rest, keep the clock
+            k, self.tick_acc = 12, 0.0
+        else:
+            self.tick_acc -= k * ms
+        if k:                                                     # draw only when a tick is due
+            t0 = time.perf_counter()
+            self.rt.step(k)
+            self.t_step = (time.perf_counter() - t0) * 1000.0
+            self.redraw()
+        self.root.after(max(1, int(ms - self.tick_acc)), self.play_loop)     # wait for the next tick
 
     # ---- timeline bar
     def draw_timeline(self):

@@ -34,7 +34,7 @@ F_MOVE, F_CHAR, F_MATRIX, F_CXFORM, F_RATIO, F_NAME, F_CLIP, F_EVENTS = 1, 2, 4,
 
 
 def _f32(b, o):
-    return struct.unpack_from("<f", b, o)[0]
+    return struct.unpack_from(A.ENDIAN + "f", b, o)[0]
 
 
 class Movie:
@@ -45,45 +45,46 @@ class Movie:
         self.const = self.ents["1"]
         if not self.apt.startswith(b"Apt Data"):
             raise ValueError("no apt data")
-        main = A.u32(self.const, 20)
-        self.width, self.height, self.ms = (A.u32(self.apt, main + 36 + 4 * i) for i in range(3))
+        self.endian = A.use_endian(self.apt, self.const)        # "<" PC, ">" x360
+        main = A.au32(self.const, 20)
+        self.width, self.height, self.ms = (A.au32(self.apt, main + 36 + 4 * i) for i in range(3))
         self.chars = {}
-        n_chars, ap_chars = A.u32(self.apt, main + 28), A.u32(self.apt, main + 32)
+        n_chars, ap_chars = A.au32(self.apt, main + 28), A.au32(self.apt, main + 32)
         for i in range(n_chars):
-            p = A.u32(self.apt, ap_chars + 4 * i)
+            p = A.au32(self.apt, ap_chars + 4 * i)
             if p:
                 self.chars[i] = self._character(i, p)
         self.frames = self._frames(main)
         self.imports = []
-        n, a = A.u32(self.apt, main + 48), A.u32(self.apt, main + 52)
+        n, a = A.au32(self.apt, main + 48), A.au32(self.apt, main + 52)
         for i in range(n):
             q = a + 16 * i
-            self.imports.append({"movie": A.cstr(self.apt, A.u32(self.apt, q)), "name": A.cstr(self.apt, A.u32(self.apt, q + 4)),
-                                 "id": A.u32(self.apt, q + 8)})
+            self.imports.append({"movie": A.cstr(self.apt, A.au32(self.apt, q)), "name": A.cstr(self.apt, A.au32(self.apt, q + 4)),
+                                 "id": A.au32(self.apt, q + 8)})
         self.exports = []
-        n, a = A.u32(self.apt, main + 56), A.u32(self.apt, main + 60)
+        n, a = A.au32(self.apt, main + 56), A.au32(self.apt, main + 60)
         for i in range(n):
             q = a + 8 * i
-            self.exports.append({"name": A.cstr(self.apt, A.u32(self.apt, q)), "id": A.u32(self.apt, q + 4)})
+            self.exports.append({"name": A.cstr(self.apt, A.au32(self.apt, q)), "id": A.au32(self.apt, q + 4)})
 
     # ---- characters
     def _character(self, cid, p):
         a = self.apt
-        t = A.u32(a, p)
+        t = A.au32(a, p)
         c = {"id": cid, "type": A.TYPES.get(t, str(t)), "ptr": p}
         if t == 1:
             c["bounds"] = [_f32(a, p + 16 + 4 * k) for k in range(4)]
-            c["geometry_id"] = A.u32(a, p + 32)
+            c["geometry_id"] = A.au32(a, p + 32)
             c["blocks"] = self._blocks(self.ents.get(str(c["geometry_id"] + 1)))
         elif t == 2:
             c["bounds"] = [_f32(a, p + 16 + 4 * k) for k in range(4)]
-            c["font_id"], c["align"], c["color"] = A.u32(a, p + 32), A.u32(a, p + 36), A.u32(a, p + 40)
+            c["font_id"], c["align"], c["color"] = A.au32(a, p + 32), A.au32(a, p + 36), A.au32(a, p + 40)
             c["height"] = _f32(a, p + 44)
-            c["readonly"], c["multiline"], c["wordwrap"] = (A.u32(a, p + 48 + 4 * k) for k in range(3))
-            c["text"] = A.cstr(a, A.u32(a, p + 60)) or ""
-            c["variable"] = A.cstr(a, A.u32(a, p + 64)) or ""
+            c["readonly"], c["multiline"], c["wordwrap"] = (A.au32(a, p + 48 + 4 * k) for k in range(3))
+            c["text"] = A.cstr(a, A.au32(a, p + 60)) or ""
+            c["variable"] = A.cstr(a, A.au32(a, p + 64)) or ""
         elif t == 3:
-            c["name"] = A.cstr(a, A.u32(a, p + 16))
+            c["name"] = A.cstr(a, A.au32(a, p + 16))
         elif t == 5:
             c["frames"] = self._frames(p)
         return c
@@ -93,20 +94,20 @@ class Movie:
         if not blob or len(blob) < 0x20:
             return None
         try:
-            total, n, _z, first = struct.unpack_from("<4I", blob, 0)
+            total, n, _z, first = struct.unpack_from(A.ENDIAN + "4I", blob, 0)
             if total != len(blob) or not 1 <= n <= 64:
                 return None
-            offs = [first] + [A.u32(blob, 0x10 + 4 * i) for i in range(n - 1)]
+            offs = [first] + [A.au32(blob, 0x10 + 4 * i) for i in range(n - 1)]
             out = []
             for o in offs:
-                size = A.u32(blob, o)
-                color, image = A.u32(blob, o + 0x20), A.u32(blob, o + 0x24)
-                matrix = struct.unpack_from("<6f", blob, o + 0x30)
-                tri, voff = A.u32(blob, o + 0x48), A.u32(blob, o + 0x4C)
+                size = A.au32(blob, o)
+                color, image = A.au32(blob, o + 0x20), A.au32(blob, o + 0x24)
+                matrix = struct.unpack_from(A.ENDIAN + "6f", blob, o + 0x30)
+                tri, voff = A.au32(blob, o + 0x48), A.au32(blob, o + 0x4C)
                 start = o + 0x10 + voff
                 if not 0 < tri < 4000 or start + tri * 96 > o + size or start + tri * 96 > len(blob):
                     return None
-                verts = [struct.unpack_from("<2f", blob, start + 32 * i) for i in range(tri * 3)]
+                verts = [struct.unpack_from(A.ENDIAN + "2f", blob, start + 32 * i) for i in range(tri * 3)]
                 out.append({"color": color, "image": image if image < 0x10000 else 0, "matrix": matrix,
                             "triangles": [tuple(verts[3 * i:3 * i + 3]) for i in range(tri)]})
             return out
@@ -116,41 +117,41 @@ class Movie:
     # ---- timelines
     def _frames(self, p):
         a = self.apt
-        n, arr = A.u32(a, p + 16), A.u32(a, p + 20)
+        n, arr = A.au32(a, p + 16), A.au32(a, p + 20)
         frames = []
         for i in range(n):
-            count, ctl = A.u32(a, arr + 8 * i), A.u32(a, arr + 8 * i + 4)
-            frames.append([self._control(A.u32(a, ctl + 4 * j)) for j in range(count)] if count else [])
+            count, ctl = A.au32(a, arr + 8 * i), A.au32(a, arr + 8 * i + 4)
+            frames.append([self._control(A.au32(a, ctl + 4 * j)) for j in range(count)] if count else [])
         return frames
 
     def _control(self, c):
         a = self.apt
-        t = A.u32(a, c)
+        t = A.au32(a, c)
         if t in (3, 9):
-            flags = A.u32(a, c + 4)
+            flags = A.au32(a, c + 4)
             events = []
-            aptr = A.u32(a, c + 60)
+            aptr = A.au32(a, c + 60)
             if flags & F_EVENTS and aptr:                  # clip actions: (event flags, key code, stream)
-                nb, boff = A.u32(a, aptr), A.u32(a, aptr + 4)
+                nb, boff = A.au32(a, aptr), A.au32(a, aptr + 4)
                 bp = boff
                 for _ in range(nb):
                     bp = (bp + 3) & ~3
-                    events.append(struct.unpack_from("<iiI", a, bp))
+                    events.append(struct.unpack_from(A.ENDIAN + "iiI", a, bp))
                     bp += 12
-            return {"op": "place", "flags": flags, "depth": A.u32(a, c + 8), "char": A.u32(a, c + 12),
-                    "matrix": struct.unpack_from("<6f", a, c + 16), "scale": A.u32(a, c + 40), "bias": A.u32(a, c + 44),
-                    "name": A.cstr(a, A.u32(a, c + 52)) or "", "clip": A.u32(a, c + 56) if flags & F_CLIP else NO_CLIP,
+            return {"op": "place", "flags": flags, "depth": A.au32(a, c + 8), "char": A.au32(a, c + 12),
+                    "matrix": struct.unpack_from(A.ENDIAN + "6f", a, c + 16), "scale": A.au32(a, c + 40), "bias": A.au32(a, c + 44),
+                    "name": A.cstr(a, A.au32(a, c + 52)) or "", "clip": A.au32(a, c + 56) if flags & F_CLIP else NO_CLIP,
                     "events": events, "ptr": c}
         if t == 1:
-            return {"op": "action", "ptr": A.u32(a, c + 4)}
+            return {"op": "action", "ptr": A.au32(a, c + 4)}
         if t == 8:
-            return {"op": "initaction", "sprite": A.u32(a, c + 4), "ptr": A.u32(a, c + 8)}
+            return {"op": "initaction", "sprite": A.au32(a, c + 4), "ptr": A.au32(a, c + 8)}
         if t == 4:
-            return {"op": "remove", "depth": A.u32(a, c + 4)}
+            return {"op": "remove", "depth": A.au32(a, c + 4)}
         if t == 5:
-            return {"op": "background", "color": A.u32(a, c + 4)}
+            return {"op": "background", "color": A.au32(a, c + 4)}
         if t == 2:
-            return {"op": "label", "label": A.cstr(a, A.u32(a, c + 4)) or ""}
+            return {"op": "label", "label": A.cstr(a, A.au32(a, c + 4)) or ""}
         return {"op": "type%d" % t}
 
     def display_list(self, frames, upto):
