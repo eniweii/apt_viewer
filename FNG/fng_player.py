@@ -37,7 +37,7 @@ Mouse in the Player: move over the picture to see which objects are under the cu
 stack, send one of its messages to it, hide it, show only it. The selected object is outlined and opened in
 the Package tab. Use it to find out which of several overlapping objects draws what.
 Navigation: a response that goes to another FNG (SwitchToPackage, PushPackage..., PopPackage) opens that FNG in
-the Player; "Back" returns along the pushes. A multi image draws its three textures one over the other.
+the Player; "Back" returns along the pushes. A multi image is its own texture with the first multi image texture as a mask.
 Step 7: the Player tab has a Message box and a log. Send a message (for example PRESS or BACK) and the
 message responses run: SetScript on the object, messages to other objects, conditionals. Script events post
 their message at their time. Commands that leave the package (PushPackage, PopPackage, game and sound
@@ -48,7 +48,7 @@ Step 6: text objects show their real text from the language files (English_Globa
 "(none)", the text stored in the FNG is shown. Text is wrapped at its max width and aligned per line.
 "Check all" draws every listed FNG and all its scripts and reports what is missing (textures, fonts) and what
 fails, with a report you can copy. "Save frame" in the Player tab writes the current picture as a PNG.
-Not done: message responses (menu logic), movies, effects, multi image blending.
+Not done: message responses (menu logic), movies, effects.
 
 Usage: python fng_player.py [folder]
 """
@@ -87,6 +87,8 @@ def resource_key(name):
 ASPECTS = {"4:3": (640, 480), "16:9": (854, 480)}
 SPEEDS = {"0.25x": 0.25, "0.5x": 0.5, "1x": 1.0, "2x": 2.0}
 DEVICES = {"Keyboard (PC)": "pc", "Controller (console)": "console", "Both": "both"}
+# Parts of a texture name that tell which input device an icon is for (a guess, used only when several textures match a $NAME$ icon)
+ICON_DEVICE_HINTS = {"pc": ("KEY", "PC", "KB", "MOUSE"), "console": ("PAD", "CONSOLE", "360", "XBOX", "JOY", "CTRL", "CONTROLLER")}
 FRAME_MS = 33
 INPUT_MAP_FILE = "input_map.json"
 INPUT_CANDIDATES = {
@@ -133,6 +135,9 @@ class PlayerResolver(fng_render.Resolver):
     def font_scale(self, obj):
         return self.app.font_scale_of(obj.resource) if obj.resource is not None else 1.0
 
+    def icon(self, name):
+        return self.app.icon_image(name)
+
 LIST_COLUMNS = (
     # id, heading, width, anchor
     ("name", "Name", 190, "w"),
@@ -174,6 +179,7 @@ class FngPlayer(tk.Tk):
         self.cache = {}                 # (path, offset) -> Package, last few only
         self.textures = None            # fng_tpk.TextureIndex of the folder
         self.fonts = None               # fng_font.FontIndex of the folder
+        self.icon_cache = {}            # (texture index, icon name, device) -> image or None
         self.strings = None             # fng_str.StringIndex of the folder
         self.font_choices = self._load_font_choices()   # resource name -> font name, set by hand
         self.input_map = self._load_input_map()         # input (accept, back ...) -> message name, set by hand
@@ -1464,6 +1470,23 @@ class FngPlayer(tk.Tk):
         if self.textures is None or resource.type_name not in ("Image", "AnimatedImage", "MultiImage") or not resource.name:
             return None
         return self.textures.find(resource.name, fng_parse.bin_hash)
+
+    def icon_image(self, name):
+        """Image of a $NAME$ icon in a string: the texture with that name. If there is none, a texture that starts with
+        NAME_ is used; with several, the one whose name fits the input device of the screen. None if nothing matches."""
+        if self.textures is None:
+            return None
+        device = self.scene.device if self.scene is not None else "both"
+        key = (id(self.textures), name.upper(), device)
+        if key not in self.icon_cache:
+            tex = self.textures.by_name.get(key[1])
+            if tex is None:
+                names = sorted(n for n in self.textures.by_name if n.startswith(key[1] + "_"))
+                hints = ICON_DEVICE_HINTS.get(device, ())
+                pick = next((n for n in names if any(h in n for h in hints)), names[0] if names else None)
+                tex = self.textures.by_name.get(pick) if pick else None
+            self.icon_cache[key] = self.texture_image(tex) if tex is not None else None
+        return self.icon_cache[key]
 
     def on_pkg_select(self, _event):
         sel = self.pkg.selection()

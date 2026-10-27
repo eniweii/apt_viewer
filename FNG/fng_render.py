@@ -16,7 +16,9 @@ Messages: post_message() runs the message responses (SetScript on the owner obje
 object or the package, IfScriptEquals / Else / EndIf). Script events post their message when the script time
 reaches them. Commands that go to another package (SwitchToPackage, PushPackage..., PopPackage) are collected
 for the window (take_navigation). Game and sound messages and button commands are only written to the log.
-A multi image draws its three textures one over the other, each lerped by its own alpha (texture 1 at the bottom).
+A multi image is one quad: the texture of the object is the picture and the first multi image texture is a mask for it
+(its alpha, or its brightness when it has no alpha). The mask has its own uv rectangle, turned by PivotRotation, and repeats. The game's
+renderer does not use the second and third texture.
 objects_at(x, y) gives the objects drawn under a point (top first), and hidden holds guids the user hid.
 Input device: scene.device is "pc" (keyboard), "console" (controller) or "both". Objects with the ConsoleOnly flag
 are not drawn for "pc", objects with PCOnly are not drawn for "console". The game shows the keyboard icons or
@@ -230,6 +232,46 @@ def can_be_visible(obj, device="both"):
     return True
 
 
+def mask_corners(img, top_left, bottom_right, pivot_rotation):
+    """Corners of the mask uv rectangle in mask pixels after the game's rotation (RotateUVs): turned by PivotRotation.z
+    degrees around the point PivotRotation.x/y of the mask."""
+    w, h = img.size
+    pts = [(top_left[0] * w, top_left[1] * h), (bottom_right[0] * w, top_left[1] * h),
+           (bottom_right[0] * w, bottom_right[1] * h), (top_left[0] * w, bottom_right[1] * h)]
+    half_w, half_h = (pts[2][0] - pts[0][0]) * 0.5, (pts[2][1] - pts[0][1]) * 0.5
+    px, py = w * pivot_rotation[0] - w * 0.5, h * pivot_rotation[1] - h * 0.5
+    sin_a, cos_a = math.sin(math.radians(pivot_rotation[2])), math.cos(math.radians(pivot_rotation[2]))
+    out = []
+    for x, y in pts:
+        x, y = x - half_w - px, y - half_h - py
+        out.append((x * cos_a + y * sin_a + px + half_w, y * cos_a - x * sin_a + py + half_h))
+    return out
+
+
+def tile_mask(img, uv, limit=64):
+    """The mask repeats outside its texture (the game's wrap mode). Returns (image, uv) where the image is the mask
+    repeated over the area the uv corners reach, and uv is moved to match. Beyond `limit` repeats the mask is left as it is."""
+    w, h = img.size
+    xs, ys = [p[0] for p in uv], [p[1] for p in uv]
+    kx0, kx1 = math.floor(min(xs) / w), math.floor(max(xs) / w)
+    ky0, ky1 = math.floor(min(ys) / h), math.floor(max(ys) / h)
+    nx, ny = kx1 - kx0 + 1, ky1 - ky0 + 1
+    if (nx == 1 and ny == 1 and kx0 == 0 and ky0 == 0) or nx * ny > limit:
+        return img, uv
+    out = Image.new("RGBA", (w * nx, h * ny), (0, 0, 0, 0))
+    for j in range(ny):
+        for i in range(nx):
+            out.paste(img, (i * w, j * h))
+    return out, [(x - kx0 * w, y - ky0 * h) for x, y in uv]
+
+
+def mask_values(img):
+    """The mask as an 8 bit image: its alpha, or its brightness when the alpha is the same everywhere."""
+    alpha = img.getchannel("A")
+    low, high = alpha.getextrema()
+    return alpha if low != high else img.convert("L")
+
+
 class Resolver:
     """What the scene needs from outside: pictures and fonts. The window supplies the real ones."""
 
@@ -255,6 +297,10 @@ class Resolver:
     def font_scale(self, obj):
         """Extra scale for the text of an object (1.0 unless a font was chosen by hand with a scale)."""
         return 1.0
+
+    def icon(self, name):
+        """RGBA image for a $NAME$ icon inside a string, or None (the text is then shown as it is)."""
+        return None
 
 
 class Node:
@@ -798,34 +844,47 @@ class Scene:
             f = th * uv0[1] + 0.5 * sv - d * ox - e * oy + d * x0 + e * y0
             return img.transform((bw, bh), Image.AFFINE, (a, b, c, d, e, f), resample=Image.NEAREST, fillcolor=(0, 0, 0, 0))
 
+        def mask_sampler(img, uv):
+            """Pixels of the mask over the bbox (the mask repeats). uv: its corners (top left, top right, bottom right, bottom left) in mask pixels."""
+            img, uv = tile_mask(img, uv)
+            ox, oy = origin
+            qx0 = ia * (x0 - ox) + ib * (y0 - oy)                       # quad coords of the bbox corner
+            qy0 = ic * (x0 - ox) + id_ * (y0 - oy)
+            (tx, ty), (rx, ry), _br, (lx, ly) = uv
+            ux, uy, vx, vy = rx - tx, ry - ty, lx - tx, ly - ty
+            coeffs = (ia * ux + ic * vx, ib * ux + id_ * vx, tx + (qx0 + 0.5) * ux + (qy0 + 0.5) * vx,
+                      ia * uy + ic * vy, ib * uy + id_ * vy, ty + (qx0 + 0.5) * uy + (qy0 + 0.5) * vy)
+            return img.transform((bw, bh), Image.AFFINE, coeffs, resample=Image.NEAREST, fillcolor=(0, 0, 0, 0))
+
         values = obj.props if not node.values else node.values
         uv0 = values.get("UpperLeft", (0.0, 0.0))
         uv1 = values.get("LowerRight", (1.0, 1.0))
         picture = None
-        multi = None
+        mask = None
         if obj.type in (TYPE_IMAGE, TYPE_COLORED):
             picture = self.resolver.image(obj)
         elif obj.type == TYPE_MULTI:
-            multi = [(i, img) for i, img in enumerate(self.resolver.multi_images(obj)) if img is not None]
-            if not multi:
-                picture = self.resolver.image(obj)
+            picture = self.resolver.image(obj)
+            textures = self.resolver.multi_images(obj)
+            if picture is None:                                                     # no picture of its own: show the first texture there is
+                picture = next((img for img in textures if img is not None), None)
+            elif textures[0] is not None:
+                mask = textures[0]
 
         if obj.type == TYPE_SIMPLE:
             layer = Image.new("RGBA", (bw, bh), (255, 255, 255, 255))
         elif obj.type == TYPE_MOVIE:
             layer = Image.new("RGBA", (bw, bh), (20, 40, 90, 255))
-        elif multi:
-            layer = Image.new("RGBA", (bw, bh), (0, 0, 0, 0))
-            for i, img in multi:                                                   # texture 1 first, 2 and 3 over it
-                tl, br = values.get(f"TopLeft{i + 1}"), values.get(f"BottomRight{i + 1}")
-                rect = (tl, br) if tl and br and tl != br else (uv0, uv1)
-                layer = Image.alpha_composite(layer, sampler(img, rect[0], rect[1]))
         elif picture is None and obj.resource is None and obj.type != TYPE_MULTI:
             layer = Image.new("RGBA", (bw, bh), (255, 255, 255, 255))           # no texture requested: plain color
         elif picture is None:
             layer = Image.new("RGBA", (bw, bh), (200, 0, 200, 110))             # texture not found: magenta
         else:
             layer = sampler(picture, uv0, uv1)
+            if mask is not None:
+                corners_uv = mask_corners(mask, values.get("TopLeft1", (0.0, 0.0)), values.get("BottomRight1", (1.0, 1.0)),
+                                          values.get("PivotRotation", (0.5, 0.5, 0.0)))
+                layer.putalpha(ImageChops.multiply(layer.getchannel("A"), mask_values(mask_sampler(mask, corners_uv))))
 
         # keep only the quad itself (the uv rectangle can be smaller than the texture)
         mask = Image.new("L", (bw, bh), 0)
@@ -846,6 +905,7 @@ class Scene:
         return layer, x0, y0, corners
 
     def _draw_text(self, canvas, node, sig):
+        sig = (sig, self.device)                        # the icons in a string depend on the input device
         cache = node.cache
         if cache is None or cache[0] != sig or cache[1] != canvas.size:
             node.cache = cache = (sig, canvas.size) + self._make_text(node, *canvas.size)
@@ -866,30 +926,38 @@ class Scene:
         origin, ex, ey = self._quad_frame(node, width, height)
 
         font_scale = self.resolver.font_scale(obj) or 1.0
+        icons = self.resolver.icon
         max_width = obj.text.get("max_width", 0)
+        formatting = obj.text.get("formatting", 0)
+        shrink = 1.0
         if 0 < max_width < 4096:
-            text = fng_font.wrap_text(font, text, max_width / font_scale)
+            if formatting & 0x10:                       # word wrap flag: wrap at the max width
+                text = fng_font.wrap_text(font, text, max_width / font_scale, icons)
+            else:                                       # no wrap flag: the game scales a wider line down to the max width
+                line = fng_font.first_line_advance(font, text, icons) * font_scale
+                if line > max_width:
+                    shrink = max_width / line
         leading = obj.text.get("leading", 0)
         if not -50 < leading < 50:
             leading = 0
-        formatting = obj.text.get("formatting", 0)
         align = 1 if formatting & 1 else (2 if formatting & 2 else 0)
         pad = 4
-        img = fng_font.render_text(font, sheet, text, node.color[:3], pad=pad, align=align, leading=leading)
-        w, h = fng_font.measure_text(font, text, leading)
+        w, h = fng_font.measure_text(font, text, leading, icons)
         x_off = -w * 0.5 if formatting & 1 else (-w if formatting & 2 else 0)
         y_off = -h * 0.5 if formatting & 4 else (-h if formatting & 8 else 0)
+        img, pad_left, pad_top = fng_font.render_text_ex(font, sheet, text, node.color[:3], pad=pad, align=align, leading=leading,
+                                                         icons=icons, origin_y=-y_off)
 
         # Size of a text object is taken as a scale when it looks like one (0.1 to 8)
         size = node.values.get("Size", (1.0, 1.0, 1.0))
         sx, sy = (size[0], size[1]) if 0.1 <= size[0] <= 8 and 0.1 <= size[1] <= 8 else (1.0, 1.0)
-        sx, sy = sx * font_scale, sy * font_scale
+        sx, sy = sx * font_scale * shrink, sy * font_scale
         if (sx, sy) != (1.0, 1.0):
             img = img.resize((max(1, int(img.width * sx)), max(1, int(img.height * sy))),
                              Image.NEAREST if sx >= 1 and sy >= 1 else Image.BILINEAR)
-            x_off, y_off, pad_x, pad_y = x_off * sx, y_off * sy, pad * sx, pad * sy
+            x_off, y_off, pad_x, pad_y = x_off * sx, y_off * sy, pad_left * sx, pad_top * sy
         else:
-            pad_x = pad_y = pad
+            pad_x, pad_y = pad_left, pad_top
         img.putalpha(img.getchannel("A").point(lambda v: v * node.color[3] // 255))
         left0, top0 = origin[0] + x_off, origin[1] + y_off
         poly = [(left0, top0), (left0 + w * sx, top0), (left0 + w * sx, top0 + h * sy), (left0, top0 + h * sy)]

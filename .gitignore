@@ -1,10 +1,5 @@
-apt_cache/
 __pycache__/
-apt_overrides.json
-apt_report.json
-missing.csv
-launch_settings.json
+outputs/
 symbols_out/
-apt_hints.json
 patterns.txt
 extract_dev_symbols.py

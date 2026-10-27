@@ -3,7 +3,7 @@
 launch.py
 
 Start the APT viewer without a command line. Double click it, or run: python launch.py
-It keeps the paths in launch_settings.json (next to this file), so the next start has them again.
+It keeps the paths in outputs/apt/launch_settings.json, so the next start has them again.
 
   UI            the folder with the UI .big files (or one .big file)
   Data folders  folders with .bun / .bin / .lzc files (textures, fonts, names). Add as many as you like.
@@ -22,7 +22,10 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SETTINGS = os.path.join(HERE, "launch_settings.json")
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "common"))
+import outpaths
+
+SETTINGS = os.path.join(outpaths.out_dir("apt"), "launch_settings.json")
 DATA_EXT = (".bun", ".bin", ".lzc")
 DEFAULTS = {"ui": "", "res": [], "movie": "", "renderer": "auto", "cache": "apt_cache", "overrides": "apt_overrides.json",
             "stubs": "apt_stubs.json", "decomp": "fng_jdlz:decompress", "game": ""}
@@ -263,7 +266,7 @@ class Launcher:
 
 
 def start(s):
-    """Open the viewer with the settings. Relative paths (cache, overrides, stubs) are next to this file."""
+    """Open the viewer with the settings. Relative cache, overrides and stubs paths go to outputs/apt."""
     os.chdir(HERE)
     sys.path.insert(0, HERE)
     try:
