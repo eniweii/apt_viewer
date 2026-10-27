@@ -3,7 +3,7 @@
 apt_resources.py
 
 Finds what an APT movie refers to in the bun/bin/lzc files:
-  - textures: decoded with fng_tpk.py (your module), by name first, then by hash
+  - textures: decoded with common/fng_tpk.py, by name first, then by hash
   - dynamic packs (keys only, compressed in place): the key is known, the pixels are not decoded yet
   - APT fonts (apt_font.py)
   - manual choices (apt_overrides.json): "<movie>|<image id>" or "png:<PNG NAME>" -> texture name
@@ -13,7 +13,9 @@ RFPK/JDLZ .lzc files are unpacked once into a cache folder, then read like any o
 """
 import json
 import os
+import sys
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "common"))
 import apt_font
 import apt_scan
 import fng_tpk

@@ -3,7 +3,8 @@
 apt_view.py
 
 Viewer for the NFS Undercover APT UI movies (UI/*.big), to find out what the missing images are.
-Needs: apt_scan.py, apt_movie.py, apt_font.py, apt_resources.py, apt_render.py, your fng_tpk.py and Pillow.
+Needs: apt_scan.py, apt_movie.py, apt_font.py, apt_resources.py, apt_render.py, common/fng_tpk.py and Pillow.
+Cache, overrides and stubs files are written to outputs/apt.
 
   python apt_view.py UI_DIR --res FRONTEND_DIR --res GLOBAL_DIR [--decomp fng_jdlz:decompress] [--movie customizecar]
 
@@ -17,7 +18,7 @@ Runtime     tick the Runtime box to run the scripts of the movie (apt_vm.py): Pl
             Click an object to inspect its clip chain, matrices, variables and the formulas that wrote its values.
             Tabs: Archive (BIG entries), Timeline (frames and controls), Scripts (disassembly), Behavior (pseudo-code).
             Grid / Anchors / Names draw the stage grid (100 px), clip origins and instance names.
-Manual choices are saved in apt_overrides.json ("<movie>|<image id>" -> texture name).
+Manual choices are saved in outputs/apt/apt_overrides.json ("<movie>|<image id>" -> texture name).
 The frame starts at the label 'Start' (or the first label that is not 'enter') because frame 0 is mostly empty.
 """
 import argparse
@@ -30,6 +31,8 @@ from tkinter import ttk
 
 from PIL import ImageTk
 
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "common"))
+import outpaths
 import apt_inspect
 import apt_movie
 import apt_render
@@ -601,6 +604,9 @@ def run(ui, res_dirs, decomp=None, movie=None, cache="apt_cache", overrides="apt
         stubs="apt_stubs.json", renderer="auto"):
     """Open the viewer. Used by main() (command line) and by launch.py."""
     sys.path.insert(0, os.getcwd())
+    cache = outpaths.out_path("apt", cache)
+    overrides = outpaths.out_path("apt", overrides)
+    stubs = outpaths.out_path("apt", stubs)
     fn = None
     try:
         mod, name = (decomp or "fng_jdlz:decompress").split(":")

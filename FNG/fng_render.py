@@ -265,6 +265,57 @@ def tile_mask(img, uv, limit=64):
     return out, [(x - kx0 * w, y - ky0 * h) for x, y in uv]
 
 
+def tile_image(img, uv0, uv1, limit=64):
+    """Repeat an ordinary image texture when normalized UVs leave the 0..1 range.
+
+    Normal UVs are unchanged. Ordinary repeat ranges preserve texel scale and negative-UV
+    phase. For pathological ranges, cap the preview texture rather than allocating an
+    unbounded repeated image; that fallback is deliberately approximate.
+    """
+    if all(0.0 <= u <= 1.0 for u in (uv0[0], uv1[0])) and all(
+        0.0 <= v <= 1.0 for v in (uv0[1], uv1[1])
+    ):
+        return img, uv0, uv1
+
+    w, h = img.size
+    x0, x1 = uv0[0] * w, uv1[0] * w
+    y0, y1 = uv0[1] * h, uv1[1] * h
+
+    def tile_range(a, b, size):
+        low, high = min(a, b), max(a, b)
+        first = math.floor(low / size)
+        # An exact upper edge belongs to the preceding tile (0..1 = one tile).
+        last = math.floor(high / size) if high == low else math.ceil(high / size) - 1
+        return first, max(first, last)
+
+    first_x, last_x = tile_range(x0, x1, w)
+    first_y, last_y = tile_range(y0, y1, h)
+    nx, ny = last_x - first_x + 1, last_y - first_y + 1
+    nx_out, ny_out = nx, ny
+    bounded = nx * ny > limit
+    if bounded:
+        nx_out = min(nx, max(1, int(math.sqrt(limit * nx / max(1, ny)))))
+        ny_out = min(ny, max(1, limit // nx_out))
+        if nx_out * ny_out > limit:
+            nx_out = max(1, limit // ny_out)
+
+    out = Image.new(img.mode, (w * nx_out, h * ny_out))
+    for j in range(ny_out):
+        for i in range(nx_out):
+            out.paste(img, (i * w, j * h))
+
+    if bounded:
+        # Map the full request to the capped grid. This is only for extreme UV ranges.
+        mapped0 = tuple(0.0 if span == 0 or span > 0 else 1.0 for span in (x1 - x0, y1 - y0))
+        mapped1 = tuple(0.0 if span == 0 or span < 0 else 1.0 for span in (x1 - x0, y1 - y0))
+        return out, mapped0, mapped1
+
+    out_w, out_h = out.size
+    mapped0 = ((x0 - first_x * w) / out_w, (y0 - first_y * h) / out_h)
+    mapped1 = ((x1 - first_x * w) / out_w, (y1 - first_y * h) / out_h)
+    return out, mapped0, mapped1
+
+
 def mask_values(img):
     """The mask as an 8 bit image: its alpha, or its brightness when the alpha is the same everywhere."""
     alpha = img.getchannel("A")
@@ -834,6 +885,7 @@ class Scene:
 
         def sampler(img, uv0, uv1):
             """Pixels of img over the bbox: quad coords map linearly onto the uv rectangle."""
+            img, uv0, uv1 = tile_image(img, uv0, uv1)
             tw, th = img.size
             su, sv = (uv1[0] - uv0[0]) * tw, (uv1[1] - uv0[1]) * th
             # qx = ia (X - ox) + ib (Y - oy);  sx = tw uv0x + (qx + 0.5) su

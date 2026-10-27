@@ -12,7 +12,7 @@ resolves what each movie refers to:
 Everything is written to a JSON report and a short console summary.
 
 Usage:
-  python apt_scan.py UI_DIR --res FRONTEND_DIR --res GLOBAL_DIR [--out apt_report.json]
+  python apt_scan.py UI_DIR --res FRONTEND_DIR --res GLOBAL_DIR [--out apt_report.json]   (reports go to outputs/apt)
   python apt_scan.py customizecar.big --res .          (single file)
 
 Options:
@@ -20,8 +20,7 @@ Options:
   --out FILE     JSON report (default apt_report.json)
   --csv FILE     Missing-texture list as CSV
   --decomp M:F   Hook "module:function" -> bytes = function(bytes) for JDLZ files
-                 (.lzc). Default: fng_jdlz:decompress, so put fng_jdlz.py in the
-                 same folder as this script (or run from the folder that has it).
+                 (.lzc). Default: fng_jdlz:decompress, found in common/.
   --verbose      Print every character
 """
 import argparse
@@ -31,6 +30,9 @@ import json
 import os
 import struct
 import sys
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "common"))
+import outpaths
 
 # ---------------------------------------------------------------- helpers
 
@@ -455,7 +457,7 @@ def main():
     # modules next to the script and in the current folder can be imported
     sys.path.insert(0, os.getcwd())
     decomp = None
-    spec = a.decomp or 'fng_jdlz:decompress'      # default: fng_jdlz.py next to this script
+    spec = a.decomp or 'fng_jdlz:decompress'      # default: common/fng_jdlz.py
     try:
         mod, fn = spec.split(':')
         decomp = getattr(importlib.import_module(mod), fn)
@@ -465,6 +467,8 @@ def main():
             sys.exit('cannot load --decomp %s: %s' % (a.decomp, ex))
         print('no decompressor (fng_jdlz.py not found); compressed files will be skipped')
 
+    a.out = outpaths.out_path('apt', a.out)
+    a.csv = outpaths.out_path('apt', a.csv)
     index, hindex, scan_log = build_index(a.res, decomp)
     print('texture index: %d names, %d keys from %d resource files (%d skipped)' % (
         len(index), len(hindex), sum(1 for l in scan_log if l['status'] == 'ok'),
