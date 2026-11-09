@@ -323,6 +323,9 @@ def mask_values(img):
     return alpha if low != high else img.convert("L")
 
 
+LOGICAL_HEIGHT = 480               # the screens are laid out for 480 lines; a taller output scales positions, sizes and text
+
+
 class Resolver:
     """What the scene needs from outside: pictures and fonts. The window supplies the real ones."""
 
@@ -394,6 +397,7 @@ class Scene:
         self._visible_nodes = set()     # nodes that can be drawn in the last render
         self._drawn_map = {}            # node -> polygon of the last render
         self._canvas_size = (640, 480)
+        self._scale = 1.0               # output pixels per logical unit of the last render (height / LOGICAL_HEIGHT)
         self.revision = 0               # changes with invalidate(), part of every picture signature
         self.frame_id = 0               # changes whenever render() makes a new picture (not when it reuses one)
         self._frame_key = None
@@ -511,7 +515,7 @@ class Scene:
         if not points:                                  # not drawn (a group, or no render yet): use its position
             m = node.matrix
             w, h = self._canvas_size
-            x, y = w / 2 + m[3][0], h / 2 + m[3][1]
+            x, y = w / 2 + m[3][0] * self._scale, h / 2 + m[3][1] * self._scale
             return x, y, x, y
         xs, ys = [p[0] for p in points], [p[1] for p in points]
         return min(xs), min(ys), max(xs), max(ys)
@@ -813,8 +817,11 @@ class Scene:
         text = self.resolver.text(node.obj) if node.obj.type == TYPE_STRING else None     # the language can change
         return (node.sig, text)
 
-    def render(self, width=640, height=480, background=(0, 0, 0, 255)):
-        """RGBA image of the current state. (0, 0) of the package is the center of the image."""
+    def render(self, width=640, height=480, background=(0, 0, 0, 255), scale=None):
+        """RGBA image of the current state. (0, 0) of the package is the center of the image.
+        scale: output pixels per logical unit, by default height / 480, so 1280x720 is drawn at 1.5: positions,
+        sizes and text are laid out at that density, not enlarged afterwards."""
+        scale = float(scale) if scale else height / LOGICAL_HEIGHT
         order = []
         self._collect(self.roots, order)
 
@@ -824,8 +831,9 @@ class Scene:
         order.sort(key=key)
         self._visible_nodes = set(order)
         self._canvas_size = (width, height)
+        self._scale = scale
         sigs = [self._node_signature(n) for n in order]
-        frame_key = (width, height, background, frozenset(self.hidden), self.device, self.revision, tuple(sigs))
+        frame_key = (width, height, scale, background, frozenset(self.hidden), self.device, self.revision, tuple(sigs))
         if frame_key == self._frame_key and self._frame is not None:
             return self._frame.copy()                       # nothing changed since the last picture
 
@@ -847,12 +855,14 @@ class Scene:
         """Dest position O and edge vectors Ex, Ey of the quad, in canvas pixels: p(qx, qy) = O + qx Ex + qy Ey."""
         m = node.matrix
         cx, cy = width / 2, height / 2
+        k = self._scale
         px, py = _point(m, 0, 0, 1)
         ex = _point(m, 1, 0, 1)
         ey = _point(m, 0, 1, 1)
-        return (cx + px, cy + py), (ex[0] - px, ex[1] - py), (ey[0] - px, ey[1] - py)
+        return (cx + px * k, cy + py * k), ((ex[0] - px) * k, (ex[1] - py) * k), ((ey[0] - px) * k, (ey[1] - py) * k)
 
     def _draw_quad(self, canvas, node, sig):
+        sig = (sig, self._scale)                        # a picture made at another scale is not reused
         cache = node.cache
         if cache is None or cache[0] != sig or cache[1] != canvas.size:
             node.cache = cache = (sig, canvas.size) + self._make_quad(node, *canvas.size)
@@ -957,7 +967,7 @@ class Scene:
         return layer, x0, y0, corners
 
     def _draw_text(self, canvas, node, sig):
-        sig = (sig, self.device)                        # the icons in a string depend on the input device
+        sig = (sig, self.device, self._scale)           # the icons in a string depend on the input device
         cache = node.cache
         if cache is None or cache[0] != sig or cache[1] != canvas.size:
             node.cache = cache = (sig, canvas.size) + self._make_text(node, *canvas.size)
@@ -1003,10 +1013,11 @@ class Scene:
         # Size of a text object is taken as a scale when it looks like one (0.1 to 8)
         size = node.values.get("Size", (1.0, 1.0, 1.0))
         sx, sy = (size[0], size[1]) if 0.1 <= size[0] <= 8 and 0.1 <= size[1] <= 8 else (1.0, 1.0)
-        sx, sy = sx * font_scale * shrink, sy * font_scale
+        k = self._scale
+        sx, sy = sx * font_scale * shrink * k, sy * font_scale * k
         if (sx, sy) != (1.0, 1.0):
             img = img.resize((max(1, int(img.width * sx)), max(1, int(img.height * sy))),
-                             Image.NEAREST if sx >= 1 and sy >= 1 else Image.BILINEAR)
+                             Image.NEAREST if sx >= 1 and sy >= 1 and k == 1.0 else Image.BILINEAR)
             x_off, y_off, pad_x, pad_y = x_off * sx, y_off * sy, pad_left * sx, pad_top * sy
         else:
             pad_x, pad_y = pad_left, pad_top

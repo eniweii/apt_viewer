@@ -18,7 +18,10 @@ Runtime     tick the Runtime box to run the scripts of the movie (apt_vm.py): Pl
             Click an object to inspect its clip chain, matrices, variables and the formulas that wrote its values.
             Tabs: Archive (BIG entries), Timeline (frames and controls), Scripts (disassembly), Behavior (pseudo-code).
             Grid / Anchors / Names draw the stage grid (100 px), clip origins and instance names.
-Manual choices are saved in outputs/apt/apt_overrides.json ("<movie>|<image id>" -> texture name).
+Resolution sets the size the movie is drawn at: Movie (its own size) or a preset, where x and y are scaled on their own
+(stretch, no letterbox). Zoom only changes what is shown; hits and the selection follow it.
+Manual choices are saved in outputs/apt/apt_overrides.json ("<movie>|<image id>" -> texture name, or "name @ pack").
+Pack hints for names that are in several packs: apt_pack_hints.json next to it (see apt_resources.py).
 The frame starts at the label 'Start' (or the first label that is not 'enter') because frame 0 is mostly empty.
 """
 import argparse
@@ -29,7 +32,7 @@ import time
 import tkinter as tk
 from tkinter import ttk
 
-from PIL import ImageTk
+from PIL import Image, ImageTk
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, "common"))
 import outpaths
@@ -44,6 +47,9 @@ import apt_stubs
 
 STATUS_TAGS = {"found": "#1b7f2b", "override": "#2a5db0", "dynamic": "#00829b", "missing": "#b0008a",
                "unnamed": "#c86400", "undecodable": "#c00000"}
+
+
+RESOLUTIONS = ["Movie", "640x480", "800x600", "1024x768", "1280x720", "1600x900", "1920x1080"]
 
 
 def make_renderer(res, backend="auto"):
@@ -67,6 +73,7 @@ class App:
         self.movies = {}                 # name -> Movie or error text
         self.movie = None
         self.hits = []
+        self.scale = 1.0                  # Zoom: display magnification of the picture (hits stay in picture pixels)
         self.photo = None
         self.rt = None                    # apt_runtime.Runtime of the current movie (runtime mode)
         self.playing = False
@@ -99,6 +106,11 @@ class App:
         zoom = ttk.Combobox(bar, textvariable=self.zoom_var, width=5, values=["0.5", "0.75", "1.0", "1.5", "2.0"], state="readonly")
         zoom.pack(side="left", padx=4)
         zoom.bind("<<ComboboxSelected>>", lambda e: self.redraw())
+        ttk.Label(bar, text="Resolution").pack(side="left", padx=(10, 0))
+        self.resolution_var = tk.StringVar(value="Movie")
+        resolution = ttk.Combobox(bar, textvariable=self.resolution_var, width=10, values=RESOLUTIONS, state="readonly")
+        resolution.pack(side="left", padx=4)
+        resolution.bind("<<ComboboxSelected>>", lambda e: self.redraw())
         self.boxes_var = tk.BooleanVar(value=False)
         ttk.Checkbutton(bar, text="Boxes", variable=self.boxes_var, command=self.redraw).pack(side="left", padx=10)
         self.loop_var = tk.BooleanVar(value=False)
@@ -303,17 +315,26 @@ class App:
         self.redraw()
 
     # ---- drawing
+    def output_size(self):
+        """(width, height) chosen in Resolution, or None for Movie (the size of the movie). Zoom is not part of it."""
+        text = self.resolution_var.get()
+        if "x" not in text:
+            return None
+        w, h = text.split("x")
+        return int(w), int(h)
+
     def redraw(self):
         mv = self.movie
         if mv is None:
             return
         t_start = time.perf_counter()
-        scale = float(self.zoom_var.get())
+        zoom = float(self.zoom_var.get())
+        size = self.output_size()
         self.renderer.boxes = self.boxes_var.get()
         self.renderer.loop_sprites = self.loop_var.get()
         self.renderer.grid, self.renderer.anchors, self.renderer.labels = self.grid_var.get(), self.anchor_var.get(), self.label_vis_var.get()
         if self.rt_var.get() and self.rt is not None:
-            img, self.hits = self.renderer.render_runtime(self.rt, scale)
+            img, self.hits = self.renderer.render_runtime(self.rt, 1.0, size)
             labels = [c["label"] for c in mv.frames[self.rt.root.frame] if c["op"] == "label"] if mv.frames else []
             head = "%s  tick %d  root frame %d/%d %s" % (mv.name, self.rt.tick, self.rt.root.frame, len(mv.frames) - 1, labels or "")
         else:
@@ -321,11 +342,15 @@ class App:
                 frame = int(self.frame_var.get())
             except (tk.TclError, ValueError):
                 frame = 0
-            img, self.hits, labels = self.renderer.render(mv, frame, scale)
+            img, self.hits, labels = self.renderer.render(mv, frame, 1.0, size)
             head = "%s  frame %d/%d %s" % (mv.name, frame, len(mv.frames) - 1, labels or "")
-        self.scale = scale
+        self.scale = zoom
         t_drawn = time.perf_counter()
         rgb = img.convert("RGB")
+        out_size = rgb.size                                       # the rendered (and saved) size, whatever the zoom
+        if abs(zoom - 1) > 0.005:                                 # Zoom only changes what is shown
+            rgb = rgb.resize((max(1, int(rgb.width * zoom)), max(1, int(rgb.height * zoom))),
+                             Image.NEAREST if zoom >= 1 else Image.BILINEAR)
         if self.photo is not None and self.canvas_size == rgb.size and self.canvas_img is not None:
             self.photo.paste(rgb)                                 # same size: no new image, no flicker
         else:
@@ -340,7 +365,7 @@ class App:
         st = self.renderer.stats
         t_shown = time.perf_counter()
         timing = "step %.1f  draw %.1f  show %.1f ms" % (getattr(self, "t_step", 0.0), (t_drawn - t_start) * 1000.0, (t_shown - t_drawn) * 1000.0)
-        self.status.set("%s  |  %s  |  %s  |  %s" % (head, getattr(self.renderer, "backend", "pillow"), timing,
+        self.status.set("%s  |  %s %dx%d  |  %s  |  %s" % (head, getattr(self.renderer, "backend", "pillow"), out_size[0], out_size[1], timing,
                                                     "  ".join("%s %d" % kv for kv in sorted(st.items())) or "no images drawn"))
         if self.tl_movie is not mv:                               # new movie: draw the static layer of the bar once
             self.tl_movie = mv
@@ -349,13 +374,13 @@ class App:
             self.move_playhead()
 
     def on_click(self, e):
-        x, y = self.canvas.canvasx(e.x), self.canvas.canvasy(e.y)
+        x, y = self.canvas.canvasx(e.x) / self.scale, self.canvas.canvasy(e.y) / self.scale      # picture pixels
         found = [h for h in self.hits if h[0][0] <= x <= h[0][2] and h[0][1] <= y <= h[0][3]]
         self.canvas.delete("sel")
         if not found:
             return
         bbox, info = found[-1]
-        self.canvas.create_rectangle(*bbox, outline="#ffff00", width=2, tags="sel")
+        self.canvas.create_rectangle(*(v * self.scale for v in bbox), outline="#ffff00", width=2, tags="sel")
         if self.rt_var.get() and self.rt is not None and info.get("mc") is not None:
             text = apt_inspect.inspector_text(self.rt, info, self.assign)
             for i in info.get("images", []):

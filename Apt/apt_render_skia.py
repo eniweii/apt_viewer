@@ -62,45 +62,44 @@ class SkiaRenderer(apt_render.Renderer):
         return hit[1]
 
     # ---- entry
-    def _surface(self, movie, scale, bg):
-        w, h = max(1, int(movie.width * scale)), max(1, int(movie.height * scale))
+    def _surface(self, movie, scale, bg, size=None):
+        w, h, sx, sy = apt_render.output_geometry(movie, scale, size)
         r, g, b, _a = argb(bg) if bg is not None else (0.2, 0.2, 0.2, 1.0)
         surface = skia.Surface(w, h)
         surface.getCanvas().clear(skia.ColorSetARGB(255, int(r * 255), int(g * 255), int(b * 255)))
-        return surface, Layer(surface.getCanvas(), w, h)
+        return surface, Layer(surface.getCanvas(), w, h), sx, sy
 
     @staticmethod
     def _to_pil(surface):
         arr = surface.makeImageSnapshot().toarray(colorType=RGBA, alphaType=UNPREMUL)
         return Image.fromarray(arr, "RGBA")
 
-    def render(self, movie, frame=0, scale=1.0):
+    def render(self, movie, frame=0, scale=1.0, size=None):
         objs, bg, labels = movie.display_list(movie.frames, frame)
-        surface, layer = self._surface(movie, scale, bg)
+        surface, layer, sx, sy = self._surface(movie, scale, bg, size)
         self.hits, self.stats = [], {}
-        self._list(layer, movie, objs, (scale, 0, 0, scale, 0, 0), (1, 1, 1, 1), [], 0, frame)
+        self._list(layer, movie, objs, (sx, 0, 0, sy, 0, 0), (1, 1, 1, 1), [], 0, frame)
         if self.grid:
-            self._grid(layer, scale)
+            self._grid(layer, sx, sy)
         return self._to_pil(surface), self.hits, labels
 
-    def render_runtime(self, rt, scale=1.0):
-        surface, layer = self._surface(rt.movie, scale, rt.bg)
+    def render_runtime(self, rt, scale=1.0, size=None):
+        surface, layer, sx, sy = self._surface(rt.movie, scale, rt.bg, size)
         self.hits, self.stats = [], {}
-        self._list(layer, rt.movie, rt.render_list(), (scale, 0, 0, scale, 0, 0), (1, 1, 1, 1), [], 0, rt.root.frame)
+        self._list(layer, rt.movie, rt.render_list(), (sx, 0, 0, sy, 0, 0), (1, 1, 1, 1), [], 0, rt.root.frame)
         if self.grid:
-            self._grid(layer, scale)
+            self._grid(layer, sx, sy)
         return self._to_pil(surface), self.hits
 
-    def _grid(self, layer, scale):
+    def _grid(self, layer, sx, sy):
         c = layer.canvas
         line, text = skia.Paint(Color=skia.ColorSetARGB(40, 255, 255, 255)), skia.Paint(Color=skia.ColorSetARGB(120, 255, 255, 255))
-        step = max(8, int(100 * scale))
-        for x in range(0, layer.width, step):
+        for x in range(0, layer.width, max(8, int(100 * sx))):
             c.drawLine(x, 0, x, layer.height, line)
-            c.drawString(str(int(x / scale)), x + 2, 12, self._font, text)
-        for y in range(0, layer.height, step):
+            c.drawString(str(int(x / sx)), x + 2, 12, self._font, text)
+        for y in range(0, layer.height, max(8, int(100 * sy))):
             c.drawLine(0, y, layer.width, y, line)
-            c.drawString(str(int(y / scale)), 2, y + 12, self._font, text)
+            c.drawString(str(int(y / sy)), 2, y + 12, self._font, text)
 
     # ---- display lists
     def _list(self, layer, movie, objs, m, cx, path, depth, clock):

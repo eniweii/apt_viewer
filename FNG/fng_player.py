@@ -14,15 +14,15 @@ on INIT, pick another script (IN, OUT, ...) to run it. Script events and button 
 Fonts: the font blocks (FEngFont) of the folder are read too. A Font resource shows its font,
 select it to see sample text drawn with the glyph sheet. Select a text object to see its text in
 its font. "Find text..." searches all files for a text (a name, a string) and shows the file, offset, enclosing
-blocks and a hex view, to find where something is stored when a reader misses it. Fonts and textures are
-also read from small .bin files, not only .bun.
+blocks and a hex view, to find where something is stored when a reader misses it. Fonts and strings are
+also read from small .bin files; textures from every .bin file, whatever its size, as well as from .bun.
 "Font blocks..." lists the font blocks with a parse result, a sample and a hex view.
 Fonts that are not in the folder can be chosen by hand: select the font resource (or a text object) and use
 "Choose font..." (or right click), with a scale for the text. The choice is kept in
 outputs/fng_player/font_choices.json.
 "Find text..." searches all files for a name or string and shows file, offset, enclosing blocks and hex,
-to find where something is stored when a reader misses it. Fonts and textures are read from .bin files
-up to 4 MB as well as from .bun files.
+to find where something is stored when a reader misses it. Fonts and strings are read from .bin files
+up to 4 MB as well as from .bun files; textures from every .bin file (only block headers are read).
 In the language files "^" is a line break.
 Device: the game shows keyboard icons or controller icons by the object flags PCOnly / ConsoleOnly, so both sets
 overlap when the flags are ignored. Pick Keyboard (PC) or Controller (console) next to Mouse (default Keyboard).
@@ -48,6 +48,8 @@ Step 6: text objects show their real text from the language files (English_Globa
 "(none)", the text stored in the FNG is shown. Text is wrapped at its max width and aligned per line.
 "Check all" draws every listed FNG and all its scripts and reports what is missing (textures, fonts) and what
 fails, with a report you can copy. "Save frame" in the Player tab writes the current picture as a PNG.
+Screen (4:3 / 16:9) and Resolution (480p to 1440p) set the size the screen is drawn and saved at: positions, sizes
+and text are laid out for that size (480 lines = 1x), not enlarged afterwards. Zoom only changes what is shown.
 Not done: message responses (menu logic), movies, effects.
 
 Usage: python fng_player.py [folder]
@@ -85,6 +87,12 @@ def resource_key(name):
     """Name of a resource without folders and extension, upper case: 'FONT_NFS_TITLE.ffn' -> 'FONT_NFS_TITLE'."""
     return name.replace("\\", "/").rsplit("/", 1)[-1].rsplit(".", 1)[0].upper()
 ASPECTS = {"4:3": (640, 480), "16:9": (854, 480)}
+RESOLUTIONS = ("480p", "720p", "1080p", "1440p")
+# Output size of each Screen / Resolution pair (standard sizes, so 16:9 gives 1280x720 and not 1281x720)
+OUTPUT_SIZES = {
+    ("4:3", "480p"): (640, 480), ("4:3", "720p"): (960, 720), ("4:3", "1080p"): (1440, 1080), ("4:3", "1440p"): (1920, 1440),
+    ("16:9", "480p"): (854, 480), ("16:9", "720p"): (1280, 720), ("16:9", "1080p"): (1920, 1080), ("16:9", "1440p"): (2560, 1440),
+}
 SPEEDS = {"0.25x": 0.25, "0.5x": 0.5, "1x": 1.0, "2x": 2.0}
 DEVICES = {"Keyboard (PC)": "pc", "Controller (console)": "console", "Both": "both"}
 # Parts of a texture name that tell which input device an icon is for (a guess, used only when several textures match a $NAME$ icon)
@@ -320,6 +328,11 @@ class FngPlayer(tk.Tk):
         aspect = ttk.Combobox(bar, textvariable=self.aspect_var, values=list(ASPECTS), state="readonly", width=5)
         aspect.pack(side="left")
         aspect.bind("<<ComboboxSelected>>", lambda _e: self._mark_dirty())
+        ttk.Label(bar, text="Resolution").pack(side="left", padx=(8, 2))
+        self.resolution_var = tk.StringVar(value="480p")
+        resolution = ttk.Combobox(bar, textvariable=self.resolution_var, values=list(RESOLUTIONS), state="readonly", width=6)
+        resolution.pack(side="left")
+        resolution.bind("<<ComboboxSelected>>", lambda _e: self._mark_dirty())
         ttk.Button(bar, text="Save frame", command=self.save_frame).pack(side="left", padx=(8, 0))
         ttk.Label(bar, text="Zoom").pack(side="left", padx=(8, 2))
         self.zoom_var = tk.StringVar(value="Fit")
@@ -401,11 +414,15 @@ class FngPlayer(tk.Tk):
             self.pending_note = ""
         self.back_button.config(state="normal" if self.nav_stack else "disabled")
         self.scene.device = self.device_code()
-        width, height = ASPECTS.get(self.aspect_var.get(), (640, 480))
+        width, height = self.canvas_size()
         self.scene.render(width, height)                     # positions are needed to move the focus
         self.scene.focus_first()
         self.flush_log()
         self._mark_dirty()
+
+    def canvas_size(self):
+        """Output size in pixels of the selected Screen and Resolution. Zoom is not part of it."""
+        return OUTPUT_SIZES.get((self.aspect_var.get(), self.resolution_var.get()), ASPECTS.get(self.aspect_var.get(), (640, 480)))
 
     def device_code(self):
         return DEVICES.get(self.device_var.get(), "pc")
@@ -415,7 +432,7 @@ class FngPlayer(tk.Tk):
         if self.scene is None:
             return
         self.scene.device = self.device_code()
-        width, height = ASPECTS.get(self.aspect_var.get(), (640, 480))
+        width, height = self.canvas_size()
         self.scene.render(width, height)
         if self.scene.nodes.get(self.scene.focus_guid) not in self.scene.focusable():
             self.scene.focus_guid = 0
@@ -456,7 +473,7 @@ class FngPlayer(tk.Tk):
         """Position in the scene picture (canvas pixels) for a mouse event on the picture label, or None."""
         if self.scene is None or self.player_photo is None:
             return None
-        width, height = ASPECTS.get(self.aspect_var.get(), (640, 480))
+        width, height = self.canvas_size()
         pw, ph = self.player_photo.width(), self.player_photo.height()
         ox = (self.player_label.winfo_width() - pw) / 2
         oy = (self.player_label.winfo_height() - ph) / 2
@@ -506,7 +523,8 @@ class FngPlayer(tk.Tk):
             self.select_node(None)
             return
         last = self._last_click
-        if last and abs(last[0] - point[0]) < 4 and abs(last[1] - point[1]) < 4 and self.selected_node in stack:
+        near = 4 * self.canvas_size()[1] / 480
+        if last and abs(last[0] - point[0]) < near and abs(last[1] - point[1]) < near and self.selected_node in stack:
             index = (stack.index(self.selected_node) + 1) % len(stack)      # same place again: the next object below
         else:
             index = 0
@@ -870,7 +888,7 @@ class FngPlayer(tk.Tk):
             self.player_info.config(text="Pillow with ImageTk is needed to play (pip install pillow)")
             self.playing = False
             return
-        width, height = ASPECTS.get(self.aspect_var.get(), (640, 480))
+        width, height = self.canvas_size()
         frame = self.scene.render(width, height, background=(24, 24, 24, 255))
         zoom = self.zoom_var.get()
         label_size = (self.player_label.winfo_width(), self.player_label.winfo_height()) if zoom == "Fit" else None
@@ -880,15 +898,17 @@ class FngPlayer(tk.Tk):
             self._update_info(width, height)            # the picture is the same as on the screen
             return
         self._draw_key = key
+        k = height / 480                                # outlines keep their look at every resolution
+        line, gap = max(2, round(2 * k)), round(3 * k)
         if self.selected_node is not None:
             poly = self.scene.polygon_of(self.selected_node)
             if poly:
-                ImageDraw.Draw(frame).line([*poly, poly[0]], fill=(255, 255, 0, 255), width=2)
+                ImageDraw.Draw(frame).line([*poly, poly[0]], fill=(255, 255, 0, 255), width=line)
         focus = self.scene.nodes.get(self.scene.focus_guid)
         if focus is not None:
             x0, y0, x1, y1 = self.scene.node_bounds(focus)
             if x1 > x0 and y1 > y0:
-                ImageDraw.Draw(frame).rectangle([x0 - 3, y0 - 3, x1 + 3, y1 + 3], outline=(0, 255, 255, 255), width=2)
+                ImageDraw.Draw(frame).rectangle([x0 - gap, y0 - gap, x1 + gap, y1 + gap], outline=(0, 255, 255, 255), width=line)
         if zoom == "Fit":
             fit = min(max(1, self.player_label.winfo_width()) / width, max(1, self.player_label.winfo_height()) / height)
             scale = max(0.2, fit)
@@ -929,7 +949,7 @@ class FngPlayer(tk.Tk):
         return self.sheets[key]
 
     def save_frame(self, path=None):
-        """Writes the current picture, at the size of the selected screen, as a PNG."""
+        """Writes the current picture, at the selected Screen and Resolution (not the Zoom), as a PNG."""
         if self.scene is None:
             self.player_info.config(text="Nothing to save. Select an FNG.")
             return
@@ -938,7 +958,7 @@ class FngPlayer(tk.Tk):
                                                 initialfile=f"{self.scene.pkg.name or 'frame'}_{self.script_var.get()}.png")
             if not path:
                 return
-        width, height = ASPECTS.get(self.aspect_var.get(), (640, 480))
+        width, height = self.canvas_size()
         self.scene.render(width, height, background=(24, 24, 24, 255)).save(path)
         self.player_info.config(text=f"Saved {path}")
 
@@ -1144,7 +1164,8 @@ class FngPlayer(tk.Tk):
                 files = [p for p in everything if p.lower().endswith(".bun")]
                 bins = [p for p in everything if p.lower().endswith(".bin")]
                 bins = [p for p in bins if os.path.getsize(p) <= fng_bun.SMALL_BIN]
-                textures = fng_tpk.scan_files(files, lambda i, n, path: self.messages.put(
+                texture_files = files + [p for p in everything if p.lower().endswith(".bin")]     # any size: only block headers are read
+                textures = fng_tpk.scan_files(texture_files, lambda i, n, path: self.messages.put(
                     ("progress", f"Textures {i + 1}/{n}: {os.path.basename(path)}")))
                 fonts = fng_font.scan_files(files + bins)
                 self.messages.put(("progress", "Language strings..."))
@@ -1229,12 +1250,15 @@ class FngPlayer(tk.Tk):
                     languages = self.strings.language_names()
                     self.language_box.config(values=["(none)"] + languages)
                     self.language_var.set(self.strings.default_language() or "(none)")
-                    text = (f"{len(self.entries)} FNG, {len(self.textures.textures)} textures in {self.textures.packs} packs, "
-                            f"{len(self.fonts.fonts)} fonts, " +
+                    unused = len(self.textures.skipped) + len(self.textures.problems)
+                    text = (f"{len(self.entries)} FNG, {len(self.textures.textures)} textures in {self.textures.packs} packs"
+                            + (f" ({unused} packs or textures not used, see Textures...)" if unused else "")
+                            + f", {len(self.fonts.fonts)} fonts, " +
                             (", ".join(f"{self.strings.count(l)} {l} strings" for l in languages) if languages else "no language strings")
                             + (f", {len(fng_parse.HASH_NAMES)} hash names" if fng_parse.HASH_NAMES else ""))
                     if self.textures.skipped:
                         text += f", {len(self.textures.skipped)} texture packs skipped (see Textures...)"
+                    print(self.textures.report())
                     problems = self.textures.problems + self.fonts.problems + self.strings.problems
                     if problems:
                         text += f", {len(problems)} pack/font problem(s), first: {problems[0]}"
@@ -1764,12 +1788,12 @@ class FngPlayer(tk.Tk):
         panes = ttk.PanedWindow(win, orient="horizontal")
         panes.pack(fill="both", expand=True)
         notes = self.textures.skipped + self.textures.problems
-        if notes:
-            ttk.Label(win, text=f"{len(notes)} packs or textures not used (compressed, empty or damaged):").pack(side="bottom", fill="x", before=panes)
-            box = tk.Text(win, height=6, wrap="none", font=("Courier New", 9))
-            box.insert("end", "\n".join(notes))
-            box.config(state="disabled")
-            box.pack(side="bottom", fill="x", before=panes)
+        ttk.Label(win, text=(f"Summary by file and reason, then every one of the {len(notes)} packs or textures not used:"
+                             if notes else "Summary:")).pack(side="top", fill="x", before=panes)
+        box = tk.Text(win, height=12, wrap="none", font=("Courier New", 9))
+        box.insert("end", self.textures.report() + ("\n\n" + "\n".join(notes) if notes else ""))
+        box.config(state="disabled")
+        box.pack(side="top", fill="x", before=panes)
         left = ttk.Frame(panes)
         cols = ("name", "size", "format", "pack", "file")
         lst = ttk.Treeview(left, columns=cols, show="headings", selectmode="browse")

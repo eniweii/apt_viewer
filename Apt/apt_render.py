@@ -28,6 +28,16 @@ STATUS_COLORS = {"missing": (255, 0, 255, 150), "dynamic": (0, 220, 255, 150), "
 
 
 # ---- 2x3 matrices (a, b, c, d, tx, ty): x' = a x + c y + tx, y' = b x + d y + ty
+def output_geometry(movie, scale=1.0, size=None):
+    """(width, height, sx, sy) of a render, the same for both backends. Without size the canvas is the movie size
+    times scale. With size (w, h) the canvas is exactly that and x and y are scaled on their own to fill it
+    (stretch: no letterboxing, no cropping, so a preset with another aspect ratio distorts the movie)."""
+    if size:
+        w, h = max(1, int(size[0])), max(1, int(size[1]))
+        return w, h, w / max(1, movie.width), h / max(1, movie.height)
+    return max(1, int(movie.width * scale)), max(1, int(movie.height * scale)), scale, scale
+
+
 def mmul(p, l):
     pa, pb, pc, pd, px, py = p
     la, lb, lc, ld, lx, ly = l
@@ -89,37 +99,36 @@ class Renderer:
         self._text_cache = {}           # (font, text, align, width, wrap) -> glyph image, kept small
 
     # ---- entry
-    def render(self, movie, frame=0, scale=1.0):
-        w, h = max(1, int(movie.width * scale)), max(1, int(movie.height * scale))
+    def render(self, movie, frame=0, scale=1.0, size=None):
+        w, h, sx, sy = output_geometry(movie, scale, size)
         objs, bg, labels = movie.display_list(movie.frames, frame)
         r, g, b, a = argb(bg) if bg is not None else (0.2, 0.2, 0.2, 1.0)
         canvas = Image.new("RGBA", (w, h), (int(r * 255), int(g * 255), int(b * 255), 255))
         self.hits, self.stats = [], {}
-        self._list(canvas, movie, objs, (scale, 0, 0, scale, 0, 0), (1, 1, 1, 1), [], 0, frame)
+        self._list(canvas, movie, objs, (sx, 0, 0, sy, 0, 0), (1, 1, 1, 1), [], 0, frame)
         if self.grid:
-            self._grid(canvas, scale)
+            self._grid(canvas, sx, sy)
         return canvas, self.hits, labels
 
-    def _grid(self, canvas, scale):
+    def _grid(self, canvas, sx, sy):
         d = ImageDraw.Draw(canvas)
-        step = max(8, int(100 * scale))
-        for x in range(0, canvas.width, step):
+        for x in range(0, canvas.width, max(8, int(100 * sx))):
             d.line((x, 0, x, canvas.height), fill=(255, 255, 255, 40))
-            d.text((x + 2, 2), str(int(x / scale)), fill=(255, 255, 255, 120))
-        for y in range(0, canvas.height, step):
+            d.text((x + 2, 2), str(int(x / sx)), fill=(255, 255, 255, 120))
+        for y in range(0, canvas.height, max(8, int(100 * sy))):
             d.line((0, y, canvas.width, y), fill=(255, 255, 255, 40))
-            d.text((2, y + 2), str(int(y / scale)), fill=(255, 255, 255, 120))
+            d.text((2, y + 2), str(int(y / sy)), fill=(255, 255, 255, 120))
 
-    def render_runtime(self, rt, scale=1.0):
+    def render_runtime(self, rt, scale=1.0, size=None):
         """Draw the current state of an apt_runtime.Runtime."""
         movie = rt.movie
-        w, h = max(1, int(movie.width * scale)), max(1, int(movie.height * scale))
+        w, h, sx, sy = output_geometry(movie, scale, size)
         r, g, b, _a = argb(rt.bg) if rt.bg is not None else (0.2, 0.2, 0.2, 1.0)
         canvas = Image.new("RGBA", (w, h), (int(r * 255), int(g * 255), int(b * 255), 255))
         self.hits, self.stats = [], {}
-        self._list(canvas, movie, rt.render_list(), (scale, 0, 0, scale, 0, 0), (1, 1, 1, 1), [], 0, rt.root.frame)
+        self._list(canvas, movie, rt.render_list(), (sx, 0, 0, sy, 0, 0), (1, 1, 1, 1), [], 0, rt.root.frame)
         if self.grid:
-            self._grid(canvas, scale)
+            self._grid(canvas, sx, sy)
         return canvas, self.hits
 
     # ---- display lists
