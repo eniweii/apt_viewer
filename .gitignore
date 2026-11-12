@@ -8,7 +8,7 @@ extract_dev_symbols.py
 Apt/engine_data/*
 !Apt/engine_data/README.txt
 FNG/fng_mask_repeat.patch
-HANDOFF.md #i send this
+HANDOFF.md
 apt_viewer_tidy.patch
 agents/claude/decompiled_all_movies.json
 Apt/apt_hints.json
