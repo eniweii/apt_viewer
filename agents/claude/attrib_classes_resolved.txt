@@ -1,0 +1,171 @@
+adaptivedifficulty: 4 collections, 23 fields: LossDistMin, TimeMargin, LossBonus, WinBonus, EliminationDistMax, LossDistMax, RestartDistMin, 0x7BF432D1, DefaultTargetTime, RestartDistMax, WinDistMin, RestartBonus
+aggression: 17 collections, 34 fields: DragThrottleAbilityMax, DragThrottleAbility, DragThrottleAbilityMin, SideBumpBias, DragStagingAbilityMin, DragShiftingAbilityMax, DragWheelieAbility, DragGoFullThrottleChance, DragSteeringAbilityMin, DragStagingAbilityMax, LaunchRPMWindowPctMin, DragLanchAbilityMin
+aicurves: 3 collections, 11 fields: THROTTLE_SPEED_DIFFERENCE, SPEED_DIFFERENCE_DRIFT_ANGLE, DRIFT_ANGLE_TO_STEERING, DISTANCE_TO_RACE_LINE_ADJUST_STEERING, SPEED_PROGRESSION_D, SPEED_PROGRESSION_P, THROTTLE_SLIP_ANGLE_CURVE, SPEED_PROGRESSION_ERROR_SCALING, SPEED_TO_STEERING, SPEED_PROGRESSION_I, SPEED_TO_ANGLE
+aiperformance: 4 collections, 6 fields: TopSpeedScale, OffworldCheat, NosScale, HandlingScale, AccelerationScale, AccelerationCheat
+AIVehicle: 17 collections, 8 fields: PlayerCollisions, PlayerCollisionsDefault, RepPointsForDestroying, CostToStateForDestroying, TopSpeedMultiplier, MAXIMUM_AI_SPEED, DetachmentID, AccelerationMultiplier
+aud_moment: 203 collections, 12 fields: VolSlot, DelayTime, MixerFlag, MomentAsset, ChokeGroup, TriggerDistance, VolScalar, Panning, CollectionName, Priority, IndexTable_CollectionName, PreBuffer
+aud_wall_reverb: 30 collections, 27 fields: variation_random_scaling, right_angle, speed_multiplier, variation_bias, variation_min_dist, AmphitheaterRacefinish, gain_halving_distance, variation_max_dist, PreVerbSendLevel, notch_q, notch_lfo_frequency, notch_lfo_depth
+aud_world_reverb: 37 collections, 25 fields: default_wall_verb, blur_scalers, crossfade_time, reverb_right_hpf_frequency, reverb_right_gain, reverb_right_delay_time, reverb_right_delay_lfo_frequency, reverb_right_delay_lfo_depth, reverb_right_delay_feedback, reverb_pan_lfo_frequency, reverb_pan_lfo_depth, reverb_model1_time
+audio_global_tuning: 1 collections, 1 fields: JitterParams
+audio_moment_vo: 63 collections, 2 fields: MomentVO_LineNumber, SpeechEvent
+audio_revlimiter: 125 collections, 14 fields: verylongcycle_probability, load_for_long, verylongcycle_length, load_cut_ratio, cutoff_frames_short, cutoff_frames_long, random_range_variation, rpm_ratio_limit, BribablePitch, total_frames_long, throttle_cut_ratio, total_frames_short
+audioimpact: 11 collections, 6 fields: MomentAsset, VolMap, LevelMap, CullDist, IntensityMap, Layers
+audiosystem: 13 collections, 46 fields: AEMS_RNBanks, FESpeech, PATHFINDER_MusFile, LfeAsset, EvtSys, InGameSpeech, DemoLicensedMusic, LicensedMusic, BandAidFiles, PFMapping, AEMS_EnvBanks, AEMS_NOSBanks
+camera: 146 collections, 30 fields: Braking, Tilt, DodgeCars, IsFixCam, LatAngle, Pitch, Nos, Fov, Vibration, Position, GearChange, Height
+camerabraking: 3 collections, 6 fields: CollectionName, SpeedThreshold, LookDown, EyeUp, Enable, AccelThreshold
+cameracorner: 1 collections, 10 fields: InputAngleMin, NavDistTable, NavDistSpeedMin, AngleMax, AngleP, AngleDeltaMax, SpeedMax, NavDistSpeedMax, SpeedMin, InputAngleMax
+cameradodge: 2 collections, 7 fields: CollectionName, Enable, CarsVelDiffMin, CarsVelDiffMax, CarsGapMin, CarsGapMax, CarsGapFullEffect
+cameradriftrace: 1 collections, 9 fields: CollectionName, SpeedToStartBlending, SpeedToFullBlending, NavTimeAhead, MaxDistanceAhead, CameraBlend, BlendComponent, HeightOffset, Enable
+cameragearchange: 5 collections, 4 fields: PositionMove, CollectionName, SpeedAttenuation, Enable
+cameraimpact: 5 collections, 8 fields: AccelThresholdVertical, SpeedThresholdVertical, PositionMove, HeightMove, CollectionName, SpeedThreshold, Enable, AccelThreshold
+camerainfo: 89 collections, 9 fields: CollectionName, TILTING, STIFFNESS, SELECTABLE, LATOFFSET, LAG, HEIGHT, FOV, ANGLE
+cameranos: 3 collections, 7 fields: CollectionName, TimeOut, TimeIn, SpeedThreshold, PullBack, FovWidening, Enable
+cameraracestart: 1 collections, 9 fields: LatAngle, CollectionName, Tilt, Position, Pitch, LatOffset, Height, Fov, Enable
+cameratrackcarshake: 1 collections, 6 fields: Vertical, Horizontal, CollectionName, Frequency, Amplitude, Enable
+cameravibration: 7 collections, 25 fields: TerrainGraphMagnitude, DragBoostMagnitude, DragBoostFrequency, TerrainGraphFrequency, SpeedGraphMagnitude, SpeedGraphFrequency, ProximityVolumeGraphMagnitude, ProximityGraphMagnitude, ProximityGraphFrequency, DraftingGraphMagnitude, BuffetingGraphMagnitude, BuffetingGraphFrequency
+car: 102 collections, 26 fields: hasIncompatibleWidebodyHood, stockPaint, manufacturer_ref, defaultPaint, paintable_zones, VinylFinish, sony_categoryID, pvehicle, autosculptAliases, Physics, Damage_Object, lockoutNonStockParts
+car_art: 7 collections, 2 fields: widebody_art_to_kit, autosculpt_art_to_kit
+car_damage_materials: 4 collections, 2 fields: MaterialDefinition, MaterialFile
+car_damage_objects: 93 collections, 2 fields: marker_entries, part_entries
+car_kit: 4 collections, 5 fields: fe_data, Physics, Part, KIT_TYPE, isAutosculptable
+car_kits: 1 collections, 4 fields: stock_kit, autosculpt_kit, widebody_kit, base_kit
+car_list: 5 collections, 4 fields: Cars, Name, PresetRides, StockCars
+car_paint_group: 20 collections, 12 fields: usage, vinyl_matte_envmapScale, UpgradeLevel, vinyl_gloss_envmapScale, vinyl_gloss_specScale, vinyl_gloss_envmapBlur, vinyl_matte_specScale, PresetsAbilities, vinyl_chrome_specScale, vinyl_chrome_envmapBlur, vinyl_matte_envmapBlur, material
+car_paint_swatch: 1 collections, 1 fields: swatch
+car_paintable_zone: 1 collections, 1 fields: car_paintable_zones
+car_part: 381 collections, 16 fields: fe_data, part_id, WINDTUNNEL, Physics, isStandardDef, art, isHiDef, preserveKitRange, group, hasDmg, economics, Audio
+car_parts: 93 collections, 167 fields: ROOF_SCOOP_PAINT_GROUP, boost_controller, FENDER_REAR_LEFT, nitrous_bottle, Transmission, cooling_system, FENDER_REAR_RIGHT, forced_induction_valve, Clutch, shocks, SEATS, ignition_system
+car_tuning: 231 collections, 140 fields: RECHARGE_MIN, RECHARGE_MAX, REVERSE_TO_FORWARD_FORCE, PerformanceBias, RECHARGE_MAX_SPEED, EXTRA_COUNTER_STEER, MeasuredPerformance, TENSOR_SCALE, RECHARGE_MIN_SPEED, NOS_DISENGAGE, YAW_SPEED, FRONT_WEIGHT_BIAS
+CARAUDIO: 125 collections, 37 fields: Show_Upgrade_Kit_Num, ginsu_max_shuffle, shift_filename, ginsu_min_shuffle, ShiftPat, ShiftVol, revlimiter, ExhaustAudioNG, exhaustaudio, EngineAudioNG, engineaudio, CollectionName
+career_constants: 1 collections, 25 fields: zone_point_decay_multiplier, zone_point_decay, cash_percent_rerace, zone_point_collision_penalty_time, xpcap_stylepoints_911, style_point_to_heat_mult, zone_point_decay_time, zone_multiplier_threshold, cashcap_stylepoints, zone_multiplier_max, zone_point_decay_initial_time, zone_point_decay_speed
+chopperspecs: 3 collections, 17 fields: PITCH_BACKWARD_RATE, ROLL_ANG, MIN_ACCELERATION, PITCH_FORWARD_RATE, PULL_BACK_RATIO, MAX_ACCELERATION, MAX_SPEED_MPH, ROLL_RATE, MASS, TENSOR_SCALE, ACCELERATION_RATIO, YAW_RATE
+collisionreactions: 45 collections, 5 fields: REARSIDE_REACTION, REAR_REACTION, FRONTSIDE_REACTION, FRONT_REACTION, SpeedBreakerOverrideable
+collisionsfx_core: 4 collections, 7 fields: VolMap, CollectionName, Splice, VelocityScaler, VelocityRange, LevelMap, IntensityMap
+collisionsfx_damage: 11 collections, 7 fields: VolMap, CarParts, LevelMap, CollectionName, Splice, IntensityMap, SocketLimitDep
+collisionsfx_object: 219 collections, 5 fields: VolMap, LevelMap, CollectionName, Splice, IntensityMap
+collisionsfx_surface: 14 collections, 5 fields: VolMap, LevelMap, CollectionName, Splice, IntensityMap
+collisionsfx_sweetener: 5 collections, 5 fields: VolMap, LevelMap, CollectionName, Moment, IntensityMap
+controller: 15 collections, 176 fields: FRONTENDACTION_CANCEL, ICE_ACTION_LEFTSTICK_UP, ICE_ACTION_RIGHT_PRESS, FRONTENDACTION_BUTTON2, HUDACTION_MESSENGER, GAMEACTION_GAS, FRONTENDACTION_RDOWN, REACTION_APPLY_TO_NEXT, GAMEACTION_SHIFTUP, ICE_ACTION_NORTH, ICE_ACTION_RIGHTSTICK_DOWN, ICE_ACTION_L2
+cost_to_state: 20 collections, 2 fields: fine_for_perp, Cost
+damage_global: 2 collections, 40 fields: meshDamageThresholdRelativeVel, attachDamagePrimitiveGrowMax, troughBaseThickness, groundColVelFactor, carColLifetime, groundColScale, attachDamagePenetrationMax, attachDamageSmackableMassMin, groundColVelMax, Cost_Level1_Min, pixelDamageThresholdRelativeVel, meshDamageThresholdClosingVel
+damage_morph_levels: 7 collections, 4 fields: socketDamageScale, Morph_level_curves, threshold, morph_levels
+damagespecs: 28 collections, 21 fields: SmackableScale, Control, Resistance, HAS_ATTACHMENTS, DZ_TOP, DZ_RREAR, DZ_RIGHT, DZ_RFRONT, DZ_REAR, DZ_LREAR, DZ_LFRONT, DZ_LEFT
+DRAG_SHIFT_ERROR: 3 collections, 4 fields: PERFECT_SHIFT_RANGE, SHORT_SHIFT_PUNISH_FACTOR, MAX_SHIFT_DELAY, LATE_SHIFT_PUNISH_FACTOR
+driver_assist: 13 collections, 9 fields: TCS_LVL, RACELINE_LVL, ESC_LVL, DRIFT_STEERING_LVL, DRIFT_SPEED_CONTROL_LVL, DRIFT_GLUE_TO_ROAD_LVL, DRIFT_DYNAMIC_BRAKE_LVL, AUTO_BRAKE_LVL, ABS_LVL
+dynamicsurface: 2 collections, 10 fields: RadiusCurve, ColourCurve, simsurface, Texture, RadiusStart, RadiusEnd, MinLife, MaxLife, ColourStart, ColourEnd
+ecar: 100 collections, 68 fields: SlipFX, Camera_Pause, Camera_Hood, RoadNoise, LIGHT_COPRED, ExtraFEPitch, LIGHT_COPWHITE, ShiftAngle, DamageEffect, GlassShatterEffectRear, WheelHopScale, EngineRev
+effects: 217 collections, 15 fields: InheritVelocity, DecalQuadratic, Decal, FogEnable, DecalSize, VisualCullDist, ConstantBm, InScatterMulitply, BrMultiply, CollectionName, ConstantBr, EmitterQuadratic
+emitterdata: 394 collections, 55 fields: VolumeExtent, GeometryEmission, CriticalPriority, LightInfluence, ShouldInheritColour, Bounce, MinParticlesPerMeter, RenderLinked, XenonEffect, VolumeCenter, VelocityStart, VelocityDelta
+emittergroup: 268 collections, 5 fields: Emitters, IntensityRanges, ClipRadius, CollectionName, FarClip
+emitteruv: 21 collections, 4 fields: StartV, StartU, EndV, EndU
+encounters: 5 collections, 3 fields: PresetRide, CollectionName, SpawnTime
+engineaudio_ng: 218 collections, 8 fields: RevLimFXVol, sweet_filename, WhineVol, tmx_filename_AI, tmx_filename, CollectionName, SweetVol, SputterVol
+enginedamage: 1 collections, 2 fields: BaseBank, RadBank
+explosion: 1 collections, 6 fields: BaseMaterial, triggerThreshold, forceMultiplier, fallOffUnit, explosionForceLimit, damageMultiplier
+fe_global: 6 collections, 3 fields: default_preset_car, Online_XP_Rewards, Online_Level
+fe_hints_tips: 7 collections, 2 fields: content, categoryHashID
+fe_tuning_sliders: 1 collections, 1 fields: fe_slider
+fecameras: 64 collections, 24 fields: cam_roll_angle, paint_delay, cam_delay, cam_angle, cam_auto_rotate_speed, dof_focal, cam_user_rotate, cam_car_rotate_speed, dof_depth, cam_periods, cam_orbit_vertical_min, cam_orbit_vertical_max
+fecooling: 1 collections, 3 fields: NewPaint, NewAftermarket, NewVinyl
+feicecameras: 43 collections, 4 fields: ECinematicMoment, TimeToStartEnter, TimeToMoveCar, CarPositionMarker
+force_feedback: 1 collections, 6 fields: FFB_SMACKABLECOLLISION, FFB_OBJECTCOLLISION, FFB_WALLCOLLISION, FFB_GROUNDCOLLISION, FFB_WALLRUB, FFB_REARENDCOLLISION
+FORCED_INDUCTION: 33 collections, 9 fields: Type, SpinDownTime, PeakPSI, LagTime, HasBypassValve, HasBlowoffValve, BoostStartRPM, BoostMinThrottle, BoostAlwaysThrottle
+frontend: 128 collections, 61 fields: p_tires_2, p_induction_1, damageColor100, p_tires_4, p_transmission_1, damageColor0, NameId, damageColor46_70, PaintOfferID, hud3DDamageFlashInterval, damageColor1_10, p_suspension_1
+frontend_sfx: 20 collections, 60 fields: sound_right_trigger_disabled, sound_rotate_moving, string_randomizer_space_odds, sound_scroll_right, sound_fullscreen_appear, string_randomizer_frame_length, sound_accept_disabled, sound_back, sound_zoom_in_start, sound_left_trigger, MovieVolumes, sound_scroll_up_disabled
+fuelcell_effect: 9 collections, 2 fields: doTest, NGEmitter
+fuelcell_emitter: 19 collections, 26 fields: VerticalSpreadMaxSpeed, VolumeExtent, VelocityInheritVertical, VerticalSpreadAngleEnd, zSpinX, VerticalSpreadAngleStart, CoaxalOption, VelocityInheritHorizontal, VerticalSpreadScaleAtZeroSpeed, zSpinY, zSpinZ, Colour2
+gameplay: 6814 collections, 393 fields: GoalAddPrevBest, StartSpeedMPH, Level, ActivationTrigger, PursuitLevel, TemplateBinding, AIOpponentName, SelectionSet, CashRewards, RewardMarkerType, NISLength, DependsEvent
+geoheatlevels: 1 collections, 3 fields: NumPatrolCars, HeatIncPerPursuit, HeatDecPerTurn
+glue: 6 collections, 6 fields: CheatVsSkill, SpreadOverRace, StrengthOverRace, CollectionName, CatchupVsSkill, SlowdownVsSkill
+headlight_sequence: 3 collections, 1 fields: ReturnPanged
+heat: 1 collections, 8 fields: engage_speeding, general_max_heat_level, time_between_checks, react_to_911_call, cost_to_state_for_heat_level, time_for_heat_level_decay, search, engage
+highway_pattern: 52 collections, 1 fields: CarsInPattern
+highway_pattern_sequence: 31 collections, 3 fields: sequence, Difficulty, CollectionName
+infraction_pursuit: 1 collections, 5 fields: max_radius_for_infraction_compounding, min_time_gap_for_distinct_infractions, infraction_intensity_increase, infaction_intensity_limit, number_of_cops
+lensflare: 198 collections, 13 fields: FixedRotation, Colour_Edge, Texture_Name, Colour_Centre, Size, Position, Texture_Index, Stretch_Power, Stretch_Multiplier, Scale_Power, Scale_Mulpilier, Rotation_Amount
+light_flares_cg: 39 collections, 9 fields: Colour, rotation_speed, ZBias, Power, MinSize, MinScale, MaxSize, Maxscale, flare_texture
+linemeshstyle: 16 collections, 7 fields: ColourEdge, ColourCenter, SubLayer, Offset, Sharpness, PercentWidth, AdditiveBlend
+loadingscreen: 8 collections, 4 fields: SoundState, CollectionName, Priority, LoadingMusic
+materials: 4 collections, 2 fields: Name, file
+milestonetypes: 31 collections, 4 fields: CollectionName, ResetWhenPursuitStarts, MilestoneType, LocalizationTag
+mipmapbias: 1 collections, 8 fields: TRN, SGN, PARTICLES, ORG, OBJ, DEF, ARC, ADS
+mistakes: 17 collections, 5 fields: ObstacleAvoidanceSkill, DragCatastrophicSteeringMistake, DragShiftMistakeChance, LateBrakeProbability, BrakeTooMuchProbability
+music: 8 collections, 2 fields: HalId, PathEvent
+nis: 170 collections, 26 fields: SelectionSet, PlayerUnderAIControl, ICE_Context, Chooser_Online, Chooser_RaceType, isNISLoadedBeforePreMovie, SeeulatorOverlayName, isLooping, NISActors, isCameraFixingElevation, SceneRootInfo, SpeechPursuitBreakerType
+nis_car_sets: 4 collections, 1 fields: car_item
+nis_generic_cameras: 2 collections, 1 fields: Name
+nosfx: 1 collections, 1 fields: BankName
+ocean: 1 collections, 5 fields: layer2_specular_colour, layer1_tile_xy, layer2_tile_xy, layer1_specular_colour, reflection_amount
+Package: 15 collections, 4 fields: fe_data, Parts, Cars, Type
+part_art: 103 collections, 12 fields: art_kit_to_game_kit_mapping, kit_max, Filename, models, applied_hashes, applied_attribs, kit_min, markers, isWidebody, num_morph_zones, lod_min, lod_max
+part_audio: 2 collections, 1 fields: file
+part_economics: 15 collections, 1 fields: price
+part_fe_quickupgrade: 2 collections, 4 fields: LEVEL1, level2, level4, level3
+part_fedata: 283 collections, 2 fields: partData, packageData
+part_physics: 47 collections, 7 fields: ValueModifiers, PhysicsTuningSliderUnlocks, TuningPresets, InfluenceOnFEPerformanceBars, AutoSculptZoneToPhysisSliderRange, ForcedInduction, UpgradeDescriptions
+partoptions: 3 collections, 7 fields: Transmission, BRAKES, CHASSIS, NOS, Tires, induction, ENGINE
+performance_merit_functions: 4 collections, 2 fields: ComplexPerformance, PerformanceWeights
+performance_stats: 4 collections, 2 fields: BluePrint, performanceRanges
+performance_tiers: 4 collections, 1 fields: TierBoundaries
+performancematch: 1 collections, 21 fields: OpponentTypeKingShift, ClampInsaneMinPerformance, DifficultyEasyMaxPercent, ClampMediumMinPerformance, DifficultyMediumMaxPercent, DifficultyHardMaxPercent, DifficultyHardMinPercent, OpponentTypeChallengeShift, DifficultyInsaneMinPercent, MulticlassShift, ClampHardMinPerformance, ClampHardMaxPerformance
+physics_special_slider: 1 collections, 2 fields: mType, mPhysicsTuning
+physics_tuning: 37 collections, 7 fields: IsElement, AttributeReference, ElementIndex, MemberIndex, LowerBoundTolerance, IsMember, HigherBoundTolerance
+physics_tuning_slider: 14 collections, 1 fields: Tunings
+physics_tuning_slider_list: 2 collections, 1 fields: sliders
+physics_upgrade_set: 11 collections, 1 fields: PhysicsUpgrades
+physicsdamage: 3 collections, 4 fields: HORSEPOWER_DAMAGE, DRAG_DAMAGE, DOWNFORCE_DAMAGE, DAMAGE_LEVEL
+postfx: 1 collections, 10 fields: AtmosphericStreakMinSpeed, InTheZone_ComplimentaryCarColourAmount, AtmosphericStreakMaxSpeed, StreakActiveTimeVariance, AtmosphericStreakFreq, StreakRestTime, BloomFactor, StreakActiveTime, FacePixelationScale, StreakRestTimeVariance
+PresetRide: 461 collections, 22 fields: VinylFinish, DecalLayers, Autosculpt, Parts, RemovedParts, PresetName, VinylLayers, Paints, isCopCar, RandomPaints, PresetCarFilter, isDLC
+pursuit_threat_select: 19 collections, 2 fields: target_threat_level_selection, start_threat_level_selection
+pursuit_threat_select_xp: 1 collections, 1 fields: xps_lookup
+pursuitaudio: 16 collections, 6 fields: SeqSeg, CollectionName, PursuitMusic, SirenTune, ChasedownMusic, BattleMusic
+PursuitEscalation: 1 collections, 4 fields: racetable, threattable, supportracetable, supporttable
+pursuitescalationpatterns: 5 collections, 3 fields: MaxIncrease, MinIncrease, EscalationTimeInterval
+pursuitlevels: 48 collections, 65 fields: CooldownSpawnChanceSide, TimeInactiveFor911, Lifetime911, cool_down_cop_limit, pursuit_with_support_time_max, CopFormations, spawn_goal_head_on_ram_chance, MeterDeadZoneBustedDistance, formations, pursuit_with_support_time_min, CooldownSpawnChanceFacingAway, CTSFor911
+pursuitsupport: 22 collections, 4 fields: AirSupportOptions, HeavySupportOptions, MinimumSupportDelay, LeaderSupportOptions
+pvehicle: 162 collections, 51 fields: car_tuning_current, TurboSND, CLASS, BEHAVIOR_ORDER, OnHitObject, AIVehicle, RacingClass, OnBottomOut, VerbalType, BEHAVIOR_MECHANIC_SUSPENSION, BEHAVIOR_MECHANIC_EFFECTS, EventSequencer
+RandomPartRules: 0 collections, 13 fields: WINDOW_TINT_weight, WINDOW_TINT_cost, WHEEL_FRONT_weight, WHEEL_FRONT_cost, SPOILER_weight, SPOILER_cost, ROOF_SCOOP_weight, ROOF_SCOOP_cost, Money, HOOD_weight, HOOD_cost, BODY_weight
+render_materials: 129 collections, 2 fields: fx_filename, parameters
+render_param_car_lighting: 173 collections, 24 fields: DiffuseFlakes, EnvmapMinRGB, SpecularMinRGB, SpecularMaxRGB, DiffuseMaxRGBA, DiffuseClamp, VinylLuminanceMinScale, SpecularVinylScale, DiffuseVinylScale, SpecularMaxScale, EnvmapMinScale, EnvmapVinylScale
+render_state_blend: 23 collections, 1 fields: data
+render_state_depthstencil: 12 collections, 1 fields: data
+render_state_rasterizer: 7 collections, 1 fields: data
+render_state_sampler: 38 collections, 1 fields: data
+render_test_materials: 4 collections, 2 fields: Tint, myTestFloat
+rendertargets: 2 collections, 1 fields: data
+results: 1 collections, 3 fields: MaxNoDamageBonus, MaxEventBonus, RankingScore
+resultsimulation: 1 collections, 12 fields: DriftNormalFactor, DriftInsaneFactor, DriftSpread, DragWheelieDistanceHard, DragWheelieDistanceEasy, DragWheelieSpread, DragWheelieDistanceInsane, DragWheelieDistanceNormal, DragFalseStartChance, DriftHardFactor, DriftEasyFactor, DriftRatingSpreadPercent
+rewardcard: 4 collections, 13 fields: ConditionModifier, DescriptionXbox, Unit, RewardCards, RewardLevel, RewardCondition, onlineStatType, Name, Difficulty, Description, Area, Row
+rewardcard_rewards: 4 collections, 4 fields: gamePlayReward, RewardCards, Name, Area
+rigidbodyspecs: 30 collections, 25 fields: WORLD_MOMENT_SCALE, OBJ_MOMENT_SCALE, GROUND_MOMENT_SCALE, DRAG_ANGULAR, DRAG, COLLISION_BOX_PAD, CG, DEFAULT_COL_BOX, BASE_MATERIAL, VEL_LIMIT_LINEAR, VEL_LIMIT_ANGULAR, SLEEP_VELOCITY
+road_blocks: 23 collections, 1 fields: road_block_configurations
+shader_distance_fx: 1 collections, 4 fields: distance_contrast_end_dist, distance_contrast_high_clamp, distance_contrast_start_dist, distance_contrast_max
+shader_parameters: 61 collections, 78 fields: reflection_mask_u_offset_v, specular_falloff, lod_blend_bias, character_specular_intensity, reflection_lighting_power, character_fresnel_reflection, reflection_vert_scale, specular_falloff2, debug_gray_normal_tex, grass_diffuse_intensity, character_lighting_intensity, specular_color
+shader_parameters_car_materials: 259 collections, 31 fields: DiffuseFlakes, EnvmapMinRGB, EnvmapBlurLevelVinyl, SpecularMinRGB, SpecularMaxRGB, DiffuseMaxRGBA, Name, _MaterialGroup, DiffuseClamp, VinylLuminanceMinScale, SpecularVinylScale, DiffuseVinylScale
+shader_paramters_procedural: 1 collections, 1 fields: no_upload
+shaderball_material_params: 2 collections, 2 fields: isTransparent, Tint
+ShiftPattern: 127 collections, 10 fields: MinLoadBog, PostShiftDuration, ShiftPattern, DownShiftPattern, ThrottleLFO, BogLFO, BlendTime, TPosDelta, MaxLFO_RPMRatio, MaxBogRPMRatio
+simsurface: 81 collections, 46 fields: ImpactSFX, FFB_SKID, TireSlideEffects, FFB_DIGRESSION_SCALE, FFB_DRIFT_SKID, WheelSurfaceEffect, DoSkidMarks, TireSlipEffects, DEBUG_COLOUR, TireSmokeEffects, PercentChanceToCatch, CollisionSweetenerSFX
+skidaudio: 6 collections, 14 fields: TrafficScaler, Long_Rear, PlayerScaler, CopScaler, AUDIOSYS_libeller, AIScaler, ShockSqueakThresh, Long_Front, Lat_Rear, Lat_Front, Drift_Long_Rear, Drift_Long_Front
+smackable: 549 collections, 35 fields: OnHitObject, ExplosionEffect, DROPOUT, SFX, start_sequencer, EventSequencer, RESPAWN_TIME, AI_AVOIDABLE, OnScrapeWorld, no_trigger, rigidbodyspecs, WooshType
+smoke: 1 collections, 1 fields: PerlinNoiseOffset
+Speech: 228 collections, 29 fields: RadioChirp, RedundancyCheckIsGlobal, RecallList, OnScreenOnly, Pan, MinHeat, MaxHeat, DeadAir, MaxPlayback, cache_SysInit, CollectionName, interrupt
+speechtune: 1 collections, 66 fields: TimeLostOffTrack, PursuitInactivityTimer, SmashSpeedRangeCops, PlayerSmashSpeedRange, SpeechDropoffRamp, TimeWaitForSpotterReply, TimeOffTrack, TimeConsideredLostNoLOS, SuspectOutrunRange, SpeedThreshFlyFlipIntensity, SpeedDiffForBlowby, RBPostOutcomeResetTime
+style_points: 0 collections, 33 fields: win_race, 0x618B1F07, 0x69AADE2F, 0xC6AF88FB, turn_reverse_360, 0x243E3D67, turn_reverse_180, 0x85BCBC59, 0xF40BE3EC, turn_360_burnout, turn_360, 0x269E4A51
+SunAndSky: 572 collections, 36 fields: CarSunSaturation, VisibleLongitude, SpecularIntensity, SunLatitude, ShadowMixAmount, SDOnly, SkyDomeStyle, SpecularSize, SunOcclusionResponseRate, SunHazeColour, SunHazeSize, FogColour
+system: 1 collections, 2 fields: SimSubSystems, SimControls
+table_data: 15 collections, 4 fields: data, curveData, argMin, argMax
+table_data_array: 0 collections, 1 fields: data
+target_time_overrides: 1 collections, 35 fields: GripRaceAdjustmentSecondsPerKilo, HubDifficulty_Insane_MaxDelta, SSPlayer_HubDifficulty_Medium_MinDelta, SSAI_HubDifficulty_Hard_MaxDelta, DragAdjustment, Overrides, SSAI_BadSector_AdjustmentFactor, Drag_NoNOSShift, SSAI_HubDifficulty_Medium_MaxDelta, SSAI_HubDifficulty_Easy_MinDelta, SSPlayer_HubDifficulty_Insane_MinDelta, MaxWheeliePoints
+testshaderparam: 1 collections, 3 fields: key, TestParam0, TestParam1
+timeofdaylighting: 9 collections, 13 fields: FogInLightScatter, FogSkyColour, FogSunFalloff, SpecularColour, FogHazeColour, FixedFunctionSkyColor, DiffuseColour, AmbientColour, FogSkyColourScale, FogHazeColourScale, FogDistanceScale, EnvSkyBrightness
+traffic_engine: 11 collections, 8 fields: SmallRpmEnd, BandAidFile, SmallRpmStart, SpeedDeltaThreshold, LargeRpmEnd, CollectionName, LargeRpmStart, IndexTable_CollectionName
+traffic_horn: 35 collections, 3 fields: HornSequence, CollectionName, IndexTable_CollectionName
+TrafficPattern: 8 collections, 5 fields: SpeedStreet, Vehicles, CollectionName, SpeedHighway, SpawnTime
+turbosfx: 65 collections, 11 fields: FlutterAmp, BlowoffIntensityThreshold, FlutterPeriod, MinRPMThreshold, SpoolTime, Volume, LoadThreshold, BankName, ThrottleThreshold, Lag, AI_BankName
+visuallook: 13 collections, 5 fields: RGBCurve, RCurve, GCurve, BCurve, Desaturation
+visuallookeffect: 20 collections, 18 fields: contrast, lensflare_fade, colourcube_scale, blur_minimum, Tint, graph, radialblur_uvoffset, Desaturation, bloom_recovery_bias, bloom_scale, vignette_colour, preview
+visuallooktransition: 1 collections, 7 fields: uves_pulse_length, uves_extreme, Normal, uves_pulse, _testvalue, uves_pulse_trigger, uves
+wheel_data: 1 collections, 3 fields: inner_radius_max, inner_radius_min, outer_radius
+World: 1 collections, 33 fields: MAX_NEWTONS, MAX_FRAGMENTS, BONDMOVE_RESTART_CLEAR, AIC_BOND_RGADGET, CHAIN_NEXT_MISSION, SPLITMISSION_PREVHALF, NUM_PED_TYPES_GC, MAX_TRAFFIC_SPAWN_DISTANCE, TRAFFIC_LANE_CHANGES, MAX_SMACKABLES, AIC_BOND_LGADGET, VEHICLE_SLOTS_AVAIL
+zone_visual_style: 23 collections, 48 fields: SkyModification, ToneMappingContrast, VisibleLongitude, HDRSkyBias, HDRMotionBlurScale, SunLatitude, SkyDomeStyle, SHColour, ToneMappingSaturation, SunOcclusionResponseRate, SunHazeColour, SunHazeSize

@@ -3,3 +3,20 @@ outputs/
 symbols_out/
 patterns.txt
 extract_dev_symbols.py
+
+# engine data for the apt viewer because it contains the dumped game lol. Keep the README:
+Apt/engine_data/*
+!Apt/engine_data/README.txt
+FNG/fng_mask_repeat.patch
+HANDOFF.md #i send this
+apt_viewer_tidy.patch
+agents/claude/decompiled_all_movies.json
+Apt/apt_hints.json
+Apt/apt_overrides.json
+Apt/launch_settings.json
+Apt/missing.csv
+Apt/apt_cache/FrontB1.lzc.unpacked
+Apt/apt_cache/gameplay.lzc.unpacked
+Apt/apt_cache/InGameB.lzc.unpacked
+Apt/apt_report.json
+

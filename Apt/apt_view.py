@@ -660,7 +660,24 @@ def main():
     ap.add_argument("--overrides", default="apt_overrides.json")
     ap.add_argument("--stubs", default="apt_stubs.json", help="what the game would give a screen (stub values and a scenario)")
     ap.add_argument("--renderer", choices=("auto", "skia", "pillow"), default="auto", help="drawing backend (auto: skia if installed)")
+    ap.add_argument("--engine-map", default=None, help="apt_engine_map.json: install the natives of nfs.exe and feed them with game data (apt_engine.py)")
+    ap.add_argument("--lang", default=None, help="folder with English_Global.bin, English_Frontend.bin, English_InGame.bin")
+    ap.add_argument("--attrib", default=None, help="attrib dump (UndercoverVLT_Dumper json)")
+    ap.add_argument("--names", default=None, help="hash name list (hashes_main.txt) to name the attrib classes, fields and collections")
+    ap.add_argument("--hints-category", default="hints_career", help="attrib fe_hints_tips collection the hints screen shows")
+    ap.add_argument("--engine-data", default=None, help="folder with the engine data (default Apt/engine_data; see apt_tools.py check)")
+    ap.add_argument("--no-engine", action="store_true", help="do not install the natives of nfs.exe")
+    ap.add_argument("--4x3", dest="four_three", action="store_true", help="CmdUtil.GetWidescreen answers 4x3 (default 16x9)")
     a = ap.parse_args()
+    import apt_engine
+    if a.engine_map:
+        apt_runtime.ENGINE = apt_engine.build(a.engine_map, a.lang, a.attrib, a.names, not a.four_three, a.hints_category)
+    elif not a.no_engine:
+        apt_runtime.ENGINE = apt_engine.build_default(a.engine_data, not a.four_three, a.hints_category)
+    print("engine feed: " + ("off (no apt_engine_map.json found; run apt_tools.py check)" if apt_runtime.ENGINE is None else "on"))
+    if apt_runtime.ENGINE is not None:
+        for role, found, text in apt_engine.status(apt_engine.find_data(a.engine_data)):
+            print("  %-6s %s %s" % (role, "ok     " if found else "MISSING", text))
     run(a.ui, a.res, a.decomp, a.movie, a.cache, a.overrides, a.stubs, a.renderer)
 
 

@@ -1,0 +1,1221 @@
+{
+ "movies": {
+  "alex.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "autosculptmenu.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "button_item.big": {
+   "placeholder_images": 18,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": []
+  },
+  "carlotmenu.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "shape"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "carselectmenu.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    },
+    {
+     "target": "this.rightMover.content.mLogo",
+     "value": "hashKey",
+     "source": "script value",
+     "expression": "hashKey"
+    }
+   ]
+  },
+  "carshopmenu.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "carsmenu.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    },
+    {
+     "target": "CarsMenu.mScreen.rightMover.content.vinylThumbnail.mTexture",
+     "value": "texture_hash",
+     "source": "script value",
+     "expression": "texture_hash"
+    }
+   ]
+  },
+  "challengekeyboardpc.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "challengerewarddominator.big": {
+   "placeholder_images": 2,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "challengerewardpro.big": {
+   "placeholder_images": 2,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "challengerewardstreet.big": {
+   "placeholder_images": 2,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "challengeseries.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    },
+    {
+     "target": "ChallengeSeries.mEventPicker.mImage2.mImageInner",
+     "value": "ChallengeSeries.mDataGrid.Data[currentHighlight].ImageHash",
+     "source": "script value",
+     "expression": "ChallengeSeries.mDataGrid.Data[currentHighlight].ImageHash"
+    },
+    {
+     "target": "ChallengeSeries.mEventPicker.mImage2.mImageInner",
+     "value": "ChallengeSeries.mDataGrid.Data[currentHighlight].ImageHash",
+     "source": "script value",
+     "expression": "ChallengeSeries.mDataGrid.Data[currentHighlight].ImageHash"
+    },
+    {
+     "target": "]",
+     "value": "ChallengeSeries.mDataGrid.Data[((r1 + currentHighlight) - ChallengeSeries.kIMAGES_BEFORE_CURRENT)].ImageHash",
+     "source": "script value",
+     "expression": "ChallengeSeries.mDataGrid.Data[((r1 + currentHighlight) - ChallengeSeries.kIMAGES_BEFORE_CURRENT)].I"
+    },
+    {
+     "target": "]",
+     "value": "0",
+     "source": "constant"
+    }
+   ]
+  },
+  "challengeseriesnumplayers.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "challengeseriessummary.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "chyrontest.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "codeentry.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "colorpickertest.big": {
+   "placeholder_images": 3,
+   "used_by": [
+    "shape"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "controllerconfig.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "countryselection.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "createaccount.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "credits.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "customizequickrace.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "danny.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "debugcartest.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "dialog.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "districtview.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "driverskill.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "fonttest.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "hintstips.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    },
+    {
+     "target": "this.mImg_L.mTexture1",
+     "value": "_parent.Screen.GetTextureHash(0)",
+     "source": "script value",
+     "expression": "_parent.Screen.GetTextureHash(0)"
+    },
+    {
+     "target": "this.mImg_M.mTexture2",
+     "value": "_parent.Screen.GetTextureHash(1)",
+     "source": "script value",
+     "expression": "_parent.Screen.GetTextureHash(1)"
+    },
+    {
+     "target": "this.mImg_R.mTexture3",
+     "value": "_parent.Screen.GetTextureHash(2)",
+     "source": "script value",
+     "expression": "_parent.Screen.GetTextureHash(2)"
+    }
+   ]
+  },
+  "hud.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "shape"
+   ],
+   "bindings": []
+  },
+  "jesh.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "kyla.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "languageselect.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "leaderboardscreen.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "legal.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "levelup.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "loadscreen01.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": []
+  },
+  "longloadingscreen.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": []
+  },
+  "mainmenu.big": {
+   "placeholder_images": 4,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": []
+  },
+  "marketing.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "messengerchat.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "messengerscreen.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "mimi.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "miniload.big": {
+   "placeholder_images": 12,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": []
+  },
+  "moviescreen.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "mycarsmenu.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "newsscreen.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "onlinegameroom.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    },
+    {
+     "target": "OnlineGameRoom.mTrackInfoMap",
+     "value": "msg.TRACK_INFO_TRACK_HASH",
+     "source": "script value",
+     "expression": "msg.TRACK_INFO_TRACK_HASH"
+    }
+   ]
+  },
+  "onlinegrsettings.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    },
+    {
+     "target": "].mMapMC.mMap",
+     "value": "_global.cmdOlnSettings.GetCurrentTrackTextureHash(r3)",
+     "source": "provider cmdOlnSettings.GetCurrentTrackTextureHash",
+     "attrib": {
+      "fields": [
+       "frontend_sfx.MovieVolumes"
+      ]
+     }
+    }
+   ]
+  },
+  "onlinetos.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "options.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "oscar.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "paintmenu.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "paused.big": {
+   "placeholder_images": 2,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": []
+  },
+  "pausemenu.big": {
+   "placeholder_images": 13,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": []
+  },
+  "pausemenufake.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "pccdkey.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "pccontrollerconfig.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "pccreateaccount.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "pcforgotpassword.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "pconlinelogin.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "pconlineloginselection.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "pconlinepersona.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "pcsaveselectmenu.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "pcsaveselectmenu2.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "performancemenu.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "performancetuning.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "photomode - backup.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "photomode.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "pinkslip.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "playerfeedback.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "playerprofile.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "postmission.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "postmissionloss.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "postmissionwin.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "postrace.big": {
+   "placeholder_images": 4,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "psascreen.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "purchasedialog.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "root.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "r2.mVinyl[ThumbnailPicker.kElementSmallTextureName].mTexture",
+     "value": "r3.id",
+     "source": "script value",
+     "expression": "r3.id"
+    },
+    {
+     "target": "r2.mVinyl[ThumbnailPicker.kElementLargeTextureName].mTexture",
+     "value": "r3.id",
+     "source": "script value",
+     "expression": "r3.id"
+    },
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "scrollbartest.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "slidertest.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "splashscreen.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "staticitemscrollertest.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "stdbhvr.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": []
+  },
+  "stdctrl.big": {
+   "placeholder_images": 7,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": []
+  },
+  "stdctrlparts.big": {
+   "placeholder_images": 17,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": []
+  },
+  "stdpopupart.big": {
+   "placeholder_images": 3,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": []
+  },
+  "stdvirkb.big": {
+   "placeholder_images": 18,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": []
+  },
+  "sung.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "template.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "textlisttest.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "textlisttext.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "thumbnailpicker.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": []
+  },
+  "thumbnailtest.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "tickertest.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "toggletest.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "treemenu.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "treemenu_customize.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "videocalibration.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "vinylpaintmenu.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "vinylselectmenu.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "vinyltransformmenu.big": {
+   "placeholder_images": 1,
+   "used_by": [
+    "bitmap"
+   ],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "widgettest.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "widgettest2.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  },
+  "worldview.big": {
+   "placeholder_images": 0,
+   "used_by": [],
+   "bindings": [
+    {
+     "target": "mc",
+     "value": "msg.textureHash",
+     "source": "game message SETTEXTUREHASH (msg.textureHash)"
+    }
+   ]
+  }
+ },
+ "summary": {
+  "movies_with_placeholders": 30,
+  "placeholder_images": 123,
+  "binding_sites": 104
+ }
+}

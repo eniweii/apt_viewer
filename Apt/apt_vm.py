@@ -30,6 +30,9 @@ class Undefined:
 
 
 UNDEF = Undefined()
+PROPS = ["_x", "_y", "_xscale", "_yscale", "_currentframe", "_totalframes", "_alpha", "_visible", "_width", "_height",
+         "_rotation", "_target", "_framesloaded", "_name", "_droptarget", "_url", "_highquality", "_focusrect",
+         "_soundbuftime", "_quality", "_xmouse", "_ymouse"]            # the 22 getProperty / setProperty indexes
 MISSING = object()                      # "no stub for this name"
 
 
@@ -101,6 +104,22 @@ class Obj:
 
     def __repr__(self):
         return "[object %s]" % (self.name or "Object")
+
+
+class SuperProxy:
+    """`super` inside a class function: calling it runs the superclass constructor, super.name(...) the superclass method, both on the same this."""
+
+    def __init__(self, this, proto, ctor):
+        self.this, self.proto, self.ctor = this, proto, ctor
+
+    def vm_get(self, name):
+        return self.proto.vm_get(name) if self.proto is not None else UNDEF
+
+    def vm_call(self, name, args, vm):
+        f = self.vm_get(name)
+        if isinstance(f, (Func, Native)):
+            return vm.call(f, self.this, args)
+        return vm.missing_call("super", name, args, "call super.%s (not defined in the movie)" % name)
 
 
 class Func:
@@ -258,7 +277,7 @@ class VM:
         self.call_counts[f.offset] = self.call_counts.get(f.offset, 0) + 1
         fr = Frame(this, f.scope, f.dictionary, {})
         reg, fl = 1, f.flags
-        for bit, val in ((0x01, this), (0x04, args), (0x10, UNDEF), (0x40, self.root), (0x80, getattr(this, "parent", UNDEF)),
+        for bit, val in ((0x01, this), (0x04, args), (0x10, self._super_for(f, this)), (0x40, self.root), (0x80, getattr(this, "parent", UNDEF)),
                          (0x100, self.globals)):
             if fl & bit:
                 if reg < 256:
@@ -378,7 +397,10 @@ class VM:
             elif op == 0x88:
                 fr.dictionary = list(ins.args)
             elif op == 0x17:
-                st.pop()
+                if st:
+                    st.pop()
+                else:
+                    self.note("pop on an empty stack at 0x%X (the compiler emits one after `if (!x) { x = function ... }`; the game ignores it)" % ins.offset)
             elif op == 0x4C:
                 st.append(st[-1])
             elif op == 0x4D:
@@ -486,20 +508,23 @@ class VM:
                 self._event("set", ("member", ins.args[0][1], v, ins.offset, obj))
             elif op == 0x87:
                 fr.regs[ins.args[0][1]] = st[-1]
-            elif op in (0x3C, 0x41):
+            elif op == 0x41:
+                name = to_str(st.pop())                         # defineLocal2: `var name;` pops the name only, no value
+                if fr.locals is not None:
+                    fr.locals.setdefault(name, UNDEF)
+            elif op == 0x3C:
                 v, name = st.pop(), st.pop()
                 if fr.locals is not None:
                     fr.locals[to_str(name)] = v
                 else:
                     self.set_var(fr, to_str(name), v, ins.offset)
-                if op == 0x41:
-                    pass
             elif op == 0x3D:
                 name, argc = to_str(st.pop()), int(to_number(st.pop()))
                 args = [st.pop() for _ in range(argc)]
                 f = self.get_var(fr, name)
                 if isinstance(f, (Func, Native)):
-                    st.append(self.call(f, None, args))
+                    # a plain call runs with the timeline as this (the clip whose script calls it), not with nothing
+                    st.append(self.call(f, fr.this if hasattr(fr.this, "vm_get_var") else self.root, args))
                 else:
                     self.note("call %s() (not defined in the movie)" % name)
                     self.external("call", name + "()", args)
@@ -582,13 +607,84 @@ class VM:
                 self._clip_call(fr.this, "gotoAndPlay" if ins.args[0][1] else "gotoAndStop", [f])
             elif op == 0x26:
                 self.note("trace: %s" % to_str(st.pop()))
+            elif op == 0x69:
+                sup, sub = st.pop(), st.pop()
+                if isinstance(sup, Func) and isinstance(sub, Func):
+                    proto = Obj(proto=sup.props.get("prototype"), name=sub.name)
+                    proto.props["constructor"] = sup            # what super() calls from the subclass
+                    sub.props["prototype"] = proto
+                else:
+                    self.note("extends: %s extends %s (the superclass is not defined in the movie)" % (to_str(sub), to_str(sup)))
+                    self.external("extends", to_str(sup), None)
+            elif op == 0x2C:
+                st.pop()                                        # implements: the interface list is not kept
+                for _ in range(int(to_number(st.pop()))):
+                    st.pop()
+            elif op == 0x2B:
+                obj, ctor = st.pop(), st.pop()                  # cast: the object, unchecked
+                st.append(obj)
+            elif op == 0x34:
+                st.append(float(getattr(self, "now_ms", 0.0)))
+            elif op in (0x22, 0x23):
+                value = st.pop() if op == 0x23 else None
+                idx, tgt = int(to_number(st.pop())), st.pop()
+                pname = PROPS[idx] if 0 <= idx < len(PROPS) else "prop%d" % idx
+                tgt = fr.this if tgt in (UNDEF, "") else tgt
+                if op == 0x22:
+                    st.append(self.get_member(tgt, pname))
+                else:
+                    self.set_member(tgt, pname, value, ins.offset)
+            elif op == 0x55:
+                obj = st.pop()
+                st.append(UNDEF)                                # the end mark the loop looks for
+                for k in reversed(self._enum_keys(obj)):
+                    st.append(k)
+            elif op == 0x09:
+                pass                                            # stopAllSounds: nothing is played
+            elif op == 0x25:
+                target = st.pop()
+                self._clip_call(fr.this if target in (UNDEF, "") else target, "removeMovieClip", [])
+            elif op == 0x53:
+                name, obj, argc = st.pop(), st.pop(), int(to_number(st.pop()))
+                args = [st.pop() for _ in range(argc)]
+                ctor = obj if name in (UNDEF, "") else self.get_member(obj, to_str(name))
+                if isinstance(ctor, Func):
+                    inst = Obj(proto=ctor.props.get("prototype"), name=ctor.name)
+                    self.call(ctor, inst, args)
+                    st.append(inst)
+                else:
+                    self.note("new %s.%s (not defined in the movie)" % (to_str(obj), to_str(name)))
+                    self.external("new", "%s.%s" % (to_str(obj), to_str(name)), args)
+                    st.append(Obj(name=to_str(name)))
             elif op == 0x77:
                 pass
             else:
                 raise Unsupported("opcode 0x%02X %s" % (op, AA.OPS.get(op, "")))
         return st.pop() if st else UNDEF
 
+    def _super_for(self, f, this):
+        """The `super` of function f running on this: found through the prototype `extends` linked (its `constructor` is the superclass)."""
+        o = this.proto if isinstance(this, Obj) else None
+        while o is not None:
+            if o is f.props.get("prototype") or any(v is f for v in o.props.values()):
+                ctor = o.props.get("constructor")
+                return SuperProxy(this, o.proto, ctor) if isinstance(ctor, Func) else UNDEF
+            o = o.proto
+        return UNDEF
+
+    def _enum_keys(self, obj):
+        """The names for (x in obj): own and inherited properties, no `length` of an array and no internal names."""
+        keys, o = [], obj
+        while isinstance(o, Obj):
+            for k in o.props:
+                if k not in keys and k not in ("length", "constructor") and not k.startswith("__"):
+                    keys.append(k)
+            o = o.proto
+        return keys
+
     def _call_method(self, obj, name, args):
+        if isinstance(obj, SuperProxy) and (name is UNDEF or name == "" or name is None):
+            return self.call(obj.ctor, obj.this, args)
         if name is UNDEF or name == "" or name is None:
             if isinstance(obj, (Func, Native)):
                 return self.call(obj, None, args)

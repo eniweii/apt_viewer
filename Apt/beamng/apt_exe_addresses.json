@@ -1,0 +1,5207 @@
+{
+ "image_base": "0x400000",
+ "sections": [
+  [
+   ".text",
+   "0x401000",
+   "0x75F26B"
+  ],
+  [
+   ".rdata",
+   "0xB61000",
+   "0x14AC6A"
+  ],
+  [
+   ".data",
+   "0xCAC000",
+   "0xBF2AF4"
+  ],
+  [
+   ".tls",
+   "0x189F000",
+   "0x19"
+  ],
+  [
+   ".rsrc",
+   "0x18A0000",
+   "0x1214"
+  ],
+  [
+   ".reloc",
+   "0x18A2000",
+   "0x96F64"
+  ]
+ ],
+ "helpers": [
+  {
+   "address": "0x9ADAB0",
+   "name": "NewNative",
+   "what": "wraps a handler address into a native function value; push handler; call; add esp,4",
+   "status": "confirmed (all 272 registrations)"
+  },
+  {
+   "address": "0x9ADBC0",
+   "name": "SetMember",
+   "what": "sets a member on an object by name: push eax(native); push \"Name\"; mov ecx,object; call",
+   "status": "confirmed"
+  },
+  {
+   "address": "0x805B90",
+   "name": "GetArgInt",
+   "what": "argument i of the script call as an int (push i; call)",
+   "status": "confirmed (GetScreenName)"
+  },
+  {
+   "address": "0x9AD9D0",
+   "name": "GetArg",
+   "what": "argument i of the script call as it is (push i; call); the value is then converted by the caller",
+   "status": "guessed from IsInputNecessary"
+  },
+  {
+   "address": "0x9ADA70",
+   "name": "NewResultObject",
+   "what": "creates the result object of a native: push type; call (types seen 1, 2, 5, 9, 32)",
+   "status": "confirmed (GetWidescreen, GetRegions)"
+  },
+  {
+   "address": "0x9ADA20",
+   "name": "ReturnUndefined",
+   "what": "ends a native with no value",
+   "status": "confirmed (PlaySound)"
+  },
+  {
+   "address": "0x805FB0",
+   "name": "ReturnBool",
+   "what": "ends a native with a bool",
+   "status": "confirmed (IsWidescreen)"
+  },
+  {
+   "address": "0x805FC0",
+   "name": "ReturnInt?",
+   "what": "ends a native with a value (jmp 0x9DABC0)",
+   "status": "guessed"
+  },
+  {
+   "address": "0x805FD0",
+   "name": "ReturnValue?",
+   "what": "ends a native with a value (jmp 0x9DACA0)",
+   "status": "unknown type"
+  },
+  {
+   "address": "0x805F50",
+   "name": "ReturnString",
+   "what": "ends a native with a string: push char*; call",
+   "status": "confirmed (GetScreenName)"
+  },
+  {
+   "address": "0x805DD0",
+   "name": "SetPropInt?",
+   "what": "sets a property on the result object by name (int pointer)",
+   "status": "guessed from GetWidescreen"
+  },
+  {
+   "address": "0x805C80",
+   "name": "SetProp?",
+   "what": "sets a property on the result object by name",
+   "status": "type not decoded"
+  },
+  {
+   "address": "0x805E50",
+   "name": "SetProp?",
+   "what": "sets a property on the result object by name",
+   "status": "type not decoded"
+  },
+  {
+   "address": "0x805CF0",
+   "name": "SetPropString",
+   "what": "sets a string property (formats into a stack buffer first)",
+   "status": "guessed"
+  },
+  {
+   "address": "0x5391D0",
+   "name": "FindScreen",
+   "what": "screen object from a screen id, through the manager pointer at [0x12AA044]",
+   "status": "confirmed (GetIsScreenDirty, GetTreeData)"
+  },
+  {
+   "address": "0x535B80",
+   "name": "PostGameEvent",
+   "what": "posts a command to the game (the handlers that act, such as OnEnterComplete and the Cmd setters)",
+   "status": "guessed"
+  }
+ ],
+ "globals": [
+  {
+   "address": "0x12AA044",
+   "name": "ScreenManager*",
+   "what": "global pointer to the screen manager (FindScreen's this)",
+   "status": "confirmed"
+  }
+ ],
+ "object_creation": {
+  "CmdAudio": [
+   {
+    "site": "0x80F91E",
+    "function": "0x80F680",
+    "calls": "0x805A90"
+   }
+  ],
+  "CmdFECarLot": [],
+  "CmdFEDebugCarTestScreen": [
+   {
+    "site": "0x551345",
+    "function": "0x551340",
+    "calls": "0x5421B0"
+   }
+  ],
+  "CmdHud": [
+   {
+    "site": "0x80F7B7",
+    "function": "0x80F680",
+    "calls": "0x805A90"
+   }
+  ],
+  "CmdLauncher": [
+   {
+    "site": "0x80B668",
+    "function": "0x80ADB0",
+    "calls": "0x805A90"
+   }
+  ],
+  "CmdPauseMenu": [
+   {
+    "site": "0x80F814",
+    "function": "0x80F680",
+    "calls": "0x805A90"
+   }
+  ],
+  "CmdScreenManagement": [
+   {
+    "site": "0x80D3DB",
+    "function": "0x80D3B0",
+    "calls": "0x805A90"
+   }
+  ],
+  "CmdUtil": [
+   {
+    "site": "0x80F702",
+    "function": "0x80F680",
+    "calls": "0x805A90"
+   }
+  ],
+  "CustMainMenu": [
+   {
+    "site": "0x556A61",
+    "function": "0x556A30",
+    "calls": "0x5562A0"
+   }
+  ],
+  "EventTranslator": [
+   {
+    "site": "0x80F871",
+    "function": "0x80F680",
+    "calls": "0x805A90"
+   }
+  ],
+  "MenuTree": [
+   {
+    "site": "0x80F97B",
+    "function": "0x80F680",
+    "calls": "0x805A90"
+   }
+  ],
+  "ScreenMessageTranslator": [
+   {
+    "site": "0x80FAE7",
+    "function": "0x80F680",
+    "calls": "0x558630"
+   }
+  ],
+  "cmdAptControllerErrorMessage": [
+   {
+    "site": "0x54CFBD",
+    "function": "0x54CF90",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdChallenge": [
+   {
+    "site": "0x5B26DD",
+    "function": "0x5B26B0",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdChallengeSummary": [
+   {
+    "site": "0x5B2B2D",
+    "function": "0x5B2B00",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdChyron": [
+   {
+    "site": "0x80F9DC",
+    "function": "0x80F680",
+    "calls": "0x53F2C0"
+   }
+  ],
+  "cmdControllerConfigOptions": [],
+  "cmdCredits": [
+   {
+    "site": "0x55B123",
+    "function": "0x55B0E0",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdFECars": [
+   {
+    "site": "0x55E8D3",
+    "function": "0x55E890",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdFEDialogScreen": [
+   {
+    "site": "0x547ABD",
+    "function": "0x547A90",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdFEHintsTipsScreen": [
+   {
+    "site": "0x55B273",
+    "function": "0x55B230",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdFELeaderboardScreen": [
+   {
+    "site": "0x566FD5",
+    "function": "0x566FD0",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdFEMyCars": [
+   {
+    "site": "0x55EA75",
+    "function": "0x55E890",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdFENISOverlay": [
+   {
+    "site": "0x5BB81C",
+    "function": "0x5BB7F0",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdFEOnlineTOS": [
+   {
+    "site": "0x55982E",
+    "function": "0x559800",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdFEPerformanceTuning": [
+   {
+    "site": "0x550ADE",
+    "function": "0x550AB0",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdFEPinkSlip": [
+   {
+    "site": "0x55B673",
+    "function": "0x55B630",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdFEVisualPaint": [
+   {
+    "site": "0x598F61",
+    "function": "0x598F30",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdFEWMDistrictViewScreen": [
+   {
+    "site": "0x5815DD",
+    "function": "0x5815B0",
+    "calls": "0x574580"
+   }
+  ],
+  "cmdFEWMWorldViewScreen": [
+   {
+    "site": "0x5749AC",
+    "function": "0x574980",
+    "calls": "0x574580"
+   }
+  ],
+  "cmdGenericError": [
+   {
+    "site": "0x54D0BD",
+    "function": "0x54D090",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdLanguageSelect": [
+   {
+    "site": "0x558845",
+    "function": "0x558800",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdLevelUpScreen": [
+   {
+    "site": "0x54CE15",
+    "function": "0x54CE10",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdLoadingScreen": [
+   {
+    "site": "0x53D839",
+    "function": "0x53D810",
+    "calls": "0x805A90"
+   }
+  ],
+  "cmdMessenger": [
+   {
+    "site": "0x54BB05",
+    "function": "0x54BB00",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdMovieScreen": [
+   {
+    "site": "0x582B5D",
+    "function": "0x582B30",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdNewsScreen": [
+   {
+    "site": "0x5599E3",
+    "function": "0x5599A0",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdOlnSettings": [
+   {
+    "site": "0x5594A3",
+    "function": "0x559400",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdOnlineGameRoom": [
+   {
+    "site": "0x55940A",
+    "function": "0x559400",
+    "calls": "0x5562A0"
+   }
+  ],
+  "cmdOptions": [
+   {
+    "site": "0x55B085",
+    "function": "0x55AFD0",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdPCControllerConfig": [
+   {
+    "site": "0x54D6A5",
+    "function": "0x54D6A0",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdPCCountrySelect": [
+   {
+    "site": "0x729ACF",
+    "function": "0x729AA0",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdPCCreateAccount": [
+   {
+    "site": "0x7240E5",
+    "function": "0x7240A0",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdPCForgotPassword": [
+   {
+    "site": "0x724305",
+    "function": "0x7242C0",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdPCOnlineLogin": [
+   {
+    "site": "0x723EA5",
+    "function": "0x723E60",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdPCOnlinePersona": [
+   {
+    "site": "0x72A61D",
+    "function": "0x72A4A0",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdPhotoMode": [
+   {
+    "site": "0x55FE63",
+    "function": "0x55FE20",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdPlayerProfile": [
+   {
+    "site": "0x559A55",
+    "function": "0x559A10",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdPostRaceTransition": [
+   {
+    "site": "0x54CD95",
+    "function": "0x54CD90",
+    "calls": "0x5421B0"
+   }
+  ],
+  "cmdVideoCalibration": [
+   {
+    "site": "0x55B203",
+    "function": "0x55B1C0",
+    "calls": "0x5421B0"
+   }
+  ]
+ },
+ "registrars": {
+  "0x535F40": [
+   {
+    "member": "GetDialogConfig",
+    "handler": "0x535E10"
+   }
+  ],
+  "0x548600": [
+   {
+    "member": "GetTreeID",
+    "handler": "0x5367D0"
+   }
+  ],
+  "0x548630": [
+   {
+    "member": "GetTreeID",
+    "handler": "0x5367E0"
+   }
+  ],
+  "0x54A890": [
+   {
+    "member": "SomeFunction",
+    "handler": "0x539410"
+   }
+  ],
+  "0x54A8C0": [
+   {
+    "member": "GetLanguageList",
+    "handler": "0x539520"
+   }
+  ],
+  "0x54BA80": [
+   {
+    "member": "GetNews",
+    "handler": "0x53B9C0"
+   },
+   {
+    "member": "ShowScrollButton",
+    "handler": "0x53BB70"
+   }
+  ],
+  "0x54CDE0": [
+   {
+    "member": "OpenSummary",
+    "handler": "0x53CC80"
+   }
+  ],
+  "0x54CF60": [
+   {
+    "member": "ExitLevelUp",
+    "handler": "0x53CCB0"
+   }
+  ],
+  "0x54D4E0": [
+   {
+    "member": null,
+    "handler": "0x53D360"
+   }
+  ],
+  "0x54D560": [
+   {
+    "member": "SomeFunction",
+    "handler": "0x53F190"
+   }
+  ],
+  "0x54ECF0": [
+   {
+    "member": "SomeFunction",
+    "handler": "0x547F50"
+   }
+  ],
+  "0x550A80": [
+   {
+    "member": "SomeFunction",
+    "handler": "0x53F190"
+   }
+  ],
+  "0x553990": [
+   {
+    "member": "GetIsScreenDirty",
+    "handler": "0x542210"
+   }
+  ],
+  "0x555CF0": [
+   {
+    "member": "ItemSelectedAnimationDone",
+    "handler": "0x545BA0"
+   }
+  ],
+  "0x556880": [
+   {
+    "member": "GetPauseTreeID",
+    "handler": "0x5367C0"
+   },
+   {
+    "member": "GetMatchmakingStats",
+    "handler": "0x5484B0"
+   }
+  ],
+  "0x55E890": [
+   {
+    "member": "GetButtonInfo",
+    "handler": "0x550770"
+   },
+   {
+    "member": "InCarLot",
+    "handler": "0x5507F0"
+   },
+   {
+    "member": "InPerformance",
+    "handler": "0x550810"
+   },
+   {
+    "member": "InAftermarket",
+    "handler": "0x550830"
+   },
+   {
+    "member": "IsCarLoading",
+    "handler": "0x53F170"
+   },
+   {
+    "member": "EnteredFromImpound",
+    "handler": "0x550850"
+   }
+  ],
+  "0x55FE20": [
+   {
+    "member": "ForceCameraStop",
+    "handler": "0x5538A0"
+   }
+  ],
+  "0x566A40": [
+   {
+    "member": "GetMessengerConfig",
+    "handler": "0x53BC60"
+   },
+   {
+    "member": "MoveTab",
+    "handler": "0x559C60"
+   }
+  ],
+  "0x56CE60": [
+   {
+    "member": "IsMessageAvailable",
+    "handler": "0x5393D0"
+   },
+   {
+    "member": "GetMessage",
+    "handler": "0x558670"
+   },
+   {
+    "member": "GetScreenName",
+    "handler": "0x5586D0"
+   },
+   {
+    "member": "GetStringHash",
+    "handler": "0x564C90"
+   },
+   {
+    "member": "EnableProcessing",
+    "handler": "0x5393B0"
+   }
+  ],
+  "0x5704F0": [
+   {
+    "member": "NotifySpawnLinePossible",
+    "handler": "0x53D460"
+   },
+   {
+    "member": "CallBackLineDeleted",
+    "handler": "0x54D640"
+   },
+   {
+    "member": "OnShiftUp",
+    "handler": "0x5670C0"
+   },
+   {
+    "member": "OnShiftDown",
+    "handler": "0x5670F0"
+   }
+  ],
+  "0x572300": [
+   {
+    "member": "GetSlotInfo",
+    "handler": "0x54F1E0"
+   },
+   {
+    "member": "SelectSlot",
+    "handler": "0x569620"
+   },
+   {
+    "member": "CycleGroup",
+    "handler": "0x569690"
+   },
+   {
+    "member": "FadingFront",
+    "handler": "0x53EEC0"
+   },
+   {
+    "member": "FadingBack",
+    "handler": "0x53EEA0"
+   }
+  ],
+  "0x57F550": [
+   {
+    "member": "GetChyronInfo",
+    "handler": "0x572700"
+   },
+   {
+    "member": "GetShowButtonHelp",
+    "handler": "0x572770"
+   },
+   {
+    "member": null,
+    "handler": "0x53F3F0"
+   },
+   {
+    "member": "ChyronDone",
+    "handler": "0x53F3C0"
+   },
+   {
+    "member": "IsWidescreen",
+    "handler": "0x53F410"
+   },
+   {
+    "member": null,
+    "handler": "0x53F400"
+   }
+  ],
+  "0x587AB0": [
+   {
+    "member": "InitializeData",
+    "handler": "0x53D620"
+   },
+   {
+    "member": "HandleLTrigger",
+    "handler": "0x53D580"
+   },
+   {
+    "member": "HandleRTrigger",
+    "handler": "0x53D5C0"
+   },
+   {
+    "member": "DefaultSettings",
+    "handler": "0x53D760"
+   },
+   {
+    "member": "ClearKey",
+    "handler": "0x53D6E0"
+   },
+   {
+    "member": null,
+    "handler": "0x53D7D0"
+   },
+   {
+    "member": null,
+    "handler": "0x53D740"
+   },
+   {
+    "member": "OptionSelected",
+    "handler": "0x53D780"
+   },
+   {
+    "member": "UpdateControllerConfigScreen",
+    "handler": "0x57AAC0"
+   }
+  ],
+  "0x587D00": [
+   {
+    "member": "Step1ScreenData",
+    "handler": "0x57B370"
+   },
+   {
+    "member": "Step2ScreenData",
+    "handler": "0x57B570"
+   },
+   {
+    "member": null,
+    "handler": "0x57B790"
+   },
+   {
+    "member": "ExitScreen",
+    "handler": "0x53D7F0"
+   }
+  ],
+  "0x587D90": [
+   {
+    "member": "GetToggleData",
+    "handler": "0x57B9B0"
+   },
+   {
+    "member": "GetPageData",
+    "handler": "0x57BBB0"
+   }
+  ],
+  "0x587DE0": [
+   {
+    "member": "GetEventData",
+    "handler": "0x57BDB0"
+   },
+   {
+    "member": "SetAnimationCompleted",
+    "handler": "0x54DD70"
+   },
+   {
+    "member": "OnEnterComplete",
+    "handler": "0x53DA80"
+   },
+   {
+    "member": "ChangeState",
+    "handler": "0x53DAA0"
+   },
+   {
+    "member": "GetLoadingTexts",
+    "handler": "0x57BFF0"
+   },
+   {
+    "member": "TextFadeOutComplete",
+    "handler": "0x53DAE0"
+   },
+   {
+    "member": "OnScreenExitComplete",
+    "handler": "0x53DB00"
+   }
+  ],
+  "0x58D570": [
+   {
+    "member": "StartMovie",
+    "handler": "0x582C50"
+   },
+   {
+    "member": "StopMovie",
+    "handler": "0x556000"
+   },
+   {
+    "member": null,
+    "handler": "0x547990"
+   }
+  ],
+  "0x58D8D0": [
+   {
+    "member": "SaveSelected",
+    "handler": "0x563390"
+   },
+   {
+    "member": "GetSaveList",
+    "handler": "0x547DF0"
+   },
+   {
+    "member": "Done",
+    "handler": "0x547F50"
+   },
+   {
+    "member": "Exit",
+    "handler": "0x582F70"
+   }
+  ],
+  "0x5942A0": [
+   {
+    "member": "GetData",
+    "handler": "0x5867F0"
+   },
+   {
+    "member": "ValueChanged",
+    "handler": "0x587AB0"
+   }
+  ],
+  "0x5946E0": [
+   {
+    "member": "GetEventName",
+    "handler": "0x53DE60"
+   },
+   {
+    "member": "UpdateCarGroup",
+    "handler": "0x54DE00"
+   },
+   {
+    "member": "CarHighlighted",
+    "handler": "0x587F50"
+   },
+   {
+    "member": "CarSelected",
+    "handler": "0x587FA0"
+   },
+   {
+    "member": "GetLocalizeMenuStats",
+    "handler": "0x57C7E0"
+   },
+   {
+    "member": null,
+    "handler": "0x57C390"
+   },
+   {
+    "member": "GetCarList",
+    "handler": "0x57C910"
+   },
+   {
+    "member": "Done",
+    "handler": "0x547F50"
+   },
+   {
+    "member": "Exit",
+    "handler": "0x547F50"
+   }
+  ],
+  "0x599370": [
+   {
+    "member": "GetInput",
+    "handler": "0x54F420"
+   },
+   {
+    "member": "GetIsLoading",
+    "handler": "0x53F060"
+   },
+   {
+    "member": null,
+    "handler": "0x54F5A0"
+   },
+   {
+    "member": "GetCashInfo",
+    "handler": "0x58AD10"
+   },
+   {
+    "member": "GetHeat",
+    "handler": "0x54F500"
+   },
+   {
+    "member": "GetRegions",
+    "handler": "0x54F650"
+   },
+   {
+    "member": null,
+    "handler": "0x54F790"
+   },
+   {
+    "member": "GetZones",
+    "handler": "0x54F7E0"
+   },
+   {
+    "member": "SelectZone",
+    "handler": "0x54F940"
+   },
+   {
+    "member": "SetZoneValue",
+    "handler": "0x54F970"
+   },
+   {
+    "member": "Accept",
+    "handler": "0x57DF70"
+   },
+   {
+    "member": "Back",
+    "handler": "0x57E000"
+   }
+  ],
+  "0x5997E0": [
+   {
+    "member": "GetVinylInfo",
+    "handler": "0x54FD70"
+   },
+   {
+    "member": "SelectTransform",
+    "handler": "0x569820"
+   },
+   {
+    "member": "StepTransform",
+    "handler": "0x5698E0"
+   },
+   {
+    "member": "CancelFastMode",
+    "handler": "0x54FE50"
+   },
+   {
+    "member": null,
+    "handler": "0x58B1A0"
+   },
+   {
+    "member": "Back",
+    "handler": "0x57E7B0"
+   }
+  ],
+  "0x59E3E0": [
+   {
+    "member": "GetTreeID",
+    "handler": "0x53B5A0"
+   },
+   {
+    "member": "GetPlayerList",
+    "handler": "0x53B5B0"
+   },
+   {
+    "member": "GetTimers",
+    "handler": "0x591040"
+   },
+   {
+    "member": "IsPlayerListUpdated",
+    "handler": "0x53B710"
+   },
+   {
+    "member": "ViewGamerCard",
+    "handler": "0x54B940"
+   },
+   {
+    "member": "ViewPlayerProfile",
+    "handler": "0x54B970"
+   },
+   {
+    "member": "TreeIntroDone",
+    "handler": "0x53B760"
+   }
+  ],
+  "0x59EBC0": [
+   {
+    "member": "GetLapOrTimeData",
+    "handler": "0x585AC0"
+   },
+   {
+    "member": "GetToggleData",
+    "handler": "0x585A40"
+   },
+   {
+    "member": null,
+    "handler": "0x559650"
+   },
+   {
+    "member": null,
+    "handler": "0x591310"
+   },
+   {
+    "member": "GetCurrentTrackTextureHash",
+    "handler": "0x53B780"
+   },
+   {
+    "member": null,
+    "handler": "0x5597D0"
+   },
+   {
+    "member": null,
+    "handler": "0x53B800"
+   },
+   {
+    "member": null,
+    "handler": "0x53B820"
+   },
+   {
+    "member": "IsCircuit",
+    "handler": "0x53B840"
+   },
+   {
+    "member": "IsLapped",
+    "handler": "0x53B860"
+   },
+   {
+    "member": "SettingsAccepted",
+    "handler": "0x53B8A0"
+   }
+  ],
+  "0x59F0D0": [
+   {
+    "member": "GetConfig",
+    "handler": "0x591690"
+   }
+  ],
+  "0x59F1E0": [
+   {
+    "member": "GetErrorMessage",
+    "handler": "0x593930"
+   }
+  ],
+  "0x59F210": [
+   {
+    "member": "GetErrorMessage",
+    "handler": "0x593AF0"
+   }
+  ],
+  "0x59F240": [
+   {
+    "member": "RetrieveData",
+    "handler": "0x593D90"
+   },
+   {
+    "member": "UpdateLabels",
+    "handler": "0x53D240"
+   },
+   {
+    "member": "UpdateFilters",
+    "handler": "0x579EB0"
+   },
+   {
+    "member": "UpdateColumnHeadings",
+    "handler": "0x579D50"
+   }
+  ],
+  "0x5A05A0": [
+   {
+    "member": null,
+    "handler": "0x57E7C0"
+   },
+   {
+    "member": "SelectArea",
+    "handler": "0x550380"
+   },
+   {
+    "member": "GetAreaColour",
+    "handler": "0x5500A0"
+   },
+   {
+    "member": "ApplyAreaColour",
+    "handler": "0x5502C0"
+   },
+   {
+    "member": "PreviewHue",
+    "handler": "0x5501E0"
+   },
+   {
+    "member": "SelectBlackWhite",
+    "handler": "0x5502F0"
+   },
+   {
+    "member": "FadingFront",
+    "handler": "0x53F130"
+   },
+   {
+    "member": "FadingBack",
+    "handler": "0x53F150"
+   },
+   {
+    "member": "Accept",
+    "handler": "0x5998A0"
+   },
+   {
+    "member": "Back",
+    "handler": "0x58B200"
+   }
+  ],
+  "0x5A06E0": [
+   {
+    "member": "GetRealPos",
+    "handler": "0x599CA0"
+   }
+  ],
+  "0x5A0780": [
+   {
+    "member": "ScrollNextCar",
+    "handler": "0x58B4B0"
+   },
+   {
+    "member": "ScrollNextCarSlot",
+    "handler": "0x57F360"
+   },
+   {
+    "member": "ScrollNextPresetRide",
+    "handler": "0x59A150"
+   },
+   {
+    "member": "ScrollNextBodyKitType",
+    "handler": "0x569A10"
+   },
+   {
+    "member": "ScrollNextPart",
+    "handler": "0x5723D0"
+   },
+   {
+    "member": "ScrollNextKit",
+    "handler": "0x5723F0"
+   },
+   {
+    "member": "ScrollNextBodyKitNumber",
+    "handler": "0x569A50"
+   },
+   {
+    "member": "ScrollPrevCar",
+    "handler": "0x58B4F0"
+   },
+   {
+    "member": "ScrollPrevCarSlot",
+    "handler": "0x57F3B0"
+   },
+   {
+    "member": "ScrollPrevPresetRide",
+    "handler": "0x59A170"
+   },
+   {
+    "member": "ScrollPrevBodyKitType",
+    "handler": "0x569A70"
+   },
+   {
+    "member": "ScrollPrevPart",
+    "handler": "0x572410"
+   },
+   {
+    "member": "ScrollPrevKit",
+    "handler": "0x572430"
+   },
+   {
+    "member": "ScrollPrevBodyKitNumber",
+    "handler": "0x569AB0"
+   }
+  ],
+  "0x5A2670": [
+   {
+    "member": "GetNumTOSWords",
+    "handler": "0x54BA30"
+   },
+   {
+    "member": "GetWordRange",
+    "handler": "0x59EF40"
+   },
+   {
+    "member": "GetMode",
+    "handler": "0x53B980"
+   }
+  ],
+  "0x5A2CB0": [
+   {
+    "member": "OptionSelected",
+    "handler": "0x59F2D0"
+   }
+  ],
+  "0x5A3680": [
+   {
+    "member": "GetCashInfo",
+    "handler": "0x58AF10"
+   },
+   {
+    "member": "GetHeat",
+    "handler": "0x54F9E0"
+   },
+   {
+    "member": "GetGroups",
+    "handler": "0x57E460"
+   },
+   {
+    "member": null,
+    "handler": "0x55E6B0"
+   },
+   {
+    "member": null,
+    "handler": "0x5994F0"
+   },
+   {
+    "member": "HighlightVinyl",
+    "handler": "0x54FAA0"
+   },
+   {
+    "member": "PreviewVinyl",
+    "handler": "0x54FAD0"
+   },
+   {
+    "member": "SelectVinyl",
+    "handler": "0x58B190"
+   },
+   {
+    "member": "LoadThumbs",
+    "handler": "0x5A0580"
+   },
+   {
+    "member": "Back",
+    "handler": "0x57E780"
+   }
+  ],
+  "0x5A37C0": [
+   {
+    "member": "GetCarList",
+    "handler": "0x57ED80"
+   },
+   {
+    "member": "CarHighlighted",
+    "handler": "0x5A06E0"
+   },
+   {
+    "member": "CarSelected",
+    "handler": "0x550930"
+   },
+   {
+    "member": "GetRegions",
+    "handler": "0x57EB40"
+   },
+   {
+    "member": "UpdateRegion",
+    "handler": "0x550910"
+   },
+   {
+    "member": "GetCarList",
+    "handler": "0x57F160"
+   },
+   {
+    "member": "GetCurrentToggle",
+    "handler": "0x57EF90"
+   },
+   {
+    "member": "UpdateCarList",
+    "handler": "0x55EAC0"
+   },
+   {
+    "member": null,
+    "handler": "0x58B490"
+   },
+   {
+    "member": "CarHighlighted",
+    "handler": "0x5A0730"
+   }
+  ],
+  "0x5A4C00": [
+   {
+    "member": null,
+    "handler": null
+   },
+   {
+    "member": "OptionHighlighted",
+    "handler": "0x5343E0"
+   },
+   {
+    "member": "GetPopupPosition",
+    "handler": "0x534400"
+   },
+   {
+    "member": "GetEventTypeOptionArray",
+    "handler": "0x59DDE0"
+   },
+   {
+    "member": "GetEventName",
+    "handler": "0x547070"
+   },
+   {
+    "member": "UpdateQuickRaceOption",
+    "handler": "0x562830"
+   },
+   {
+    "member": "Done",
+    "handler": "0x547F50"
+   },
+   {
+    "member": "Exit",
+    "handler": "0x581B30"
+   }
+  ],
+  "0x5B6530": [
+   {
+    "member": "IsProMode",
+    "handler": "0x5B2990"
+   },
+   {
+    "member": "GetDataGrid",
+    "handler": "0x5AC290"
+   },
+   {
+    "member": "GetTickerText",
+    "handler": "0x5AC470"
+   },
+   {
+    "member": "GetAnalogueStickValues",
+    "handler": "0x5B29B0"
+   },
+   {
+    "member": "SelectLBPlayer",
+    "handler": "0x5B2AE0"
+   },
+   {
+    "member": "SetCurrentSeries",
+    "handler": "0x5AC540"
+   },
+   {
+    "member": "GetCurrentSeries",
+    "handler": "0x5AC560"
+   }
+  ],
+  "0x5B66B0": [
+   {
+    "member": null,
+    "handler": "0x5AC6E0"
+   },
+   {
+    "member": "GetPercent",
+    "handler": "0x5AC8C0"
+   },
+   {
+    "member": null,
+    "handler": "0x5B2C30"
+   }
+  ],
+  "0x5B6860": [
+   {
+    "member": "GetName",
+    "handler": "0x5B2E10"
+   },
+   {
+    "member": "OnScreenEntered",
+    "handler": "0x5ACE00"
+   },
+   {
+    "member": "OnScreenUpdate",
+    "handler": "0x5ACE20"
+   }
+  ],
+  "0x723FB0": [
+   {
+    "member": "IsCapturingInput",
+    "handler": "0x71F2C0"
+   }
+  ],
+  "0x724270": [
+   {
+    "member": "IsCapturingInput",
+    "handler": "0x71F2C0"
+   },
+   {
+    "member": "GetYearInfo",
+    "handler": "0x71F5B0"
+   }
+  ],
+  "0x724360": [
+   {
+    "member": "IsCapturingInput",
+    "handler": "0x71F2C0"
+   }
+  ],
+  "0x72BBB0": [
+   {
+    "member": "GetCountryList",
+    "handler": "0x72B6D0"
+   },
+   {
+    "member": "CountrySelected",
+    "handler": "0x7243E0"
+   }
+  ],
+  "0x72DD90": [
+   {
+    "member": "IsCapturingInput",
+    "handler": "0x71F2C0"
+   },
+   {
+    "member": "GetPersonas",
+    "handler": null
+   },
+   {
+    "member": null,
+    "handler": null
+   },
+   {
+    "member": "CreateNewPersona",
+    "handler": null
+   },
+   {
+    "member": "DisablePersona",
+    "handler": null
+   },
+   {
+    "member": "GetToggleItems",
+    "handler": null
+   },
+   {
+    "member": "PadBack",
+    "handler": null
+   }
+  ],
+  "0x808CC0": [
+   {
+    "member": "PauseGame",
+    "handler": "0x805FE0"
+   },
+   {
+    "member": "ResumeGame",
+    "handler": "0x806000"
+   }
+  ],
+  "0x80D0B0": [
+   {
+    "member": "Assert",
+    "handler": "0x806030"
+   },
+   {
+    "member": "TempFunctionToBeDeleted",
+    "handler": "0x806030"
+   },
+   {
+    "member": "IsInputNecessary",
+    "handler": "0x808D10"
+   },
+   {
+    "member": "IsInputNecessaryError",
+    "handler": "0x806100"
+   },
+   {
+    "member": "GetDALID",
+    "handler": "0x80B6C0"
+   },
+   {
+    "member": "GetWidescreen",
+    "handler": "0x806110"
+   },
+   {
+    "member": null,
+    "handler": "0x806150"
+   },
+   {
+    "member": "FormatAsCash",
+    "handler": "0x8061C0"
+   },
+   {
+    "member": "FormatAsNumber",
+    "handler": "0x8062E0"
+   },
+   {
+    "member": "FormatAsTime",
+    "handler": "0x808D50"
+   },
+   {
+    "member": "FormatAsPercentage",
+    "handler": "0x806470"
+   },
+   {
+    "member": "MainScreenLoaded",
+    "handler": "0x806190"
+   },
+   {
+    "member": "BootLoadScreenLoaded",
+    "handler": "0x8061A0"
+   },
+   {
+    "member": "GetBootLoadingScreenText",
+    "handler": "0x80B840"
+   },
+   {
+    "member": "GetBootLoadingPrecentComplete",
+    "handler": "0x8061B0"
+   },
+   {
+    "member": "IsSimPaused",
+    "handler": "0x8060E0"
+   }
+  ],
+  "0x80D4F0": [
+   {
+    "member": "GetTreeData",
+    "handler": "0x80BAF0"
+   },
+   {
+    "member": "Busy",
+    "handler": "0x806560"
+   }
+  ],
+  "0x80DCB0": [
+   {
+    "member": "GetPlayerCarInfo",
+    "handler": "0x80D0B0"
+   }
+  ],
+  "0x80E9E0": [
+   {
+    "member": "StartGame",
+    "handler": "0x806010"
+   },
+   {
+    "member": "SetCarName",
+    "handler": "0x80DD80"
+   }
+  ],
+  "0x80EA30": [
+   {
+    "member": "EventReceived",
+    "handler": "0x80DE60"
+   },
+   {
+    "member": "MovieClipLoaded",
+    "handler": "0x80DFA0"
+   },
+   {
+    "member": "MovieClipUnloaded",
+    "handler": "0x80BAC0"
+   },
+   {
+    "member": "GetMovieClipLoaderLevel",
+    "handler": "0x806540"
+   },
+   {
+    "member": "GetMaxMovieClipLoaderLevels",
+    "handler": "0x806550"
+   },
+   {
+    "member": "OnButtonHighlight",
+    "handler": "0x547F50"
+   },
+   {
+    "member": "OnButtonPressed",
+    "handler": "0x80E0C0"
+   },
+   {
+    "member": "OnEnterComplete",
+    "handler": "0x8065D0"
+   },
+   {
+    "member": "OnExitComplete",
+    "handler": "0x8065F0"
+   },
+   {
+    "member": "OnPadButton",
+    "handler": "0x806660"
+   },
+   {
+    "member": "OnPadDown",
+    "handler": "0x806680"
+   },
+   {
+    "member": "OnPadLeft",
+    "handler": "0x8066C0"
+   },
+   {
+    "member": "OnPadRight",
+    "handler": "0x806770"
+   },
+   {
+    "member": "OnTreePadRight",
+    "handler": "0x806700"
+   },
+   {
+    "member": "OnPadUp",
+    "handler": "0x8067B0"
+   },
+   {
+    "member": "OnPadStart",
+    "handler": "0x8067F0"
+   },
+   {
+    "member": "OnScreenConstructed",
+    "handler": "0x8065B0"
+   },
+   {
+    "member": "OnScreenDestructed",
+    "handler": "0x806630"
+   },
+   {
+    "member": "OnScreenDestructing",
+    "handler": "0x806610"
+   },
+   {
+    "member": "OnScreenTick",
+    "handler": "0x806830"
+   },
+   {
+    "member": "OnPadAccept",
+    "handler": "0x806850"
+   },
+   {
+    "member": "OnPadBack",
+    "handler": "0x806890"
+   },
+   {
+    "member": "OnPadStart",
+    "handler": "0x8067F0"
+   },
+   {
+    "member": "OnPadLTrigger",
+    "handler": "0x8068D0"
+   },
+   {
+    "member": "OnPadRTrigger",
+    "handler": "0x806910"
+   },
+   {
+    "member": "OnPadButton0",
+    "handler": "0x806950"
+   },
+   {
+    "member": "OnPadButton1",
+    "handler": "0x806990"
+   },
+   {
+    "member": "OnPadButton2",
+    "handler": "0x8069D0"
+   },
+   {
+    "member": "OnPadButton3",
+    "handler": "0x806A10"
+   },
+   {
+    "member": "OnPadButton4",
+    "handler": "0x806A50"
+   },
+   {
+    "member": "OnPadButton5",
+    "handler": "0x806A90"
+   },
+   {
+    "member": "OnPadButton6",
+    "handler": "0x806AD0"
+   },
+   {
+    "member": "OnOptionHighlighted",
+    "handler": "0x806B10"
+   },
+   {
+    "member": "OnOptionSelected",
+    "handler": "0x806B60"
+   },
+   {
+    "member": "OnPadLTriggerRelease",
+    "handler": "0x806BD0"
+   },
+   {
+    "member": "OnPadRTriggerRelease",
+    "handler": "0x806C10"
+   }
+  ],
+  "0x80EEA0": [
+   {
+    "member": "PlaySound",
+    "handler": "0x80E220"
+   }
+  ]
+ },
+ "tables": [
+  {
+   "start": "0xB74340",
+   "end": "0xB743DC",
+   "stride": 12,
+   "count": 13,
+   "name": "resolutions",
+   "columns": [
+    "width",
+    "height",
+    "string hash (language table text WxH)"
+   ],
+   "status": "confirmed: the hash resolves to '800x480' ... in English_Global.bin; walked from cmdOptions.GetData",
+   "walked_by": [
+    "GetData"
+   ],
+   "entries": [
+    [
+     "800",
+     "480",
+     "0x1BF814D1"
+    ],
+    [
+     "800",
+     "600",
+     "0x1BF81C4B"
+    ],
+    [
+     "1152",
+     "720",
+     "0x7B35FB5F"
+    ],
+    [
+     "1280",
+     "720",
+     "0xCF0B8101"
+    ],
+    [
+     "1024",
+     "768",
+     "0x27607649"
+    ],
+    [
+     "1440",
+     "900",
+     "0x5FAB603F"
+    ],
+    [
+     "1280",
+     "960",
+     "0xCF0B8A07"
+    ],
+    [
+     "1280",
+     "1024",
+     "0xB0784ECF"
+    ],
+    [
+     "1680",
+     "1050",
+     "0x617FA2B2"
+    ],
+    [
+     "1920",
+     "1080",
+     "0x5867B532"
+    ],
+    [
+     "1600",
+     "1200",
+     "0xF9ADC487"
+    ],
+    [
+     "1920",
+     "1200",
+     "0x5867BCAC"
+    ],
+    [
+     "2560",
+     "1600",
+     "0x4FC5DE31"
+    ]
+   ]
+  },
+  {
+   "start": "0xCB9140",
+   "end": "0xCBA518",
+   "stride": 20,
+   "count": 254,
+   "name": "slot table",
+   "columns": [
+    "a",
+    "b",
+    "c",
+    "d",
+    "e"
+   ],
+   "status": "254 entries walked from Back/CarHighlighted/CarSelected: meaning not decoded",
+   "walked_by": [
+    "Back",
+    "CarHighlighted",
+    "CarSelected",
+    "None"
+   ],
+   "entries": [
+    [
+     "8",
+     "7",
+     "0",
+     "0",
+     "0"
+    ],
+    [
+     "9",
+     "7",
+     "0",
+     "0",
+     "0"
+    ],
+    [
+     "10",
+     "7",
+     "0",
+     "0",
+     "0"
+    ],
+    [
+     "11",
+     "8",
+     "0",
+     "0",
+     "0"
+    ],
+    [
+     "33",
+     "17",
+     "0x60579FA5",
+     "0",
+     "0"
+    ],
+    [
+     "36",
+     "17",
+     "0x839D5900",
+     "0",
+     "0"
+    ],
+    [
+     "37",
+     "17",
+     "0x778800BA",
+     "0",
+     "0"
+    ],
+    [
+     "52",
+     "17",
+     "0xF2AC851",
+     "0",
+     "0"
+    ],
+    [
+     "43",
+     "17",
+     "0x151C526B",
+     "0",
+     "0"
+    ],
+    [
+     "34",
+     "17",
+     "0x932593D4",
+     "0",
+     "0"
+    ],
+    [
+     "50",
+     "17",
+     "0xF1A3D881",
+     "0",
+     "0"
+    ],
+    [
+     "45",
+     "17",
+     "0x2B5A03A8",
+     "0",
+     "0"
+    ],
+    [
+     "54",
+     "17",
+     "0x8CD76F81",
+     "0",
+     "0"
+    ],
+    [
+     "49",
+     "18",
+     "0x6554CEC3",
+     "0",
+     "0"
+    ],
+    [
+     "33",
+     "18",
+     "0x60579FA5",
+     "0",
+     "0"
+    ],
+    [
+     "37",
+     "18",
+     "0x778800BA",
+     "0",
+     "0"
+    ],
+    [
+     "34",
+     "18",
+     "0x932593D4",
+     "0",
+     "0"
+    ],
+    [
+     "50",
+     "18",
+     "0xF1A3D881",
+     "0",
+     "0"
+    ],
+    [
+     "45",
+     "18",
+     "0x2B5A03A8",
+     "0",
+     "0"
+    ],
+    [
+     "54",
+     "18",
+     "0x8CD76F81",
+     "0",
+     "0"
+    ],
+    [
+     "49",
+     "29",
+     "0x6554CEC3",
+     "0",
+     "0"
+    ],
+    [
+     "34",
+     "29",
+     "0x932593D4",
+     "0",
+     "0"
+    ],
+    [
+     "50",
+     "29",
+     "0xF1A3D881",
+     "0",
+     "0"
+    ],
+    [
+     "37",
+     "29",
+     "0x778800BA",
+     "0",
+     "0"
+    ],
+    [
+     "45",
+     "29",
+     "0x2B5A03A8",
+     "0",
+     "0"
+    ],
+    [
+     "54",
+     "29",
+     "0x8CD76F81",
+     "0",
+     "0"
+    ],
+    [
+     "49",
+     "28",
+     "0x7E11054A",
+     "0",
+     "0"
+    ],
+    [
+     "47",
+     "28",
+     "0x36662B62",
+     "0",
+     "0"
+    ],
+    [
+     "48",
+     "28",
+     "0x423D9320",
+     "0",
+     "0"
+    ],
+    [
+     "45",
+     "28",
+     "0x2B5A03A8",
+     "0",
+     "0"
+    ],
+    [
+     "54",
+     "28",
+     "0x8CD76F81",
+     "0",
+     "0"
+    ],
+    [
+     "49",
+     "19",
+     "0x6554CEC3",
+     "0",
+     "0"
+    ],
+    [
+     "36",
+     "19",
+     "0x839D5900",
+     "0",
+     "0"
+    ],
+    [
+     "37",
+     "19",
+     "0x778800BA",
+     "0",
+     "0"
+    ],
+    [
+     "34",
+     "19",
+     "0x932593D4",
+     "0",
+     "0"
+    ],
+    [
+     "50",
+     "19",
+     "0xF1A3D881",
+     "0",
+     "0"
+    ],
+    [
+     "45",
+     "19",
+     "0x2B5A03A8",
+     "0",
+     "0"
+    ],
+    [
+     "54",
+     "19",
+     "0x8CD76F81",
+     "0",
+     "0"
+    ],
+    [
+     "49",
+     "20",
+     "0x6554CEC3",
+     "0",
+     "0"
+    ],
+    [
+     "35",
+     "20",
+     "0x932593D4",
+     "0",
+     "0"
+    ],
+    [
+     "50",
+     "20",
+     "0xF1A3D881",
+     "0",
+     "0"
+    ],
+    [
+     "37",
+     "20",
+     "0x778800BA",
+     "0",
+     "0"
+    ],
+    [
+     "45",
+     "20",
+     "0x2B5A03A8",
+     "0",
+     "0"
+    ],
+    [
+     "54",
+     "20",
+     "0x8CD76F81",
+     "0",
+     "0"
+    ],
+    [
+     "47",
+     "21",
+     "0x36662B62",
+     "0",
+     "0"
+    ],
+    [
+     "48",
+     "21",
+     "0x423D9320",
+     "0",
+     "0"
+    ],
+    [
+     "36",
+     "21",
+     "0x839D5900",
+     "0",
+     "0"
+    ],
+    [
+     "43",
+     "21",
+     "0x151C526B",
+     "0",
+     "0"
+    ],
+    [
+     "45",
+     "21",
+     "0x2B5A03A8",
+     "0",
+     "0"
+    ],
+    [
+     "54",
+     "21",
+     "0x8CD76F81",
+     "0",
+     "0"
+    ],
+    [
+     "47",
+     "22",
+     "0x36662B62",
+     "0",
+     "0"
+    ],
+    [
+     "48",
+     "22",
+     "0x423D9320",
+     "0",
+     "0"
+    ],
+    [
+     "49",
+     "22",
+     "0xF8B614F3",
+     "0",
+     "0"
+    ],
+    [
+     "50",
+     "22",
+     "0xF1A3D881",
+     "0",
+     "0"
+    ],
+    [
+     "45",
+     "22",
+     "0x2B5A03A8",
+     "0",
+     "0"
+    ],
+    [
+     "43",
+     "22",
+     "0x151C526B",
+     "0",
+     "0"
+    ],
+    [
+     "54",
+     "22",
+     "0x8CD76F81",
+     "0",
+     "0"
+    ],
+    [
+     "36",
+     "23",
+     "0x839D5900",
+     "0",
+     "0"
+    ],
+    [
+     "43",
+     "23",
+     "0x151C526B",
+     "0",
+     "0"
+    ],
+    [
+     "45",
+     "23",
+     "0x2B5A03A8",
+     "0",
+     "0"
+    ],
+    [
+     "54",
+     "23",
+     "0x8CD76F81",
+     "0",
+     "0"
+    ],
+    [
+     "43",
+     "24",
+     "0x151C526B",
+     "0",
+     "0"
+    ],
+    [
+     "45",
+     "24",
+     "0x2B5A03A8",
+     "0",
+     "0"
+    ],
+    [
+     "38",
+     "25",
+     "0x27294AC4",
+     "0",
+     "0"
+    ],
+    [
+     "39",
+     "25",
+     "0x70FE82B1",
+     "0",
+     "0"
+    ],
+    [
+     "41",
+     "25",
+     "0x43775762",
+     "0",
+     "0"
+    ],
+    [
+     "44",
+     "25",
+     "0x46AA04CF",
+     "0",
+     "0"
+    ],
+    [
+     "38",
+     "27",
+     "0x27294AC4",
+     "0",
+     "0"
+    ],
+    [
+     "39",
+     "27",
+     "0x70FE82B1",
+     "0",
+     "0"
+    ],
+    [
+     "41",
+     "27",
+     "0x43775762",
+     "0",
+     "0"
+    ],
+    [
+     "42",
+     "27",
+     "0xA445C5A6",
+     "0",
+     "0"
+    ],
+    [
+     "44",
+     "27",
+     "0x46AA04CF",
+     "0",
+     "0"
+    ],
+    [
+     "44",
+     "26",
+     "0x46AA04CF",
+     "0",
+     "0"
+    ],
+    [
+     "54",
+     "26",
+     "0x8CD76F81",
+     "0",
+     "0"
+    ],
+    [
+     "98",
+     "50",
+     "0xE8AD968D",
+     "0",
+     "0"
+    ],
+    [
+     "99",
+     "50",
+     "0xB5CA4B87",
+     "0",
+     "0"
+    ],
+    [
+     "100",
+     "50",
+     "0xF9B9868B",
+     "0",
+     "0"
+    ],
+    [
+     "32",
+     "50",
+     "0xF11D48F6",
+     "0",
+     "0"
+    ],
+    [
+     "101",
+     "50",
+     "0x85651BCE",
+     "0",
+     "0"
+    ],
+    [
+     "102",
+     "50",
+     "0x7D975F9D",
+     "0",
+     "0"
+    ],
+    [
+     "103",
+     "50",
+     "0x2B5A03A8",
+     "0",
+     "0"
+    ],
+    [
+     "104",
+     "50",
+     "0xF8EBDD49",
+     "0",
+     "0"
+    ],
+    [
+     "105",
+     "98",
+     "0x9B1EB517",
+     "0",
+     "0"
+    ],
+    [
+     "106",
+     "98",
+     "0x3C26D196",
+     "0",
+     "0"
+    ],
+    [
+     "107",
+     "98",
+     "0x9CF92454",
+     "0",
+     "0"
+    ],
+    [
+     "108",
+     "98",
+     "0xA1225C64",
+     "0",
+     "0"
+    ],
+    [
+     "111",
+     "103",
+     "0x35CA5A54",
+     "0",
+     "0"
+    ],
+    [
+     "113",
+     "100",
+     "0xD0C6E951",
+     "0",
+     "0"
+    ],
+    [
+     "114",
+     "100",
+     "0xCB3AA30C",
+     "0",
+     "0"
+    ],
+    [
+     "115",
+     "100",
+     "0x2F9E420B",
+     "0",
+     "0"
+    ],
+    [
+     "66",
+     "45",
+     "0x824E664E",
+     "0",
+     "0"
+    ],
+    [
+     "55",
+     "45",
+     "0xCB02C38B",
+     "0",
+     "0"
+    ],
+    [
+     "58",
+     "45",
+     "0xCD46C965",
+     "0",
+     "0"
+    ],
+    [
+     "67",
+     "45",
+     "0xCA2ECA4",
+     "0",
+     "0"
+    ],
+    [
+     "61",
+     "45",
+     "0x42988BC9",
+     "0",
+     "0"
+    ],
+    [
+     "62",
+     "45",
+     "0x440DF94E",
+     "0",
+     "0"
+    ],
+    [
+     "63",
+     "45",
+     "0xBA3EA206",
+     "0",
+     "0"
+    ],
+    [
+     "64",
+     "45",
+     "0xDDEEEDE5",
+     "0",
+     "0"
+    ],
+    [
+     "65",
+     "45",
+     "0xBF918CCA",
+     "0",
+     "0"
+    ],
+    [
+     "66",
+     "46",
+     "0x824E664E",
+     "0",
+     "0"
+    ],
+    [
+     "55",
+     "46",
+     "0xCB02C38B",
+     "0",
+     "0"
+    ],
+    [
+     "67",
+     "46",
+     "0xCA2ECA4",
+     "0",
+     "0"
+    ],
+    [
+     "61",
+     "46",
+     "0x42988BC9",
+     "0",
+     "0"
+    ],
+    [
+     "62",
+     "46",
+     "0x440DF94E",
+     "0",
+     "0"
+    ],
+    [
+     "63",
+     "46",
+     "0xBA3EA206",
+     "0",
+     "0"
+    ],
+    [
+     "64",
+     "46",
+     "0xDDEEEDE5",
+     "0",
+     "0"
+    ],
+    [
+     "68",
+     "55",
+     "0x74B98590",
+     "0",
+     "0"
+    ],
+    [
+     "68",
+     "56",
+     "0x74B98590",
+     "0",
+     "0"
+    ],
+    [
+     "69",
+     "56",
+     "0x4AC26DC8",
+     "0",
+     "0"
+    ],
+    [
+     "68",
+     "57",
+     "0x74B98590",
+     "0",
+     "0"
+    ],
+    [
+     "69",
+     "57",
+     "0x4AC26DC8",
+     "0",
+     "0"
+    ],
+    [
+     "70",
+     "57",
+     "0xBAE5F150",
+     "0",
+     "0"
+    ],
+    [
+     "71",
+     "57",
+     "0x50497AE8",
+     "0",
+     "0"
+    ],
+    [
+     "73",
+     "58",
+     "0xBBABED7E",
+     "0",
+     "0"
+    ],
+    [
+     "74",
+     "58",
+     "0x2CD7DACD",
+     "0",
+     "0"
+    ],
+    [
+     "75",
+     "58",
+     "0x25073588",
+     "0",
+     "0"
+    ],
+    [
+     "76",
+     "58",
+     "0x8FD4DB8C",
+     "0",
+     "0"
+    ],
+    [
+     "75",
+     "59",
+     "0x25073588",
+     "0",
+     "0"
+    ],
+    [
+     "31",
+     "34",
+     "0x3FCE7952",
+     "0",
+     "0"
+    ],
+    [
+     "32",
+     "34",
+     "0xF11D48F6",
+     "0",
+     "0"
+    ],
+    [
+     "49",
+     "30",
+     "0x6554CEC3",
+     "0",
+     "0"
+    ],
+    [
+     "31",
+     "35",
+     "0x3FCE7952",
+     "0",
+     "0"
+    ],
+    [
+     "77",
+     "67",
+     "0x743AA91",
+     "0",
+     "0"
+    ],
+    [
+     "78",
+     "67",
+     "0xD1716CFA",
+     "0",
+     "0"
+    ],
+    [
+     "79",
+     "67",
+     "0xD4B8E430",
+     "0",
+     "0"
+    ],
+    [
+     "82",
+     "67",
+     "0xDDFE7286",
+     "0",
+     "0"
+    ],
+    [
+     "84",
+     "67",
+     "0xEB541B89",
+     "0",
+     "0"
+    ],
+    [
+     "85",
+     "67",
+     "0x5D1BFC5F",
+     "0",
+     "0"
+    ],
+    [
+     "86",
+     "61",
+     "0x749F809",
+     "0",
+     "0"
+    ],
+    [
+     "87",
+     "61",
+     "0x98260FCD",
+     "0",
+     "0"
+    ],
+    [
+     "88",
+     "61",
+     "0xFE25B460",
+     "0",
+     "0"
+    ],
+    [
+     "89",
+     "61",
+     "0x9DCEE69C",
+     "0",
+     "0"
+    ],
+    [
+     "90",
+     "61",
+     "0xC1AD938F",
+     "0",
+     "0"
+    ],
+    [
+     "92",
+     "61",
+     "0x3DA9C10E",
+     "0",
+     "0"
+    ],
+    [
+     "116",
+     "63",
+     "0x9E663379",
+     "0",
+     "0"
+    ],
+    [
+     "117",
+     "63",
+     "0x42206E88",
+     "0",
+     "0"
+    ],
+    [
+     "118",
+     "63",
+     "0x7EBB72AA",
+     "0",
+     "0"
+    ],
+    [
+     "119",
+     "63",
+     "0xFD4780DC",
+     "0",
+     "0"
+    ],
+    [
+     "120",
+     "63",
+     "0x60579FA5",
+     "0",
+     "0"
+    ],
+    [
+     "127",
+     "118",
+     "0xD1C64BE3",
+     "0",
+     "0"
+    ],
+    [
+     "128",
+     "118",
+     "0x3F8F43DE",
+     "0",
+     "0"
+    ],
+    [
+     "129",
+     "118",
+     "0xD56D2A0B",
+     "0",
+     "0"
+    ],
+    [
+     "130",
+     "118",
+     "0x6FED856F",
+     "0",
+     "0"
+    ],
+    [
+     "131",
+     "119",
+     "0xB13B4622",
+     "0",
+     "0"
+    ],
+    [
+     "132",
+     "119",
+     "0x27B64F2D",
+     "0",
+     "0"
+    ],
+    [
+     "133",
+     "119",
+     "0xF5DB0161",
+     "0",
+     "0"
+    ],
+    [
+     "134",
+     "120",
+     "0x40601730",
+     "0",
+     "0"
+    ],
+    [
+     "135",
+     "120",
+     "0xE46D4791",
+     "0",
+     "0"
+    ],
+    [
+     "136",
+     "120",
+     "0x2DAF7E8",
+     "0",
+     "0"
+    ],
+    [
+     "137",
+     "120",
+     "0x6FB3C6BB",
+     "0",
+     "0"
+    ],
+    [
+     "140",
+     "139",
+     "0xE174414E",
+     "0",
+     "0"
+    ],
+    [
+     "141",
+     "139",
+     "0xDC1D5CB7",
+     "0",
+     "0"
+    ],
+    [
+     "145",
+     "142",
+     "0xF711C051",
+     "0",
+     "0"
+    ],
+    [
+     "144",
+     "142",
+     "0xE7DC6E3A",
+     "0",
+     "0"
+    ],
+    [
+     "146",
+     "142",
+     "0x5DCCC60B",
+     "0",
+     "0"
+    ],
+    [
+     "147",
+     "146",
+     "0xCE3EF6CC",
+     "0",
+     "0"
+    ],
+    [
+     "148",
+     "146",
+     "0xCE424268",
+     "0",
+     "0"
+    ],
+    [
+     "149",
+     "146",
+     "0x7122C7FE",
+     "0",
+     "0"
+    ],
+    [
+     "150",
+     "146",
+     "0xF9A317AE",
+     "0",
+     "0"
+    ],
+    [
+     "151",
+     "146",
+     "0xDEAEA14F",
+     "0",
+     "0"
+    ],
+    [
+     "152",
+     "146",
+     "0xB485D8BC",
+     "0",
+     "0"
+    ],
+    [
+     "153",
+     "146",
+     "0x90FCE4C0",
+     "0",
+     "0"
+    ],
+    [
+     "156",
+     "155",
+     "0x11A35074",
+     "0",
+     "0"
+    ],
+    [
+     "156",
+     "154",
+     "0x11A35074",
+     "0",
+     "0"
+    ],
+    [
+     "157",
+     "154",
+     "0x34FFCE64",
+     "0",
+     "0"
+    ],
+    [
+     "158",
+     "154",
+     "0x253ECB7B",
+     "0",
+     "0"
+    ],
+    [
+     "168",
+     "158",
+     "0xF5F79E88",
+     "0",
+     "0"
+    ],
+    [
+     "166",
+     "158",
+     "0x64D5E932",
+     "0",
+     "0"
+    ],
+    [
+     "167",
+     "158",
+     "0x653C8965",
+     "0",
+     "0"
+    ],
+    [
+     "171",
+     "143",
+     "0x76A5C881",
+     "0",
+     "0"
+    ],
+    [
+     "172",
+     "143",
+     "0x9E2B51E3",
+     "0",
+     "0"
+    ],
+    [
+     "175",
+     "143",
+     "0x67962C13",
+     "0",
+     "0"
+    ],
+    [
+     "171",
+     "169",
+     "0x76A5C881",
+     "0",
+     "0"
+    ],
+    [
+     "172",
+     "169",
+     "0x9E2B51E3",
+     "0",
+     "0"
+    ],
+    [
+     "175",
+     "169",
+     "0x67962C13",
+     "0",
+     "0"
+    ],
+    [
+     "173",
+     "170",
+     "0x76A5C881",
+     "0",
+     "0"
+    ],
+    [
+     "174",
+     "170",
+     "0x9E2B51E3",
+     "0",
+     "0"
+    ],
+    [
+     "175",
+     "170",
+     "0x67962C13",
+     "0",
+     "0"
+    ],
+    [
+     "176",
+     "171",
+     "0xCD737ED1",
+     "0",
+     "0"
+    ],
+    [
+     "177",
+     "171",
+     "0x554CD009",
+     "0",
+     "0"
+    ],
+    [
+     "178",
+     "173",
+     "0xCD737ED1",
+     "0",
+     "0"
+    ],
+    [
+     "179",
+     "173",
+     "0x554CD009",
+     "0",
+     "0"
+    ],
+    [
+     "199",
+     "176",
+     "0x833A8E1B",
+     "0",
+     "0"
+    ],
+    [
+     "200",
+     "176",
+     "0xF7054775",
+     "0",
+     "0"
+    ],
+    [
+     "201",
+     "176",
+     "0xD7AF053F",
+     "0",
+     "0"
+    ],
+    [
+     "200",
+     "178",
+     "0xDFAFA139",
+     "0",
+     "0"
+    ],
+    [
+     "201",
+     "178",
+     "0xDFAFA13A",
+     "0",
+     "0"
+    ],
+    [
+     "199",
+     "177",
+     "0x833A8E1B",
+     "0",
+     "0"
+    ],
+    [
+     "200",
+     "177",
+     "0xF7054775",
+     "0",
+     "0"
+    ],
+    [
+     "201",
+     "177",
+     "0xD7AF053F",
+     "0",
+     "0"
+    ],
+    [
+     "200",
+     "179",
+     "0xDFAFA139",
+     "0",
+     "0"
+    ],
+    [
+     "201",
+     "179",
+     "0xDFAFA13A",
+     "0",
+     "0"
+    ],
+    [
+     "188",
+     "172",
+     "0x2D8C4D34",
+     "0",
+     "0"
+    ],
+    [
+     "189",
+     "172",
+     "0x79B1918A",
+     "0",
+     "0"
+    ],
+    [
+     "190",
+     "172",
+     "0x9FD876FD",
+     "0",
+     "0"
+    ],
+    [
+     "191",
+     "172",
+     "0x4C24B975",
+     "0",
+     "0"
+    ],
+    [
+     "192",
+     "172",
+     "0x259C59D6",
+     "0",
+     "0"
+    ],
+    [
+     "193",
+     "172",
+     "0x683D5BF6",
+     "0",
+     "0"
+    ],
+    [
+     "194",
+     "172",
+     "0x97607865",
+     "0",
+     "0"
+    ],
+    [
+     "180",
+     "174",
+     "0x2D8C4D34",
+     "0",
+     "0"
+    ],
+    [
+     "181",
+     "174",
+     "0x79B1918A",
+     "0",
+     "0"
+    ],
+    [
+     "182",
+     "174",
+     "0x9FD876FD",
+     "0",
+     "0"
+    ],
+    [
+     "183",
+     "174",
+     "0x4C24B975",
+     "0",
+     "0"
+    ],
+    [
+     "184",
+     "174",
+     "0x259C59D6",
+     "0",
+     "0"
+    ],
+    [
+     "185",
+     "174",
+     "0x683D5BF6",
+     "0",
+     "0"
+    ],
+    [
+     "186",
+     "174",
+     "0x97607865",
+     "0",
+     "0"
+    ],
+    [
+     "196",
+     "188",
+     "0x833A8E1B",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "188",
+     "0xF7054775",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "188",
+     "0xD7AF053F",
+     "0",
+     "0"
+    ],
+    [
+     "196",
+     "189",
+     "0x833A8E1B",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "189",
+     "0xF7054775",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "189",
+     "0xD7AF053F",
+     "0",
+     "0"
+    ],
+    [
+     "196",
+     "190",
+     "0x833A8E1B",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "190",
+     "0xF7054775",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "190",
+     "0xD7AF053F",
+     "0",
+     "0"
+    ],
+    [
+     "196",
+     "191",
+     "0x833A8E1B",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "191",
+     "0xF7054775",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "191",
+     "0xD7AF053F",
+     "0",
+     "0"
+    ],
+    [
+     "196",
+     "192",
+     "0x833A8E1B",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "192",
+     "0xF7054775",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "192",
+     "0xD7AF053F",
+     "0",
+     "0"
+    ],
+    [
+     "196",
+     "193",
+     "0x833A8E1B",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "193",
+     "0xF7054775",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "193",
+     "0xD7AF053F",
+     "0",
+     "0"
+    ],
+    [
+     "196",
+     "194",
+     "0x833A8E1B",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "194",
+     "0xF7054775",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "194",
+     "0xD7AF053F",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "180",
+     "0xDFAFA139",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "180",
+     "0xDFAFA13A",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "181",
+     "0xDFAFA139",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "181",
+     "0xDFAFA13A",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "182",
+     "0xDFAFA139",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "182",
+     "0xDFAFA13A",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "183",
+     "0xDFAFA139",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "183",
+     "0xDFAFA13A",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "184",
+     "0xDFAFA139",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "184",
+     "0xDFAFA13A",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "185",
+     "0xDFAFA139",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "185",
+     "0xDFAFA13A",
+     "0",
+     "0"
+    ],
+    [
+     "197",
+     "186",
+     "0xDFAFA139",
+     "0",
+     "0"
+    ],
+    [
+     "198",
+     "186",
+     "0xDFAFA13A",
+     "0",
+     "0"
+    ],
+    [
+     "206",
+     "205",
+     "0x27FC0937",
+     "0",
+     "0"
+    ],
+    [
+     "207",
+     "205",
+     "0x5EF5E896",
+     "0",
+     "0"
+    ],
+    [
+     "208",
+     "205",
+     "0xF309931E",
+     "0",
+     "0"
+    ],
+    [
+     "210",
+     "209",
+     "0xCBDF3801",
+     "0",
+     "0"
+    ],
+    [
+     "211",
+     "209",
+     "0x6AC425D6",
+     "0",
+     "0"
+    ],
+    [
+     "212",
+     "209",
+     "0xF11D48F6",
+     "0",
+     "0"
+    ],
+    [
+     "213",
+     "66",
+     "0x99FED65D",
+     "0",
+     "0"
+    ],
+    [
+     "214",
+     "66",
+     "0x4772F9AA",
+     "0",
+     "0"
+    ],
+    [
+     "215",
+     "66",
+     "0x2D97E410",
+     "0",
+     "0"
+    ],
+    [
+     "216",
+     "66",
+     "0x5A6FED9F",
+     "0",
+     "0"
+    ],
+    [
+     "217",
+     "66",
+     "0xA5632057",
+     "0",
+     "0"
+    ],
+    [
+     "218",
+     "66",
+     "0x5765BF6A",
+     "0",
+     "0"
+    ],
+    [
+     "219",
+     "66",
+     "0x6B3E9E41",
+     "0",
+     "0"
+    ]
+   ]
+  },
+  {
+   "start": "0xCBA7B8",
+   "end": "0xCBA934",
+   "stride": 20,
+   "count": 19,
+   "name": "languages",
+   "columns": [
+    "id",
+    "flags",
+    "name",
+    "code",
+    "pointer"
+   ],
+   "status": "confirmed text (ENGLISH/EN ...); walked from StartMovie",
+   "walked_by": [
+    "StartMovie"
+   ],
+   "entries": [
+    [
+     "0",
+     "0",
+     "ENGLISH",
+     "EN",
+     "data:CBA564"
+    ],
+    [
+     "1",
+     "0",
+     "FRENCH",
+     "FR",
+     "data:CBA780"
+    ],
+    [
+     "2",
+     "0",
+     "GERMAN",
+     "GE",
+     "data:CBA784"
+    ],
+    [
+     "3",
+     "0",
+     "ITALIAN",
+     "IT",
+     "data:CBA788"
+    ],
+    [
+     "4",
+     "0",
+     "SPANISH",
+     "SP",
+     "data:CBA78C"
+    ],
+    [
+     "5",
+     "0",
+     "DUTCH",
+     "EN",
+     "data:CBA790"
+    ],
+    [
+     "6",
+     "0",
+     "SWEDISH",
+     "EN",
+     "data:CBA794"
+    ],
+    [
+     "17",
+     "0",
+     "POLISH",
+     "EN",
+     "data:CBA798"
+    ],
+    [
+     "18",
+     "0",
+     "FINNISH",
+     "EN",
+     "data:CBA79C"
+    ],
+    [
+     "7",
+     "0",
+     "DANISH",
+     "EN",
+     "data:CBA7A4"
+    ],
+    [
+     "8",
+     "0",
+     "HUNGARIAN",
+     "EN",
+     "data:CBA7A8"
+    ],
+    [
+     "9",
+     "0",
+     "CZECH",
+     "EN",
+     "data:CBA7AC"
+    ],
+    [
+     "10",
+     "0",
+     "MEXICAN",
+     "EN",
+     "data:CBA7B0"
+    ],
+    [
+     "15",
+     "0",
+     "RUSSIAN",
+     "RU",
+     "data:CBA7B4"
+    ],
+    [
+     "19",
+     "0",
+     "NORWEGIAN",
+     "EN",
+     "data:CBA7A0"
+    ],
+    [
+     "14",
+     "0",
+     "JAPANESE",
+     "JA",
+     "data:CBA564"
+    ],
+    [
+     "12",
+     "0",
+     "ENGLISH",
+     "EN",
+     "data:CBA564"
+    ],
+    [
+     "13",
+     "0",
+     "CHINESE_SIMP",
+     "EN",
+     "data:CBA564"
+    ],
+    [
+     "16",
+     "0",
+     "THAI",
+     "EN",
+     "data:CBA564"
+    ]
+   ]
+  },
+  {
+   "start": "0xCBAEB8",
+   "end": "0xCBB32C",
+   "stride": 12,
+   "count": 95,
+   "name": "screens",
+   "columns": [
+    "id",
+    "movie name",
+    "handler"
+   ],
+   "status": "confirmed: 92 of 95 names are movies of the UI folder; GetScreenName walks it",
+   "walked_by": [
+    "GetScreenName"
+   ],
+   "entries": [
+    [
+     "0",
+     "main",
+     "code:553910"
+    ],
+    [
+     "4",
+     "PostRace",
+     "code:55A520"
+    ],
+    [
+     "8",
+     "PostRace",
+     "code:55A520"
+    ],
+    [
+     "5",
+     "PostRace",
+     "code:55A520"
+    ],
+    [
+     "6",
+     "PostMissionWin",
+     "code:55AB10"
+    ],
+    [
+     "7",
+     "PostMissionLoss",
+     "code:55AB10"
+    ],
+    [
+     "9",
+     "LevelUp",
+     "code:55ABC0"
+    ],
+    [
+     "13",
+     "OnlineChyron",
+     "code:553910"
+    ],
+    [
+     "14",
+     "SaveIcon",
+     "code:553910"
+    ],
+    [
+     "15",
+     "SaveIcon_Dialog",
+     "code:553910"
+    ],
+    [
+     "10",
+     "LoadingScreen",
+     "code:553910"
+    ],
+    [
+     "11",
+     "MissionLoadingScreen",
+     "code:553910"
+    ],
+    [
+     "12",
+     "LongLoadingScreen",
+     "code:553910"
+    ],
+    [
+     "34",
+     "ControllerUnplugged",
+     "code:55AC70"
+    ],
+    [
+     "35",
+     "GenericError",
+     "code:55AEC0"
+    ],
+    [
+     "36",
+     "NISOverlay",
+     "code:5BC780"
+    ],
+    [
+     "27",
+     "PCOnlineLoginSelection",
+     "code:55AFD0"
+    ],
+    [
+     "26",
+     "PCOnlineLogin",
+     "code:55AF60"
+    ],
+    [
+     "28",
+     "PCOnlineLogin",
+     "code:723E60"
+    ],
+    [
+     "16",
+     "PCCreateAccount",
+     "code:7240A0"
+    ],
+    [
+     "29",
+     "PCOnlinePersona",
+     "code:72AFE0"
+    ],
+    [
+     "30",
+     "PCForgotPassword",
+     "code:7242C0"
+    ],
+    [
+     "31",
+     "CountrySelection",
+     "code:72A700"
+    ],
+    [
+     "17",
+     "OnlineGameRoom",
+     "code:566900"
+    ],
+    [
+     "18",
+     "OnlineGRSettings",
+     "code:559460"
+    ],
+    [
+     "19",
+     "OnlineTOS",
+     "code:5669A0"
+    ],
+    [
+     "23",
+     "NewsScreen",
+     "code:5599A0"
+    ],
+    [
+     "24",
+     "PlayerProfile",
+     "code:559A10"
+    ],
+    [
+     "25",
+     "PlayerFeedback",
+     "code:559AA0"
+    ],
+    [
+     "20",
+     "MessengerScreen",
+     "code:559B10"
+    ],
+    [
+     "21",
+     "MessengerChat",
+     "code:559CB0"
+    ],
+    [
+     "37",
+     "FontTest",
+     "code:553910"
+    ],
+    [
+     "38",
+     "DebugCarTest",
+     "code:55EC90"
+    ],
+    [
+     "39",
+     "TreeMenu",
+     "code:556810"
+    ],
+    [
+     "40",
+     "TreeMenu_Customize",
+     "code:556B20"
+    ],
+    [
+     "41",
+     "WidgetTest",
+     "code:553910"
+    ],
+    [
+     "42",
+     "WidgetTest2",
+     "code:553910"
+    ],
+    [
+     "43",
+     "Dialog",
+     "code:556050"
+    ],
+    [
+     "44",
+     "ColorPickerTest",
+     "code:553910"
+    ],
+    [
+     "45",
+     "DropdownTest",
+     "code:553910"
+    ],
+    [
+     "47",
+     "ScrollbarTest",
+     "code:553910"
+    ],
+    [
+     "48",
+     "TextListTest",
+     "code:553910"
+    ],
+    [
+     "49",
+     "TickerTest",
+     "code:553910"
+    ],
+    [
+     "50",
+     "ToggleTest",
+     "code:553910"
+    ],
+    [
+     "46",
+     "SliderTest",
+     "code:553910"
+    ],
+    [
+     "51",
+     "ThumbnailTest",
+     "code:553910"
+    ],
+    [
+     "52",
+     "ChyronTest",
+     "code:553910"
+    ],
+    [
+     "53",
+     "TreeTest",
+     "code:5569C0"
+    ],
+    [
+     "54",
+     "StaticItemScrollerTest",
+     "code:553910"
+    ],
+    [
+     "89",
+     "Sung",
+     "code:553910"
+    ],
+    [
+     "90",
+     "Kyla",
+     "code:553910"
+    ],
+    [
+     "91",
+     "Mimi",
+     "code:553910"
+    ],
+    [
+     "92",
+     "Oscar",
+     "code:553910"
+    ],
+    [
+     "94",
+     "Danny",
+     "code:553910"
+    ],
+    [
+     "93",
+     "Alex",
+     "code:553910"
+    ],
+    [
+     "95",
+     "Jesh",
+     "code:553910"
+    ],
+    [
+     "56",
+     "Legal",
+     "code:558790"
+    ],
+    [
+     "57",
+     "LanguageSelect",
+     "code:558800"
+    ],
+    [
+     "59",
+     "SplashScreen",
+     "code:558720"
+    ],
+    [
+     "58",
+     "MovieScreen",
+     "code:58D500"
+    ],
+    [
+     "60",
+     "PCSaveSelectMenu2",
+     "code:5561E0"
+    ],
+    [
+     "61",
+     "PSAScreen",
+     "code:5588E0"
+    ],
+    [
+     "62",
+     "ChallengeSeries",
+     "code:5B6150"
+    ],
+    [
+     "63",
+     "ChallengeSeriesSummary",
+     "code:5B6610"
+    ],
+    [
+     "64",
+     "ChallengeRewardStreet",
+     "code:553910"
+    ],
+    [
+     "65",
+     "ChallengeRewardPro",
+     "code:553910"
+    ],
+    [
+     "66",
+     "ChallengeRewardDominator",
+     "code:553910"
+    ],
+    [
+     "67",
+     "ChallengeSeriesNumPlayers",
+     "code:5B6720"
+    ],
+    [
+     "68",
+     "ChallengeKeyBoardPC",
+     "code:5B2CA0"
+    ],
+    [
+     "69",
+     "CarSelectMenu",
+     "code:55B580"
+    ],
+    [
+     "70",
+     "CarsMenu",
+     "code:55E890"
+    ],
+    [
+     "73",
+     "PinkSlip",
+     "code:55B630"
+    ],
+    [
+     "72",
+     "MyCarsMenu",
+     "code:55EA30"
+    ],
+    [
+     "74",
+     "CarShopMenu",
+     "code:55E9C0"
+    ],
+    [
+     "84",
+     "PurchaseDialog",
+     "code:55D3B0"
+    ],
+    [
+     "78",
+     "PaintMenu",
+     "code:5A0280"
+    ],
+    [
+     "75",
+     "VinylSelectMenu",
+     "code:5696B0"
+    ],
+    [
+     "76",
+     "VinylTransformMenu",
+     "code:55E6D0"
+    ],
+    [
+     "77",
+     "VinylPaintMenu",
+     "code:55E7F0"
+    ],
+    [
+     "79",
+     "AutosculptMenu",
+     "code:55E480"
+    ],
+    [
+     "80",
+     "PerformanceMenu",
+     "code:55EAE0"
+    ],
+    [
+     "81",
+     "PerformanceTuning",
+     "code:55EB50"
+    ],
+    [
+     "82",
+     "PhotoMode",
+     "code:55FE20"
+    ],
+    [
+     "83",
+     "DriverSkill",
+     "code:55EBF0"
+    ],
+    [
+     "85",
+     "Marketing",
+     "code:553910"
+    ],
+    [
+     "86",
+     "DistrictView",
+     "code:58D260"
+    ],
+    [
+     "87",
+     "WorldView",
+     "code:581840"
+    ],
+    [
+     "88",
+     "CustomizeQuickRace",
+     "code:555E20"
+    ],
+    [
+     "3",
+     "Options",
+     "code:55B040"
+    ],
+    [
+     "96",
+     "VideoCalibration",
+     "code:55B1C0"
+    ],
+    [
+     "98",
+     "Credits",
+     "code:55B0E0"
+    ],
+    [
+     "97",
+     "PCControllerConfig",
+     "code:55B150"
+    ],
+    [
+     "99",
+     "HintsTips",
+     "code:55B230"
+    ],
+    [
+     "22",
+     "LeaderboardScreen",
+     "code:570480"
+    ],
+    [
+     "32",
+     "CodeEntry",
+     "code:559D20"
+    ]
+   ]
+  },
+  {
+   "start": "0xCBB39C",
+   "end": "0xCBB42C",
+   "stride": 36,
+   "count": 4,
+   "name": "result columns A",
+   "columns": [
+    "event type mask",
+    "title 1",
+    "title 2",
+    "title 3",
+    "title 4",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "status": "titles are language hashes (Cost to State, Time, # Disabled, Car); reached from GetErrorMessage's callees, so the owner is a guess",
+   "walked_by": [
+    "GetErrorMessage"
+   ],
+   "entries": [
+    [
+     "1",
+     "0x86B947D",
+     "0x34F3C8DD",
+     "0xD7F58216",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0",
+     "0xFFFFFFFF"
+    ],
+    [
+     "2",
+     "0x65004D16",
+     "0x34F3C8DD",
+     "0x86B947D",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0",
+     "0xFFFFFFFF"
+    ],
+    [
+     "16",
+     "0xF7C765B3",
+     "0x34F3C8DD",
+     "0x86B947D",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0",
+     "0xFFFFFFFF"
+    ],
+    [
+     "32",
+     "0x93274BEF",
+     "0x34F3C8DD",
+     "0x86B947D",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0",
+     "0xC06C9F1"
+    ]
+   ]
+  },
+  {
+   "start": "0xCBB64C",
+   "end": "0xCBB6B8",
+   "stride": 36,
+   "count": 3,
+   "name": "result columns B",
+   "columns": [
+    "event type mask",
+    "title 1",
+    "title 2",
+    "title 3",
+    "title 4",
+    "",
+    "",
+    "",
+    ""
+   ],
+   "status": "same layout, titles # of Points, # of Drops, # of Busts",
+   "walked_by": [
+    "GetErrorMessage"
+   ],
+   "entries": [
+    [
+     "1",
+     "0xF4DD921B",
+     "0x923711A6",
+     "0x9214974F",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0",
+     "3"
+    ],
+    [
+     "2",
+     "0xF4DD921B",
+     "0xB97309F1",
+     "0xAB939B72",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0",
+     "3"
+    ],
+    [
+     "4",
+     "0xF4DD921B",
+     "0x9214974F",
+     "0xAB939B72",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0",
+     "0"
+    ]
+   ]
+  },
+  {
+   "start": "0xCBB6B8",
+   "end": "0xCBB820",
+   "stride": 36,
+   "count": 10,
+   "name": "result columns C",
+   "columns": [
+    "a",
+    "b",
+    "title 1",
+    "title 2",
+    "title 3",
+    "title 4",
+    "",
+    "",
+    ""
+   ],
+   "status": "same layout, other shape",
+   "walked_by": [
+    "GetErrorMessage"
+   ],
+   "entries": [
+    [
+     "1",
+     "2",
+     "0x34F3C8DD",
+     "0xB3DE33E7",
+     "0xAB939B72",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0"
+    ],
+    [
+     "0",
+     "1",
+     "0x34F3C8DD",
+     "0xB3DE33E7",
+     "0xAB939B72",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0"
+    ],
+    [
+     "0",
+     "1024",
+     "0x34F3C8DD",
+     "0xB3DE33E7",
+     "0xAB939B72",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0"
+    ],
+    [
+     "5",
+     "32",
+     "0x34F3C8DD",
+     "0xB3DE33E7",
+     "0xAB939B72",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0"
+    ],
+    [
+     "2",
+     "4",
+     "0x34F3C8DD",
+     "0xB3DE33E7",
+     "0xAB939B72",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0"
+    ],
+    [
+     "2",
+     "2048",
+     "0x34F3C8DD",
+     "0xB3DE33E7",
+     "0xAB939B72",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0"
+    ],
+    [
+     "4",
+     "16",
+     "0x34F3C8DD",
+     "0xB3DE33E7",
+     "0xAB939B72",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0"
+    ],
+    [
+     "8",
+     "256",
+     "0x34F3C8DD",
+     "0xEC5696F3",
+     "0xAB939B72",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0"
+    ],
+    [
+     "7",
+     "128",
+     "0x34F3C8DD",
+     "0xEC5696F3",
+     "0xAB939B72",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0"
+    ],
+    [
+     "9",
+     "512",
+     "0x34F3C8DD",
+     "0x86B947D",
+     "0xAB939B72",
+     "0x5E1F43AD",
+     "0",
+     "0",
+     "0"
+    ]
+   ]
+  },
+  {
+   "start": "0x126F818",
+   "end": "0x126FD7C",
+   "stride": 12,
+   "count": 115,
+   "name": "car slots",
+   "columns": [
+    "slot index",
+    "name",
+    "x"
+   ],
+   "status": "names like BADGING_BUMPER_SET_FRONT; walked from ScrollNextCarSlot/SelectSlot",
+   "walked_by": [
+    "None",
+    "ScrollNextCarSlot",
+    "ScrollPrevCarSlot",
+    "SelectSlot"
+   ],
+   "entries": [
+    [
+     "0",
+     "BADGING_BUMPER_SET_FRONT",
+     "0"
+    ],
+    [
+     "1",
+     "BADGING_BUMPER_SET_REAR",
+     "0"
+    ],
+    [
+     "2",
+     "BADGING_FENDER_FRONT_LEFT",
+     "0"
+    ],
+    [
+     "3",
+     "BADGING_FENDER_FRONT_RIGHT",
+     "0"
+    ],
+    [
+     "4",
+     "BADGING_FENDER_REAR_LEFT",
+     "0"
+    ],
+    [
+     "5",
+     "BADGING_FENDER_REAR_RIGHT",
+     "0"
+    ],
+    [
+     "6",
+     "BADGING_TRUNK",
+     "0"
+    ],
+    [
+     "7",
+     "BASE",
+     "0"
+    ],
+    [
+     "8",
+     "BODY",
+     "0"
+    ],
+    [
+     "9",
+     "BODY_DOORLINE",
+     "0"
+    ],
+    [
+     "10",
+     "BRAKE_CALIPER_FRONT",
+     "0"
+    ],
+    [
+     "11",
+     "BRAKE_CALIPER_REAR",
+     "0"
+    ],
+    [
+     "12",
+     "BRAKE_ROTOR_FRONT",
+     "0"
+    ],
+    [
+     "13",
+     "BRAKE_ROTOR_REAR",
+     "0"
+    ],
+    [
+     "14",
+     "BRAKELIGHT_GLASS_LEFT",
+     "0"
+    ],
+    [
+     "15",
+     "BRAKELIGHT_GLASS_RIGHT",
+     "0"
+    ],
+    [
+     "16",
+     "BRAKELIGHT_LEFT",
+     "0"
+    ],
+    [
+     "17",
+     "BRAKELIGHT_RIGHT",
+     "0"
+    ],
+    [
+     "18",
+     "BUMPER_FRONT",
+     "0"
+    ],
+    [
+     "19",
+     "BUMPER_FRONT_EXTRA",
+     "0"
+    ],
+    [
+     "20",
+     "BUMPER_REAR",
+     "0"
+    ],
+    [
+     "21",
+     "BUMPER_REAR_EXTRA",
+     "0"
+    ],
+    [
+     "22",
+     "CHASSIS",
+     "0"
+    ],
+    [
+     "23",
+     "DAMAGE_BODY",
+     "0"
+    ],
+    [
+     "24",
+     "DAMAGE_BRAKELIGHT_LEFT",
+     "0"
+    ],
+    [
+     "25",
+     "DAMAGE_BRAKELIGHT_RIGHT",
+     "0"
+    ],
+    [
+     "26",
+     "DAMAGE_BUMPER_FRONT",
+     "0"
+    ],
+    [
+     "27",
+     "DAMAGE_BUMPER_REAR",
+     "0"
+    ],
+    [
+     "28",
+     "DAMAGE_DOOR_LEFT",
+     "0"
+    ],
+    [
+     "29",
+     "DAMAGE_DOOR_REAR_LEFT",
+     "0"
+    ],
+    [
+     "30",
+     "DAMAGE_DOOR_REAR_RIGHT",
+     "0"
+    ],
+    [
+     "31",
+     "DAMAGE_DOOR_RIGHT",
+     "0"
+    ],
+    [
+     "32",
+     "DAMAGE_FENDER_FRONT_LEFT",
+     "0"
+    ],
+    [
+     "33",
+     "DAMAGE_FENDER_FRONT_RIGHT",
+     "0"
+    ],
+    [
+     "34",
+     "DAMAGE_HEADLIGHT_LEFT",
+     "0"
+    ],
+    [
+     "35",
+     "DAMAGE_HEADLIGHT_RIGHT",
+     "0"
+    ],
+    [
+     "36",
+     "DAMAGE_HOOD",
+     "0"
+    ],
+    [
+     "37",
+     "DAMAGE_SIDEMIRROR_LEFT",
+     "0"
+    ],
+    [
+     "38",
+     "DAMAGE_SIDEMIRROR_RIGHT",
+     "0"
+    ],
+    [
+     "39",
+     "DAMAGE_TRUNK",
+     "0"
+    ],
+    [
+     "40",
+     "DAMAGE_TRUNK911",
+     "0"
+    ],
+    [
+     "41",
+     "DAMAGE_WIDEBODY",
+     "0"
+    ],
+    [
+     "42",
+     "DAMAGE_WIDEBODY_BUMPER_FRONT",
+     "0"
+    ],
+    [
+     "43",
+     "DAMAGE_WIDEBODY_BUMPER_REAR",
+     "0"
+    ],
+    [
+     "44",
+     "DAMAGE_WIDEBODY_DOOR_LEFT",
+     "0"
+    ],
+    [
+     "45",
+     "DAMAGE_WIDEBODY_DOOR_REAR_LEFT",
+     "0"
+    ],
+    [
+     "46",
+     "DAMAGE_WIDEBODY_DOOR_REAR_RIGHT",
+     "0"
+    ],
+    [
+     "47",
+     "DAMAGE_WIDEBODY_DOOR_RIGHT",
+     "0"
+    ],
+    [
+     "48",
+     "DAMAGE_WIDEBODY_FENDER_FRONT_LEFT",
+     "0"
+    ],
+    [
+     "49",
+     "DAMAGE_WIDEBODY_FENDER_FRONT_RIGHT",
+     "0"
+    ],
+    [
+     "50",
+     "DAMAGE_WINDOW_FRONT",
+     "0"
+    ],
+    [
+     "51",
+     "DAMAGE_WINDOW_FRONT_LEFT",
+     "0"
+    ],
+    [
+     "52",
+     "DAMAGE_WINDOW_FRONT_RIGHT",
+     "0"
+    ],
+    [
+     "53",
+     "DAMAGE_WINDOW_REAR",
+     "0"
+    ],
+    [
+     "54",
+     "DAMAGE_WINDOW_REAR_LEFT",
+     "0"
+    ],
+    [
+     "55",
+     "DAMAGE_WINDOW_REAR_RIGHT",
+     "0"
+    ],
+    [
+     "56",
+     "DECAL_FRONT_WINDOW",
+     "0"
+    ],
+    [
+     "57",
+     "DECAL_REAR_WINDOW",
+     "0"
+    ],
+    [
+     "58",
+     "DOOR_LEFT",
+     "0"
+    ],
+    [
+     "59",
+     "DOOR_REAR_LEFT",
+     "0"
+    ],
+    [
+     "60",
+     "DOOR_REAR_RIGHT",
+     "0"
+    ],
+    [
+     "61",
+     "DOOR_RIGHT",
+     "0"
+    ],
+    [
+     "62",
+     "DOORHANDLE_FRONT_LEFT",
+     "0"
+    ],
+    [
+     "63",
+     "DOORHANDLE_FRONT_RIGHT",
+     "0"
+    ],
+    [
+     "64",
+     "DOORHANDLE_REAR_LEFT",
+     "0"
+    ],
+    [
+     "65",
+     "DOORHANDLE_REAR_RIGHT",
+     "0"
+    ],
+    [
+     "66",
+     "DRIVER",
+     "0"
+    ],
+    [
+     "67",
+     "ENGINE",
+     "0"
+    ],
+    [
+     "68",
+     "EXHAUST",
+     "0"
+    ],
+    [
+     "69",
+     "EXHAUST_TIPS_CENTER",
+     "0"
+    ],
+    [
+     "70",
+     "EXHAUST_TIPS_LEFT",
+     "0"
+    ],
+    [
+     "71",
+     "EXHAUST_TIPS_RIGHT",
+     "0"
+    ],
+    [
+     "72",
+     "FENDER_FRONT_LEFT",
+     "0"
+    ],
+    [
+     "73",
+     "FENDER_FRONT_RIGHT",
+     "0"
+    ],
+    [
+     "74",
+     "HEADLIGHT_GLASS_LEFT",
+     "0"
+    ],
+    [
+     "75",
+     "HEADLIGHT_GLASS_RIGHT",
+     "0"
+    ],
+    [
+     "76",
+     "HEADLIGHT_LEFT",
+     "0"
+    ],
+    [
+     "77",
+     "HEADLIGHT_RIGHT",
+     "0"
+    ],
+    [
+     "78",
+     "HOOD",
+     "0"
+    ],
+    [
+     "79",
+     "LICENSE_PLATE",
+     "0"
+    ],
+    [
+     "80",
+     "LIGHTBAR",
+     "0"
+    ],
+    [
+     "81",
+     "ROLL_CAGE",
+     "0"
+    ],
+    [
+     "82",
+     "ROOF",
+     "0"
+    ],
+    [
+     "83",
+     "ROOF_INSIDE",
+     "0"
+    ],
+    [
+     "84",
+     "ROOFSCOOP",
+     "0"
+    ],
+    [
+     "85",
+     "SEAT_LEFT",
+     "0"
+    ],
+    [
+     "86",
+     "SEAT_RIGHT",
+     "0"
+    ],
+    [
+     "87",
+     "SIDEMIRROR_LEFT",
+     "0"
+    ],
+    [
+     "88",
+     "SIDEMIRROR_RIGHT",
+     "0"
+    ],
+    [
+     "89",
+     "SKIRT_LEFT",
+     "0"
+    ],
+    [
+     "90",
+     "SKIRT_RIGHT",
+     "0"
+    ],
+    [
+     "91",
+     "SPOILER",
+     "0"
+    ],
+    [
+     "92",
+     "STEERINGWHEEL",
+     "0"
+    ],
+    [
+     "93",
+     "TRUNK",
+     "0"
+    ],
+    [
+     "94",
+     "UNIVERSAL_SPOILER_BASE",
+     "0"
+    ],
+    [
+     "95",
+     "WHEEL_FRONT",
+     "0"
+    ],
+    [
+     "96",
+     "WHEEL_REAR",
+     "0"
+    ],
+    [
+     "97",
+     "WINDOW_FRONT",
+     "0"
+    ],
+    [
+     "98",
+     "WINDOW_FRONT_LEFT",
+     "0"
+    ],
+    [
+     "99",
+     "WINDOW_FRONT_RIGHT",
+     "0"
+    ],
+    [
+     "100",
+     "WINDOW_REAR",
+     "0"
+    ],
+    [
+     "101",
+     "WINDOW_REAR_LEFT",
+     "0"
+    ],
+    [
+     "102",
+     "WINDOW_REAR_RIGHT",
+     "0"
+    ],
+    [
+     "103",
+     "BRAKE_PACKAGE",
+     "0"
+    ],
+    [
+     "104",
+     "DRIVETRAIN_PACKAGE",
+     "0"
+    ],
+    [
+     "105",
+     "ENGINE_PACKAGE",
+     "0"
+    ],
+    [
+     "106",
+     "FORCED_INDUCTION_PACKAGE",
+     "0"
+    ],
+    [
+     "107",
+     "INTERIOR",
+     "0"
+    ],
+    [
+     "108",
+     "LIVERY",
+     "0"
+    ],
+    [
+     "109",
+     "NITROUS_PACKAGE",
+     "0"
+    ],
+    [
+     "110",
+     "SUSPENSION_PACKAGE",
+     "0"
+    ],
+    [
+     "111",
+     "TIRE_FRONT",
+     "0"
+    ],
+    [
+     "112",
+     "TIRE_PACKAGE",
+     "0"
+    ],
+    [
+     "113",
+     "TIRE_REAR",
+     "0"
+    ],
+    [
+     "114",
+     "VECTORVINYL",
+     "0"
+    ]
+   ]
+  }
+ ],
+ "game_functions": [
+  {
+   "address": "0x5584F0",
+   "handlers": 98,
+   "example": "UpdateControllerConfigScreen"
+  },
+  {
+   "address": "0x575D60",
+   "handlers": 81,
+   "example": "UpdateControllerConfigScreen"
+  },
+  {
+   "address": "0x87B030",
+   "handlers": 78,
+   "example": "GetSlotInfo"
+  },
+  {
+   "address": "0x4ACEF0",
+   "handlers": 59,
+   "example": "GetSlotInfo"
+  },
+  {
+   "address": "0x535180",
+   "handlers": 38,
+   "example": "UpdateControllerConfigScreen"
+  },
+  {
+   "address": "0x503240",
+   "handlers": 35,
+   "example": "GetData"
+  },
+  {
+   "address": "0x5031E0",
+   "handlers": 32,
+   "example": "IsWidescreen"
+  },
+  {
+   "address": "0x58D4A0",
+   "handlers": 28,
+   "example": "GetTimers"
+  },
+  {
+   "address": "0x4AA1C0",
+   "handlers": 23,
+   "example": "Back"
+  },
+  {
+   "address": "0x87AFB6",
+   "handlers": 22,
+   "example": "GetNews"
+  },
+  {
+   "address": "0x9ADA30",
+   "handlers": 21,
+   "example": "GetInput"
+  },
+  {
+   "address": "0x694760",
+   "handlers": 20,
+   "example": "UpdateFilters"
+  },
+  {
+   "address": "0x9AA640",
+   "handlers": 17,
+   "example": "FormatAsNumber"
+  },
+  {
+   "address": "0x71D890",
+   "handlers": 15,
+   "example": "GetData"
+  },
+  {
+   "address": "0x727B90",
+   "handlers": 15,
+   "example": "ValueChanged"
+  },
+  {
+   "address": "0x805FA0",
+   "handlers": 12,
+   "example": "GetTreeID"
+  },
+  {
+   "address": "0x5DB5F0",
+   "handlers": 12,
+   "example": "GetStringHash"
+  },
+  {
+   "address": "0x583610",
+   "handlers": 12,
+   "example": "GetCashInfo"
+  },
+  {
+   "address": "0x4AA140",
+   "handlers": 11,
+   "example": "GetNews"
+  },
+  {
+   "address": "0x805ED0",
+   "handlers": 11,
+   "example": "GetInput"
+  },
+  {
+   "address": "0x99C2C0",
+   "handlers": 10,
+   "example": null
+  },
+  {
+   "address": "0x5EF630",
+   "handlers": 10,
+   "example": "GetRealPos"
+  },
+  {
+   "address": "0x502F40",
+   "handlers": 10,
+   "example": "GetRealPos"
+  },
+  {
+   "address": "0x805B10",
+   "handlers": 10,
+   "example": "IsInputNecessary"
+  },
+  {
+   "address": "0x686150",
+   "handlers": 9,
+   "example": "GetNews"
+  }
+ ]
+}

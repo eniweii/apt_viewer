@@ -1,0 +1,4083 @@
+{
+ "registrations": 272,
+ "registrars": {
+  "0x535f40": [
+   "GetDialogConfig"
+  ],
+  "0x548600": [
+   "GetTreeID"
+  ],
+  "0x548630": [
+   "GetTreeID"
+  ],
+  "0x54a890": [
+   "SomeFunction"
+  ],
+  "0x54a8c0": [
+   "GetLanguageList"
+  ],
+  "0x54ba80": [
+   "GetNews",
+   "ShowScrollButton"
+  ],
+  "0x54cde0": [
+   "OpenSummary"
+  ],
+  "0x54cf60": [
+   "ExitLevelUp"
+  ],
+  "0x54d4e0": [
+   null
+  ],
+  "0x54d560": [
+   "SomeFunction"
+  ],
+  "0x54ecf0": [
+   "SomeFunction"
+  ],
+  "0x550a80": [
+   "SomeFunction"
+  ],
+  "0x553990": [
+   "GetIsScreenDirty"
+  ],
+  "0x555cf0": [
+   "ItemSelectedAnimationDone"
+  ],
+  "0x556880": [
+   "GetPauseTreeID",
+   "GetMatchmakingStats"
+  ],
+  "0x55e890": [
+   "GetButtonInfo",
+   "InCarLot",
+   "InPerformance",
+   "InAftermarket",
+   "IsCarLoading",
+   "EnteredFromImpound"
+  ],
+  "0x55fe20": [
+   "ForceCameraStop"
+  ],
+  "0x566a40": [
+   "GetMessengerConfig",
+   "MoveTab"
+  ],
+  "0x56ce60": [
+   "IsMessageAvailable",
+   "GetMessage",
+   "GetScreenName",
+   "GetStringHash",
+   "EnableProcessing"
+  ],
+  "0x5704f0": [
+   "NotifySpawnLinePossible",
+   "CallBackLineDeleted",
+   "OnShiftUp",
+   "OnShiftDown"
+  ],
+  "0x572300": [
+   "GetSlotInfo",
+   "SelectSlot",
+   "CycleGroup",
+   "FadingFront",
+   "FadingBack"
+  ],
+  "0x57f550": [
+   "GetChyronInfo",
+   "GetShowButtonHelp",
+   null,
+   "ChyronDone",
+   "IsWidescreen",
+   null
+  ],
+  "0x587ab0": [
+   "InitializeData",
+   "HandleLTrigger",
+   "HandleRTrigger",
+   "DefaultSettings",
+   "ClearKey",
+   null,
+   null,
+   "OptionSelected",
+   "UpdateControllerConfigScreen"
+  ],
+  "0x587d00": [
+   "Step1ScreenData",
+   "Step2ScreenData",
+   null,
+   "ExitScreen"
+  ],
+  "0x587d90": [
+   "GetToggleData",
+   "GetPageData"
+  ],
+  "0x587de0": [
+   "GetEventData",
+   "SetAnimationCompleted",
+   "OnEnterComplete",
+   "ChangeState",
+   "GetLoadingTexts",
+   "TextFadeOutComplete",
+   "OnScreenExitComplete"
+  ],
+  "0x58d570": [
+   "StartMovie",
+   "StopMovie",
+   null
+  ],
+  "0x58d8d0": [
+   "SaveSelected",
+   "GetSaveList",
+   "Done",
+   "Exit"
+  ],
+  "0x5942a0": [
+   "GetData",
+   "ValueChanged"
+  ],
+  "0x5946e0": [
+   "GetEventName",
+   "UpdateCarGroup",
+   "CarHighlighted",
+   "CarSelected",
+   "GetLocalizeMenuStats",
+   null,
+   "GetCarList",
+   "Done",
+   "Exit"
+  ],
+  "0x599370": [
+   "GetInput",
+   "GetIsLoading",
+   null,
+   "GetCashInfo",
+   "GetHeat",
+   "GetRegions",
+   null,
+   "GetZones",
+   "SelectZone",
+   "SetZoneValue",
+   "Accept",
+   "Back"
+  ],
+  "0x5997e0": [
+   "GetVinylInfo",
+   "SelectTransform",
+   "StepTransform",
+   "CancelFastMode",
+   null,
+   "Back"
+  ],
+  "0x59e3e0": [
+   "GetTreeID",
+   "GetPlayerList",
+   "GetTimers",
+   "IsPlayerListUpdated",
+   "ViewGamerCard",
+   "ViewPlayerProfile",
+   "TreeIntroDone"
+  ],
+  "0x59ebc0": [
+   "GetLapOrTimeData",
+   "GetToggleData",
+   null,
+   null,
+   "GetCurrentTrackTextureHash",
+   null,
+   null,
+   null,
+   "IsCircuit",
+   "IsLapped",
+   "SettingsAccepted"
+  ],
+  "0x59f0d0": [
+   "GetConfig"
+  ],
+  "0x59f1e0": [
+   "GetErrorMessage"
+  ],
+  "0x59f210": [
+   "GetErrorMessage"
+  ],
+  "0x59f240": [
+   "RetrieveData",
+   "UpdateLabels",
+   "UpdateFilters",
+   "UpdateColumnHeadings"
+  ],
+  "0x5a05a0": [
+   null,
+   "SelectArea",
+   "GetAreaColour",
+   "ApplyAreaColour",
+   "PreviewHue",
+   "SelectBlackWhite",
+   "FadingFront",
+   "FadingBack",
+   "Accept",
+   "Back"
+  ],
+  "0x5a06e0": [
+   "GetRealPos"
+  ],
+  "0x5a0780": [
+   "ScrollNextCar",
+   "ScrollNextCarSlot",
+   "ScrollNextPresetRide",
+   "ScrollNextBodyKitType",
+   "ScrollNextPart",
+   "ScrollNextKit",
+   "ScrollNextBodyKitNumber",
+   "ScrollPrevCar",
+   "ScrollPrevCarSlot",
+   "ScrollPrevPresetRide",
+   "ScrollPrevBodyKitType",
+   "ScrollPrevPart",
+   "ScrollPrevKit",
+   "ScrollPrevBodyKitNumber"
+  ],
+  "0x5a2670": [
+   "GetNumTOSWords",
+   "GetWordRange",
+   "GetMode"
+  ],
+  "0x5a2cb0": [
+   "OptionSelected"
+  ],
+  "0x5a3680": [
+   "GetCashInfo",
+   "GetHeat",
+   "GetGroups",
+   null,
+   null,
+   "HighlightVinyl",
+   "PreviewVinyl",
+   "SelectVinyl",
+   "LoadThumbs",
+   "Back"
+  ],
+  "0x5a37c0": [
+   "GetCarList",
+   "CarHighlighted",
+   "CarSelected",
+   "GetRegions",
+   "UpdateRegion",
+   "GetCarList",
+   "GetCurrentToggle",
+   "UpdateCarList",
+   null,
+   "CarHighlighted"
+  ],
+  "0x5a4c00": [
+   null,
+   "OptionHighlighted",
+   "GetPopupPosition",
+   "GetEventTypeOptionArray",
+   "GetEventName",
+   "UpdateQuickRaceOption",
+   "Done",
+   "Exit"
+  ],
+  "0x5b6530": [
+   "IsProMode",
+   "GetDataGrid",
+   "GetTickerText",
+   "GetAnalogueStickValues",
+   "SelectLBPlayer",
+   "SetCurrentSeries",
+   "GetCurrentSeries"
+  ],
+  "0x5b66b0": [
+   null,
+   "GetPercent",
+   null
+  ],
+  "0x5b6860": [
+   "GetName",
+   "OnScreenEntered",
+   "OnScreenUpdate"
+  ],
+  "0x723fb0": [
+   "IsCapturingInput"
+  ],
+  "0x724270": [
+   "IsCapturingInput",
+   "GetYearInfo"
+  ],
+  "0x724360": [
+   "IsCapturingInput"
+  ],
+  "0x72bbb0": [
+   "GetCountryList",
+   "CountrySelected"
+  ],
+  "0x72dd90": [
+   "IsCapturingInput",
+   "GetPersonas",
+   null,
+   "CreateNewPersona",
+   "DisablePersona",
+   "GetToggleItems",
+   "PadBack"
+  ],
+  "0x808cc0": [
+   "PauseGame",
+   "ResumeGame"
+  ],
+  "0x80d0b0": [
+   "Assert",
+   "TempFunctionToBeDeleted",
+   "IsInputNecessary",
+   "IsInputNecessaryError",
+   "GetDALID",
+   "GetWidescreen",
+   null,
+   "FormatAsCash",
+   "FormatAsNumber",
+   "FormatAsTime",
+   "FormatAsPercentage",
+   "MainScreenLoaded",
+   "BootLoadScreenLoaded",
+   "GetBootLoadingScreenText",
+   "GetBootLoadingPrecentComplete",
+   "IsSimPaused"
+  ],
+  "0x80d4f0": [
+   "GetTreeData",
+   "Busy"
+  ],
+  "0x80dcb0": [
+   "GetPlayerCarInfo"
+  ],
+  "0x80e9e0": [
+   "StartGame",
+   "SetCarName"
+  ],
+  "0x80ea30": [
+   "EventReceived",
+   "MovieClipLoaded",
+   "MovieClipUnloaded",
+   "GetMovieClipLoaderLevel",
+   "GetMaxMovieClipLoaderLevels",
+   "OnButtonHighlight",
+   "OnButtonPressed",
+   "OnEnterComplete",
+   "OnExitComplete",
+   "OnPadButton",
+   "OnPadDown",
+   "OnPadLeft",
+   "OnPadRight",
+   "OnTreePadRight",
+   "OnPadUp",
+   "OnPadStart",
+   "OnScreenConstructed",
+   "OnScreenDestructed",
+   "OnScreenDestructing",
+   "OnScreenTick",
+   "OnPadAccept",
+   "OnPadBack",
+   "OnPadStart",
+   "OnPadLTrigger",
+   "OnPadRTrigger",
+   "OnPadButton0",
+   "OnPadButton1",
+   "OnPadButton2",
+   "OnPadButton3",
+   "OnPadButton4",
+   "OnPadButton5",
+   "OnPadButton6",
+   "OnOptionHighlighted",
+   "OnOptionSelected",
+   "OnPadLTriggerRelease",
+   "OnPadRTriggerRelease"
+  ],
+  "0x80eea0": [
+   "PlaySound"
+  ]
+ },
+ "objects": {
+  "AptDown": {
+   "registrar": null,
+   "members": {},
+   "not_in_exe": []
+  },
+  "AptNext": {
+   "registrar": null,
+   "members": {},
+   "not_in_exe": []
+  },
+  "AptUp": {
+   "registrar": null,
+   "members": {},
+   "not_in_exe": []
+  },
+  "CmdAudio": {
+   "registrar": "0x80eea0",
+   "members": {
+    "PlaySound": {
+     "handler": "0x80e220",
+     "registrar": "0x80eea0",
+     "args": [
+      "any@0"
+     ],
+     "result": "undefined",
+     "properties": [],
+     "strings": [],
+     "game_calls": 16,
+     "attrib": {
+      "collections": [
+       "frontend_sfx.0xC831160A",
+       "headlight_sequence.DEFAULT"
+      ],
+      "fields": [
+       "frontend_sfx.SoundMapping"
+      ],
+      "classes": [
+       "frontend_sfx"
+      ]
+     }
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "CmdAutosculptScreen": {
+   "registrar": null,
+   "members": {},
+   "not_in_exe": []
+  },
+  "CmdFECarLot": {
+   "registrar": "0x5a37c0",
+   "members": {
+    "CarSelected": {
+     "handler": "0x550930",
+     "registrar": "0x5a37c0",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 4
+    },
+    "GetRegions": {
+     "handler": "0x57eb40",
+     "registrar": "0x5a37c0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "id",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "regionEnum",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "type",
+       "setter": "set(string)"
+      },
+      {
+       "name": "id",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "regionEnum",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "type",
+       "setter": "set(string)"
+      },
+      {
+       "name": "id",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "regionEnum",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "type",
+       "setter": "set(string)"
+      },
+      {
+       "name": "type",
+       "setter": "set(?)"
+      },
+      {
+       "name": "type",
+       "setter": "set(?)"
+      },
+      {
+       "name": "type",
+       "setter": "set(?)"
+      },
+      {
+       "name": "length",
+       "setter": "set(int?)"
+      }
+     ],
+     "strings": [
+      "id",
+      "text",
+      "regionEnum",
+      "Toggle",
+      "type",
+      "length"
+     ],
+     "game_calls": 26
+    },
+    "UpdateRegion": {
+     "handler": "0x550910",
+     "registrar": "0x5a37c0",
+     "args": [
+      "int@0",
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 6
+    }
+   },
+   "ambiguous": [
+    "CarHighlighted",
+    "GetCarList"
+   ],
+   "not_in_exe": []
+  },
+  "CmdFECarSelectScreen": {
+   "registrar": null,
+   "members": {},
+   "not_in_exe": []
+  },
+  "CmdFEDebugCarTestScreen": {
+   "registrar": "0x5a0780",
+   "members": {
+    "ScrollNextBodyKitNumber": {
+     "handler": "0x569a50",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1,
+     "attrib": {
+      "classes": [
+       "car_part"
+      ]
+     }
+    },
+    "ScrollNextBodyKitType": {
+     "handler": "0x569a10",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2,
+     "attrib": {
+      "classes": [
+       "car_kit",
+       "car_part",
+       "car_parts"
+      ]
+     }
+    },
+    "ScrollNextCar": {
+     "handler": "0x58b4b0",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2,
+     "attrib": {
+      "collections": [
+       "car_list.dump_targets"
+      ],
+      "classes": [
+       "PresetRide",
+       "car_list",
+       "car_paint_group",
+       "pvehicle"
+      ],
+      "fields": [
+       "PresetRide.Autosculpt",
+       "PresetRide.CarType",
+       "PresetRide.DecalLayers",
+       "PresetRide.Livery",
+       "PresetRide.Paints",
+       "PresetRide.Parts",
+       "PresetRide.RandomPaints",
+       "PresetRide.RemovedParts",
+       "PresetRide.VinylFinish",
+       "PresetRide.VinylLayers",
+       "car_list.Cars"
+      ]
+     }
+    },
+    "ScrollNextCarSlot": {
+     "handler": "0x57f360",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 3,
+     "attrib": {
+      "classes": [
+       "car_part",
+       "car_parts"
+      ]
+     }
+    },
+    "ScrollNextKit": {
+     "handler": "0x5723f0",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1,
+     "attrib": {
+      "classes": [
+       "car_part"
+      ]
+     }
+    },
+    "ScrollNextPart": {
+     "handler": "0x5723d0",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1,
+     "attrib": {
+      "classes": [
+       "car_part",
+       "car_parts"
+      ]
+     }
+    },
+    "ScrollNextPresetRide": {
+     "handler": "0x59a150",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1,
+     "attrib": {
+      "collections": [
+       "car_list.dump_targets"
+      ],
+      "classes": [
+       "PresetRide",
+       "pvehicle"
+      ],
+      "fields": [
+       "PresetRide.CarType",
+       "car_list.Cars"
+      ]
+     }
+    },
+    "ScrollPrevBodyKitNumber": {
+     "handler": "0x569ab0",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "ScrollPrevBodyKitType": {
+     "handler": "0x569a70",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2,
+     "attrib": {
+      "classes": [
+       "car_kit",
+       "car_part",
+       "car_parts"
+      ]
+     }
+    },
+    "ScrollPrevCar": {
+     "handler": "0x58b4f0",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1,
+     "attrib": {
+      "collections": [
+       "car_list.dump_targets"
+      ],
+      "classes": [
+       "PresetRide",
+       "car_list",
+       "car_paint_group",
+       "pvehicle"
+      ],
+      "fields": [
+       "PresetRide.Autosculpt",
+       "PresetRide.CarType",
+       "PresetRide.DecalLayers",
+       "PresetRide.Livery",
+       "PresetRide.Paints",
+       "PresetRide.Parts",
+       "PresetRide.RandomPaints",
+       "PresetRide.RemovedParts",
+       "PresetRide.VinylFinish",
+       "PresetRide.VinylLayers",
+       "car_list.Cars"
+      ]
+     }
+    },
+    "ScrollPrevCarSlot": {
+     "handler": "0x57f3b0",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 3,
+     "attrib": {
+      "classes": [
+       "car_part",
+       "car_parts"
+      ]
+     }
+    },
+    "ScrollPrevKit": {
+     "handler": "0x572430",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1,
+     "attrib": {
+      "classes": [
+       "car_part"
+      ]
+     }
+    },
+    "ScrollPrevPart": {
+     "handler": "0x572410",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1,
+     "attrib": {
+      "classes": [
+       "car_part",
+       "car_parts"
+      ]
+     }
+    },
+    "ScrollPrevPresetRide": {
+     "handler": "0x59a170",
+     "registrar": "0x5a0780",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1,
+     "attrib": {
+      "collections": [
+       "car_list.dump_targets"
+      ],
+      "classes": [
+       "PresetRide",
+       "pvehicle"
+      ],
+      "fields": [
+       "PresetRide.CarType",
+       "car_list.Cars"
+      ]
+     }
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "CmdFELanguage": {
+   "registrar": "0x535f40",
+   "members": {},
+   "ambiguous": [],
+   "not_in_exe": [
+    "GetLanguage",
+    "GetLocaleText"
+   ]
+  },
+  "CmdFEPCSaveSelectScreen": {
+   "registrar": null,
+   "members": {},
+   "not_in_exe": []
+  },
+  "CmdFEWMQuickRaceCustomizeScreen": {
+   "registrar": null,
+   "members": {},
+   "not_in_exe": []
+  },
+  "CmdHud": {
+   "registrar": "0x80dcb0",
+   "members": {
+    "GetPlayerCarInfo": {
+     "handler": "0x80d0b0",
+     "registrar": "0x80dcb0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "speed",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "rpm",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "gear",
+       "setter": "set(int?)"
+      }
+     ],
+     "strings": [
+      "speed",
+      "rpm",
+      "gear",
+      "Assert",
+      "TempFunctionToBeDeleted",
+      "IsInputNecessary",
+      "IsInputNecessaryError",
+      "GetDALID",
+      "GetWidescreen",
+      "IsHighDef"
+     ],
+     "game_calls": 39
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "CmdLauncher": {
+   "registrar": "0x80e9e0",
+   "members": {
+    "SetCarName": {
+     "handler": "0x80dd80",
+     "registrar": "0x80e9e0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "StartGame": {
+     "handler": "0x806010",
+     "registrar": "0x80e9e0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1,
+     "attrib": {
+      "classes": [
+       "PresetRide",
+       "car_tuning",
+       "pvehicle"
+      ]
+     }
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "CmdPauseMenu": {
+   "registrar": "0x808cc0",
+   "members": {
+    "PauseGame": {
+     "handler": "0x805fe0",
+     "registrar": "0x808cc0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "ResumeGame": {
+     "handler": "0x806000",
+     "registrar": "0x808cc0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2,
+     "attrib": {
+      "classes": [
+       "PresetRide",
+       "car_tuning",
+       "pvehicle"
+      ]
+     }
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "CmdScreenManagement": {
+   "registrar": "0x80ea30",
+   "members": {
+    "EventReceived": {
+     "handler": "0x80de60",
+     "registrar": "0x80ea30",
+     "args": [
+      "any@0",
+      "any@1",
+      "any@2"
+     ],
+     "result": "undefined",
+     "properties": [],
+     "strings": [],
+     "game_calls": 12
+    },
+    "GetMaxMovieClipLoaderLevels": {
+     "handler": "0x806550",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "GetMovieClipLoaderLevel": {
+     "handler": "0x806540",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "MovieClipLoaded": {
+     "handler": "0x80dfa0",
+     "registrar": "0x80ea30",
+     "args": [
+      "any@0",
+      "any@1"
+     ],
+     "result": "undefined",
+     "properties": [],
+     "strings": [],
+     "game_calls": 10
+    },
+    "MovieClipUnloaded": {
+     "handler": "0x80bac0",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 3
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "CmdUtil": {
+   "registrar": "0x80d0b0",
+   "members": {
+    "Assert": {
+     "handler": "0x806030",
+     "registrar": "0x80d0b0",
+     "args": [],
+     "result": "undefined",
+     "properties": [],
+     "strings": [],
+     "game_calls": 6
+    },
+    "BootLoadScreenLoaded": {
+     "handler": "0x8061a0",
+     "registrar": "0x80d0b0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "FormatAsCash": {
+     "handler": "0x8061c0",
+     "registrar": "0x80d0b0",
+     "args": [
+      "any@0"
+     ],
+     "result": "object",
+     "properties": [
+      {
+       "name": "cash",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "^{0:s}",
+      "cash"
+     ],
+     "game_calls": 11
+    },
+    "FormatAsNumber": {
+     "handler": "0x8062e0",
+     "registrar": "0x80d0b0",
+     "args": [
+      "any@0",
+      "any@1",
+      "any@12301696"
+     ],
+     "result": "object",
+     "properties": [
+      {
+       "name": "number",
+       "setter": "set(string)"
+      },
+      {
+       "name": "number",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "{0:f.%i}",
+      "number",
+      "{0:d}"
+     ],
+     "game_calls": 17
+    },
+    "FormatAsPercentage": {
+     "handler": "0x806470",
+     "registrar": "0x80d0b0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "percentage",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "percentage"
+     ],
+     "game_calls": 11
+    },
+    "FormatAsTime": {
+     "handler": "0x808d50",
+     "registrar": "0x80d0b0",
+     "args": [
+      "any@0"
+     ],
+     "result": "object",
+     "properties": [
+      {
+       "name": "time",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "^{0:s}",
+      "time"
+     ],
+     "game_calls": 12
+    },
+    "GetBootLoadingPrecentComplete": {
+     "handler": "0x8061b0",
+     "registrar": "0x80d0b0",
+     "args": [
+      "any@0"
+     ],
+     "result": "object",
+     "properties": [
+      {
+       "name": "cash",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "^{0:s}",
+      "cash"
+     ],
+     "game_calls": 12
+    },
+    "GetBootLoadingScreenText": {
+     "handler": "0x80b840",
+     "registrar": "0x80d0b0",
+     "args": [],
+     "result": "string",
+     "properties": [],
+     "strings": [],
+     "game_calls": 8
+    },
+    "GetDALID": {
+     "handler": "0x80b6c0",
+     "registrar": "0x80d0b0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "dalID",
+       "setter": "set(int?)"
+      }
+     ],
+     "strings": [
+      "Undefined DAL Enum value requested from APT: ",
+      "%s %s",
+      "dalID"
+     ],
+     "game_calls": 12
+    },
+    "GetWidescreen": {
+     "handler": "0x806110",
+     "registrar": "0x80d0b0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "widescreen",
+       "setter": "set(int?)"
+      }
+     ],
+     "strings": [
+      "widescreen"
+     ],
+     "game_calls": 3
+    },
+    "IsInputNecessary": {
+     "handler": "0x808d10",
+     "registrar": "0x80d0b0",
+     "args": [
+      "any@0"
+     ],
+     "result": "object",
+     "properties": [
+      {
+       "name": "time",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "^{0:s}",
+      "time"
+     ],
+     "game_calls": 15
+    },
+    "IsInputNecessaryError": {
+     "handler": "0x806100",
+     "registrar": "0x80d0b0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "IsSimPaused": {
+     "handler": "0x8060e0",
+     "registrar": "0x80d0b0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    },
+    "MainScreenLoaded": {
+     "handler": "0x806190",
+     "registrar": "0x80d0b0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": [
+    "ArePermanentPreloadsInProgress",
+    "DisableCharacterRenderingOverApt",
+    "EnableCharacterRenderingOverApt",
+    "GetScreenHeight",
+    "GetScreenWidth",
+    "IsHighDef"
+   ]
+  },
+  "CmdVinylPaintScreen": {
+   "registrar": null,
+   "members": {},
+   "not_in_exe": []
+  },
+  "CmdVinylSelectScreen": {
+   "registrar": null,
+   "members": {},
+   "not_in_exe": []
+  },
+  "CmdVinylTransformScreen": {
+   "registrar": null,
+   "members": {},
+   "not_in_exe": []
+  },
+  "CustMainMenu": {
+   "registrar": "0x548600",
+   "members": {
+    "GetTreeID": {
+     "handler": "0x5367d0",
+     "registrar": "0x548600",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "EventTranslator": {
+   "registrar": "0x80ea30",
+   "members": {
+    "OnButtonPressed": {
+     "handler": "0x80e0c0",
+     "registrar": "0x80ea30",
+     "args": [
+      "any@0",
+      "any@0",
+      "any@0"
+     ],
+     "result": "undefined",
+     "properties": [],
+     "strings": [],
+     "game_calls": 12
+    },
+    "OnEnterComplete": {
+     "handler": "0x8065d0",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "OnExitComplete": {
+     "handler": "0x8065f0",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "OnOptionHighlighted": {
+     "handler": "0x806b10",
+     "registrar": "0x80ea30",
+     "args": [
+      "any@0",
+      "any@1"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 5
+    },
+    "OnOptionSelected": {
+     "handler": "0x806b60",
+     "registrar": "0x80ea30",
+     "args": [
+      "any@0",
+      "any@1"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 5
+    },
+    "OnPadAccept": {
+     "handler": "0x806850",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "OnPadBack": {
+     "handler": "0x806890",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "OnPadButton0": {
+     "handler": "0x806950",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnPadButton1": {
+     "handler": "0x806990",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnPadButton2": {
+     "handler": "0x8069d0",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnPadButton3": {
+     "handler": "0x806a10",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnPadButton4": {
+     "handler": "0x806a50",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnPadButton5": {
+     "handler": "0x806a90",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnPadButton6": {
+     "handler": "0x806ad0",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnPadDown": {
+     "handler": "0x806680",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "OnPadLTrigger": {
+     "handler": "0x8068d0",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnPadLTriggerRelease": {
+     "handler": "0x806bd0",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnPadLeft": {
+     "handler": "0x8066c0",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "OnPadRTrigger": {
+     "handler": "0x806910",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnPadRTriggerRelease": {
+     "handler": "0x806c10",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnPadRight": {
+     "handler": "0x806770",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "OnPadUp": {
+     "handler": "0x8067b0",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "OnScreenConstructed": {
+     "handler": "0x8065b0",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "OnScreenDestructed": {
+     "handler": "0x806630",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "OnScreenDestructing": {
+     "handler": "0x806610",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "OnScreenTick": {
+     "handler": "0x806830",
+     "registrar": "0x80ea30",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnTreePadRight": {
+     "handler": "0x806700",
+     "registrar": "0x80ea30",
+     "args": [
+      "any@0",
+      "any@1"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 5
+    }
+   },
+   "ambiguous": [
+    "OnPadStart"
+   ],
+   "not_in_exe": []
+  },
+  "Game": {
+   "registrar": "0x535f40",
+   "members": {},
+   "ambiguous": [],
+   "not_in_exe": [
+    "OnMenuGetItemEnabled",
+    "OnMenuHilight",
+    "OnMenuSelect"
+   ]
+  },
+  "Input": {
+   "registrar": "0x535f40",
+   "members": {},
+   "ambiguous": [],
+   "not_in_exe": [
+    "PopInputState",
+    "PushInputState"
+   ]
+  },
+  "MenuTree": {
+   "registrar": "0x56ce60",
+   "members": {
+    "Busy": {
+     "handler": "0x806560",
+     "registrar": "0x80d4f0",
+     "args": [
+      "any@0",
+      "any@1"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 6
+    },
+    "GetMessage": {
+     "handler": "0x558670",
+     "registrar": "0x56ce60",
+     "args": [],
+     "result": "object(type 32)",
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    },
+    "GetTreeData": {
+     "handler": "0x80baf0",
+     "registrar": "0x80d4f0",
+     "args": [
+      "any@0"
+     ],
+     "result": "object(type 9)",
+     "properties": [],
+     "strings": [],
+     "game_calls": 5
+    },
+    "IsMessageAvailable": {
+     "handler": "0x5393d0",
+     "registrar": "0x56ce60",
+     "args": [],
+     "result": "bool",
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "PlaySound": {
+   "registrar": null,
+   "members": {},
+   "not_in_exe": []
+  },
+  "ScreenMessageTranslator": {
+   "registrar": "0x56ce60",
+   "members": {
+    "EnableProcessing": {
+     "handler": "0x5393b0",
+     "registrar": "0x56ce60",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "GetMessage": {
+     "handler": "0x558670",
+     "registrar": "0x56ce60",
+     "args": [],
+     "result": "object(type 32)",
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    },
+    "GetScreenName": {
+     "handler": "0x5586d0",
+     "registrar": "0x56ce60",
+     "args": [
+      "int@0"
+     ],
+     "result": "string",
+     "properties": [],
+     "strings": [],
+     "game_calls": 3
+    },
+    "GetStringHash": {
+     "handler": "0x564c90",
+     "registrar": "0x56ce60",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 4
+    },
+    "IsMessageAvailable": {
+     "handler": "0x5393d0",
+     "registrar": "0x56ce60",
+     "args": [],
+     "result": "bool",
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": [
+    "GetMovieScreenName"
+   ]
+  },
+  "TempScrollItem": {
+   "registrar": null,
+   "members": {},
+   "not_in_exe": []
+  },
+  "Util": {
+   "registrar": "0x535f40",
+   "members": {},
+   "ambiguous": [],
+   "not_in_exe": [
+    "TruncateField",
+    "TruncateFieldEllipse",
+    "loadCafeIcon"
+   ]
+  },
+  "cmdAptControllerErrorMessage": {
+   "registrar": "0x59f1e0",
+   "members": {
+    "GetErrorMessage": {
+     "handler": "0x593930",
+     "registrar": "0x59f1e0",
+     "args": [],
+     "result": "string",
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdChallenge": {
+   "registrar": "0x5b6530",
+   "members": {
+    "GetAnalogueStickValues": {
+     "handler": "0x5b29b0",
+     "registrar": "0x5b6530",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "up",
+       "setter": "set(?)"
+      },
+      {
+       "name": "down",
+       "setter": "set(?)"
+      },
+      {
+       "name": "up",
+       "setter": "set(?)"
+      },
+      {
+       "name": "down",
+       "setter": "set(?)"
+      }
+     ],
+     "strings": [
+      "up",
+      "down"
+     ],
+     "game_calls": 6
+    },
+    "GetCurrentSeries": {
+     "handler": "0x5ac560",
+     "registrar": "0x5b6530",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "GetDataGrid": {
+     "handler": "0x5ac290",
+     "registrar": "0x5b6530",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "Title",
+       "setter": "set(string)"
+      },
+      {
+       "name": "ImageHash",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "E%d",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "E%d",
+       "setter": "set(?)"
+      },
+      {
+       "name": "E%d",
+       "setter": "set(?)"
+      },
+      {
+       "name": "NumElements",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(?)"
+      }
+     ],
+     "strings": [
+      "~CHALLENGE_SERIES_TITLE%d",
+      "Title",
+      "CHALLENGE_SERIES_IMAGE%d",
+      "ImageHash",
+      "ID%d",
+      "ID%dUNLOCKED",
+      "ID%dRECENTLYUNLOCKED",
+      "E%d",
+      "NumElements",
+      "Data"
+     ],
+     "game_calls": 20,
+     "attrib": {
+      "fields": [
+       "frontend_sfx.MovieVolumes"
+      ]
+     }
+    },
+    "GetTickerText": {
+     "handler": "0x5ac470",
+     "registrar": "0x5b6530",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "tickerText",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "~CHALLENGE_TICKER_%d",
+      "tickerText"
+     ],
+     "game_calls": 5
+    },
+    "IsProMode": {
+     "handler": "0x5b2990",
+     "registrar": "0x5b6530",
+     "args": [],
+     "result": "bool",
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "SelectLBPlayer": {
+     "handler": "0x5b2ae0",
+     "registrar": "0x5b6530",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    },
+    "SetCurrentSeries": {
+     "handler": "0x5ac540",
+     "registrar": "0x5b6530",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdChallengeSummary": {
+   "registrar": "0x5b6530",
+   "members": {
+    "GetDataGrid": {
+     "handler": "0x5ac290",
+     "registrar": "0x5b6530",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "Title",
+       "setter": "set(string)"
+      },
+      {
+       "name": "ImageHash",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "E%d",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "E%d",
+       "setter": "set(?)"
+      },
+      {
+       "name": "E%d",
+       "setter": "set(?)"
+      },
+      {
+       "name": "NumElements",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(?)"
+      }
+     ],
+     "strings": [
+      "~CHALLENGE_SERIES_TITLE%d",
+      "Title",
+      "CHALLENGE_SERIES_IMAGE%d",
+      "ImageHash",
+      "ID%d",
+      "ID%dUNLOCKED",
+      "ID%dRECENTLYUNLOCKED",
+      "E%d",
+      "NumElements",
+      "Data"
+     ],
+     "game_calls": 20,
+     "attrib": {
+      "fields": [
+       "frontend_sfx.MovieVolumes"
+      ]
+     }
+    },
+    "GetPercent": {
+     "handler": "0x5ac8c0",
+     "registrar": "0x5b66b0",
+     "args": [],
+     "result": "object(type 1)",
+     "properties": [],
+     "strings": [
+      "Percent"
+     ],
+     "game_calls": 3
+    },
+    "IsProMode": {
+     "handler": "0x5b2990",
+     "registrar": "0x5b6530",
+     "args": [],
+     "result": "bool",
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdChyron": {
+   "registrar": "0x57f550",
+   "members": {
+    "GetShowButtonHelp": {
+     "handler": "0x572770",
+     "registrar": "0x57f550",
+     "args": [],
+     "result": "bool",
+     "properties": [],
+     "strings": [],
+     "game_calls": 4,
+     "attrib": {
+      "fields": [
+       "career_constants.zone_multiplier_max",
+       "gameplay.GameMode"
+      ],
+      "classes": [
+       "career_constants"
+      ]
+     }
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdControllerConfigOptions": {
+   "registrar": "0x5942a0",
+   "members": {
+    "GetData": {
+     "handler": "0x5867f0",
+     "registrar": "0x5942a0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "MinusDBLabel",
+       "setter": "set(string)"
+      },
+      {
+       "name": "PlusDBLabel",
+       "setter": "set(string)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(?)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(?)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(?)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(?)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(?)"
+      }
+     ],
+     "strings": [
+      "%d",
+      "%c%s",
+      "MinusDBLabel",
+      "PlusDBLabel",
+      "Data"
+     ],
+     "game_calls": 108
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": [
+    "ChangeOption",
+    "GetController"
+   ]
+  },
+  "cmdCredits": {
+   "registrar": "0x5704f0",
+   "members": {
+    "CallBackLineDeleted": {
+     "handler": "0x54d640",
+     "registrar": "0x5704f0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "NotifySpawnLinePossible": {
+     "handler": "0x53d460",
+     "registrar": "0x5704f0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnShiftDown": {
+     "handler": "0x5670f0",
+     "registrar": "0x5704f0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "OnShiftUp": {
+     "handler": "0x5670c0",
+     "registrar": "0x5704f0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdFECars": {
+   "registrar": "0x55e890",
+   "members": {
+    "EnteredFromImpound": {
+     "handler": "0x550850",
+     "registrar": "0x55e890",
+     "args": [],
+     "result": "bool",
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "GetButtonInfo": {
+     "handler": "0x550770",
+     "registrar": "0x55e890",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "true",
+       "setter": "set(string)"
+      },
+      {
+       "name": "true",
+       "setter": "set(string)"
+      },
+      {
+       "name": "RT",
+       "setter": "set(string)"
+      },
+      {
+       "name": "RT",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "true",
+      "false",
+      "RT"
+     ],
+     "game_calls": 5
+    },
+    "IsCarLoading": {
+     "handler": "0x53f170",
+     "registrar": "0x55e890",
+     "args": [],
+     "result": "bool",
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdFECreateAccount": {
+   "registrar": "0x535f40",
+   "members": {},
+   "ambiguous": [],
+   "not_in_exe": [
+    "GetEmailAndPassword"
+   ]
+  },
+  "cmdFEDialogScreen": {
+   "registrar": "0x535f40",
+   "members": {
+    "GetDialogConfig": {
+     "handler": "0x535e10",
+     "registrar": "0x535f40",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "titleText",
+       "setter": "set(string)"
+      },
+      {
+       "name": "dialogText",
+       "setter": "set(string)"
+      },
+      {
+       "name": "numButtons",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "buttonText",
+       "setter": "set(?)"
+      },
+      {
+       "name": "showPopupBar",
+       "setter": "set(?)"
+      },
+      {
+       "name": "enableCancel",
+       "setter": "set(?)"
+      },
+      {
+       "name": "showCarGun",
+       "setter": "set(?)"
+      }
+     ],
+     "strings": [
+      "titleText",
+      "dialogText",
+      "numButtons",
+      "buttonText",
+      "showPopupBar",
+      "enableCancel",
+      "showCarGun"
+     ],
+     "game_calls": 11
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": [
+    "UpdateEndOfTextPos"
+   ]
+  },
+  "cmdFEHintsTipsScreen": {
+   "registrar": "0x587d90",
+   "members": {
+    "GetPageData": {
+     "handler": "0x57bbb0",
+     "registrar": "0x587d90",
+     "args": [
+      "int@1201160296"
+     ],
+     "result": "object",
+     "properties": [
+      {
+       "name": "Text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "hash",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "imageHash",
+       "setter": "set(?)"
+      }
+     ],
+     "strings": [
+      "%c%s",
+      "Text",
+      "%s%d",
+      "hash",
+      "imageHash"
+     ],
+     "game_calls": 26,
+     "attrib": {
+      "classes": [
+       "fe_hints_tips"
+      ],
+      "fields": [
+       "fe_hints_tips.content"
+      ]
+     }
+    },
+    "GetToggleData": {
+     "handler": "0x57b9b0",
+     "registrar": "0x587d90",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "Text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "ID",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "Content",
+       "setter": "set(?)"
+      }
+     ],
+     "strings": [
+      "%c%s",
+      "Text",
+      "ID",
+      "Content"
+     ],
+     "game_calls": 23,
+     "attrib": {
+      "classes": [
+       "fe_hints_tips"
+      ],
+      "fields": [
+       "fe_hints_tips.content"
+      ]
+     }
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdFELeaderboardScreen": {
+   "registrar": "0x59f240",
+   "members": {
+    "RetrieveData": {
+     "handler": "0x593d90",
+     "registrar": "0x59f240",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "numRows",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "rank",
+       "setter": "set(string)"
+      },
+      {
+       "name": "userName",
+       "setter": "set(string)"
+      },
+      {
+       "name": "score",
+       "setter": "set(string)"
+      },
+      {
+       "name": "metaData0",
+       "setter": "set(string)"
+      },
+      {
+       "name": "metaData1",
+       "setter": "set(string)"
+      },
+      {
+       "name": "metaData2",
+       "setter": "set(string)"
+      },
+      {
+       "name": "rowData",
+       "setter": "set(?)"
+      },
+      {
+       "name": "userPosition",
+       "setter": "set(int?)"
+      }
+     ],
+     "strings": [
+      "numRows",
+      "{0:d}",
+      "rank",
+      "userName",
+      "score",
+      "MetaData",
+      "metaData0",
+      "metaData1",
+      "metaData2",
+      "rowData"
+     ],
+     "game_calls": 37
+    },
+    "UpdateColumnHeadings": {
+     "handler": "0x579d50",
+     "registrar": "0x59f240",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "colHeading",
+       "setter": "set(?)"
+      }
+     ],
+     "strings": [
+      "~OL_SUBTITLE_RANK",
+      "text",
+      "~OL_SUBTITLE_GAME_TAG",
+      "%c%s",
+      "colHeading"
+     ],
+     "game_calls": 17
+    },
+    "UpdateFilters": {
+     "handler": "0x579eb0",
+     "registrar": "0x59f240",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "filters",
+       "setter": "set(?)"
+      }
+     ],
+     "strings": [
+      "text",
+      "filters",
+      "%d~"
+     ],
+     "game_calls": 99
+    },
+    "UpdateLabels": {
+     "handler": "0x53d240",
+     "registrar": "0x59f240",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "eventName",
+       "setter": "set(string)"
+      },
+      {
+       "name": "gameMode",
+       "setter": "set(string)"
+      },
+      {
+       "name": "playerFilter",
+       "setter": "set(string)"
+      },
+      {
+       "name": "period",
+       "setter": "set(string)"
+      },
+      {
+       "name": "isPursuit",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "isPursuit",
+       "setter": "set(int?)"
+      }
+     ],
+     "strings": [
+      "~ON_LEADERBOARD_EVENT_NAME",
+      "eventName",
+      "~ON_SETTINGS_GAMEMODE_OPTION",
+      "gameMode",
+      "~OL_BUTTON_PLAYER_FILTER",
+      "playerFilter",
+      "~ON_LEADERBOARD_PERIOD",
+      "period",
+      "isPursuit"
+     ],
+     "game_calls": 9
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdFEMyCars": {
+   "registrar": "0x5a37c0",
+   "members": {
+    "CarSelected": {
+     "handler": "0x550930",
+     "registrar": "0x5a37c0",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 4
+    },
+    "GetCurrentToggle": {
+     "handler": "0x57ef90",
+     "registrar": "0x5a37c0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "id",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "listEnum",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "type",
+       "setter": "set(string)"
+      },
+      {
+       "name": "id",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "listEnum",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "type",
+       "setter": "set(string)"
+      },
+      {
+       "name": "type",
+       "setter": "set(?)"
+      },
+      {
+       "name": "type",
+       "setter": "set(?)"
+      },
+      {
+       "name": "length",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "id",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "listEnum",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "type",
+       "setter": "set(string)"
+      },
+      {
+       "name": "type",
+       "setter": "set(?)"
+      },
+      {
+       "name": "length",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "index",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "carHandle",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "carName",
+       "setter": "set(string)"
+      },
+      {
+       "name": "carCost",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "%d",
+       "setter": "set(?)"
+      },
+      {
+       "name": "length",
+       "setter": "set(int?)"
+      }
+     ],
+     "strings": [
+      "id",
+      "text",
+      "listEnum",
+      "Toggle",
+      "type",
+      "length",
+      "index",
+      "carHandle",
+      "carName",
+      "carCost"
+     ],
+     "game_calls": 40
+    },
+    "UpdateCarList": {
+     "handler": "0x55eac0",
+     "registrar": "0x5a37c0",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 4
+    }
+   },
+   "ambiguous": [
+    "CarHighlighted",
+    "GetCarList"
+   ],
+   "not_in_exe": []
+  },
+  "cmdFENISOverlay": {
+   "registrar": "0x5b6860",
+   "members": {
+    "GetName": {
+     "handler": "0x5b2e10",
+     "registrar": "0x5b6860",
+     "args": [],
+     "result": "unknown value",
+     "properties": [],
+     "strings": [
+      "UI/%s.big"
+     ],
+     "game_calls": 6
+    },
+    "OnScreenEntered": {
+     "handler": "0x5ace00",
+     "registrar": "0x5b6860",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "OnScreenUpdate": {
+     "handler": "0x5ace20",
+     "registrar": "0x5b6860",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdFEOnlineTOS": {
+   "registrar": "0x5a2670",
+   "members": {
+    "GetMode": {
+     "handler": "0x53b980",
+     "registrar": "0x5a2670",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 3
+    },
+    "GetNumTOSWords": {
+     "handler": "0x54ba30",
+     "registrar": "0x5a2670",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 4
+    },
+    "GetWordRange": {
+     "handler": "0x59ef40",
+     "registrar": "0x5a2670",
+     "args": [
+      "int@0",
+      "int@1"
+     ],
+     "result": "object",
+     "properties": [
+      {
+       "name": "numWords",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "word%d",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "numWords",
+      "word%d"
+     ],
+     "game_calls": 14
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdFEPerformanceTuning": {
+   "registrar": "0x5a06e0",
+   "members": {
+    "GetRealPos": {
+     "handler": "0x599ca0",
+     "registrar": "0x5a06e0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "val",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "{0:f.1}",
+      "val",
+      "%d",
+      "%f",
+      "SetBarDelta",
+      "SetBarLevel",
+      "SetBarText",
+      "PlayRegularAnim",
+      "MENU_DRIVER_SKILLS_TALLY",
+      "PlayInstantAnim"
+     ],
+     "game_calls": 43,
+     "attrib": {
+      "fields": [
+       "gameplay.BoostValue",
+       "gameplay.Children",
+       "gameplay.RewardMarkerType"
+      ],
+      "classes": [
+       "gameplay"
+      ]
+     }
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdFEPinkSlip": {
+   "registrar": "0x587ab0",
+   "members": {
+    "OptionSelected": {
+     "handler": "0x53d780",
+     "registrar": "0x587ab0",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 3
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdFEVisualPaint": {
+   "registrar": "0x572300",
+   "members": {
+    "CycleGroup": {
+     "handler": "0x569690",
+     "registrar": "0x572300",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1,
+     "attrib": {
+      "classes": [
+       "car_paint_group"
+      ]
+     }
+    },
+    "FadingBack": {
+     "handler": "0x53eea0",
+     "registrar": "0x572300",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "FadingFront": {
+     "handler": "0x53eec0",
+     "registrar": "0x572300",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "GetSlotInfo": {
+     "handler": "0x54f1e0",
+     "registrar": "0x572300",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "id",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "type",
+       "setter": "set(string)"
+      },
+      {
+       "name": "%d",
+       "setter": "set(?)"
+      },
+      {
+       "name": "length",
+       "setter": "set(int?)"
+      }
+     ],
+     "strings": [
+      "id",
+      "text",
+      "Paint Slot",
+      "type",
+      "%d",
+      "length"
+     ],
+     "game_calls": 9
+    },
+    "SelectSlot": {
+     "handler": "0x569620",
+     "registrar": "0x572300",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 5,
+     "attrib": {
+      "collections": [
+       "frontend.customization"
+      ],
+      "fields": [
+       "frontend.part_camera"
+      ],
+      "classes": [
+       "car_paint_group"
+      ]
+     }
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdFEWMDistrictViewScreen": {
+   "registrar": "0x555cf0",
+   "members": {
+    "ItemSelectedAnimationDone": {
+     "handler": "0x545ba0",
+     "registrar": "0x555cf0",
+     "args": [],
+     "result": "bool",
+     "properties": [],
+     "strings": [],
+     "game_calls": 3
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdFEWMWorldViewScreen": {
+   "registrar": "0x555cf0",
+   "members": {
+    "ItemSelectedAnimationDone": {
+     "handler": "0x545ba0",
+     "registrar": "0x555cf0",
+     "args": [],
+     "result": "bool",
+     "properties": [],
+     "strings": [],
+     "game_calls": 3
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdGenericError": {
+   "registrar": "0x59f1e0",
+   "members": {
+    "GetErrorMessage": {
+     "handler": "0x593930",
+     "registrar": "0x59f1e0",
+     "args": [],
+     "result": "string",
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdLanguageSelect": {
+   "registrar": "0x54a8c0",
+   "members": {
+    "GetLanguageList": {
+     "handler": "0x539520",
+     "registrar": "0x54a8c0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "languageArr",
+       "setter": "set(?)"
+      }
+     ],
+     "strings": [
+      "languageArr"
+     ],
+     "game_calls": 4
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdLevelUpScreen": {
+   "registrar": "0x54cf60",
+   "members": {
+    "ExitLevelUp": {
+     "handler": "0x53ccb0",
+     "registrar": "0x54cf60",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 3
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdLoadingScreen": {
+   "registrar": "0x587de0",
+   "members": {
+    "ChangeState": {
+     "handler": "0x53daa0",
+     "registrar": "0x587de0",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    },
+    "GetEventData": {
+     "handler": "0x57bdb0",
+     "registrar": "0x587de0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "eventName",
+       "setter": "set(string)"
+      },
+      {
+       "name": "eventDesc",
+       "setter": "set(string)"
+      },
+      {
+       "name": "eventDesc",
+       "setter": "set(string)"
+      },
+      {
+       "name": "eventDesc",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "Mission_Location_%s",
+      "Mission_Time_%s",
+      "eventName",
+      "eventDesc"
+     ],
+     "game_calls": 20,
+     "attrib": {
+      "fields": [
+       "frontend_sfx.MovieVolumes"
+      ]
+     }
+    },
+    "GetLoadingTexts": {
+     "handler": "0x57bff0",
+     "registrar": "0x587de0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "%c%s",
+       "setter": "set(string)"
+      },
+      {
+       "name": "%c%s",
+       "setter": "set(int?)"
+      }
+     ],
+     "strings": [
+      "text%d",
+      "%c%s"
+     ],
+     "game_calls": 11
+    },
+    "OnEnterComplete": {
+     "handler": "0x53da80",
+     "registrar": "0x587de0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "OnScreenExitComplete": {
+     "handler": "0x53db00",
+     "registrar": "0x587de0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "SetAnimationCompleted": {
+     "handler": "0x54dd70",
+     "registrar": "0x587de0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    },
+    "TextFadeOutComplete": {
+     "handler": "0x53dae0",
+     "registrar": "0x587de0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdMessenger": {
+   "registrar": "0x566a40",
+   "members": {
+    "GetMessengerConfig": {
+     "handler": "0x53bc60",
+     "registrar": "0x566a40",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "listSize",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "names",
+       "setter": "set(?)"
+      },
+      {
+       "name": "isOnline",
+       "setter": "set(?)"
+      },
+      {
+       "name": "friendRequestPending",
+       "setter": "set(?)"
+      },
+      {
+       "name": "messagePending",
+       "setter": "set(?)"
+      },
+      {
+       "name": "gameInvitePending",
+       "setter": "set(?)"
+      },
+      {
+       "name": "selectedTab",
+       "setter": "set(int?)"
+      }
+     ],
+     "strings": [
+      "PendingFriends",
+      "SentInviteFriends",
+      "PendingGames",
+      "ReceivedChats",
+      "PlasmaBlock",
+      "listSize",
+      "names",
+      "isOnline",
+      "friendRequestPending",
+      "messagePending"
+     ],
+     "game_calls": 46
+    },
+    "MoveTab": {
+     "handler": "0x559c60",
+     "registrar": "0x566a40",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 3
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdMovieScreen": {
+   "registrar": "0x58d570",
+   "members": {
+    "StartMovie": {
+     "handler": "0x582c50",
+     "registrar": "0x58d570",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2,
+     "attrib": {
+      "fields": [
+       "frontend_sfx.MovieVolumes"
+      ],
+      "collections": [
+       "frontend_sfx.0xC831160A"
+      ],
+      "classes": [
+       "frontend_sfx"
+      ]
+     }
+    },
+    "StopMovie": {
+     "handler": "0x556000",
+     "registrar": "0x58d570",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": [
+    "GetMovieName"
+   ]
+  },
+  "cmdNewsScreen": {
+   "registrar": "0x54ba80",
+   "members": {
+    "GetNews": {
+     "handler": "0x53b9c0",
+     "registrar": "0x54ba80",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "newsContent",
+       "setter": "set(string)"
+      },
+      {
+       "name": "newsTitle",
+       "setter": "set(string)"
+      },
+      {
+       "name": "newsContent",
+       "setter": "set(string)"
+      },
+      {
+       "name": "newsTitle",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "<h>",
+      "</h>",
+      "news title",
+      "<b>",
+      "</b>",
+      "news content",
+      "newsContent",
+      "newsTitle",
+      "news data"
+     ],
+     "game_calls": 21
+    },
+    "ShowScrollButton": {
+     "handler": "0x53bb70",
+     "registrar": "0x54ba80",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [
+      "rightMover.content.ConsoleHelp.mHelpButtonLS",
+      "rightMover.content.ConsoleHelp.mHelpButtonLSDrop"
+     ],
+     "game_calls": 1
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdOlnSettings": {
+   "registrar": "0x59ebc0",
+   "members": {
+    "GetCurrentTrackTextureHash": {
+     "handler": "0x53b780",
+     "registrar": "0x59ebc0",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [
+      "PREVIEW_%s"
+     ],
+     "game_calls": 6,
+     "attrib": {
+      "fields": [
+       "frontend_sfx.MovieVolumes"
+      ]
+     }
+    },
+    "GetLapOrTimeData": {
+     "handler": "0x585ac0",
+     "registrar": "0x59ebc0",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 3
+    },
+    "GetToggleData": {
+     "handler": "0x585a40",
+     "registrar": "0x59ebc0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "toggle0",
+       "setter": "set(?)"
+      },
+      {
+       "name": "toggle3",
+       "setter": "set(?)"
+      },
+      {
+       "name": "toggle4",
+       "setter": "set(?)"
+      }
+     ],
+     "strings": [
+      "toggle0",
+      "toggle3",
+      "toggle4"
+     ],
+     "game_calls": 10
+    },
+    "SettingsAccepted": {
+     "handler": "0x53b8a0",
+     "registrar": "0x59ebc0",
+     "args": [
+      "int@0",
+      "int@1",
+      "int@2",
+      "int@3",
+      "int@4"
+     ],
+     "result": "unknown value",
+     "properties": [],
+     "strings": [],
+     "game_calls": 8
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": [
+    "GetCurrentTrackLength",
+    "GetToggleDefaults",
+    "GetTrackData",
+    "IsCopsNRobbers",
+    "IsSprint"
+   ]
+  },
+  "cmdOnlineGameRoom": {
+   "registrar": "0x59e3e0",
+   "members": {
+    "GetPlayerList": {
+     "handler": "0x53b5b0",
+     "registrar": "0x59e3e0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "numPlayers",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "voip",
+       "setter": "set(?)"
+      },
+      {
+       "name": "playerName",
+       "setter": "set(?)"
+      },
+      {
+       "name": "ping",
+       "setter": "set(?)"
+      },
+      {
+       "name": "PlayerId",
+       "setter": "set(?)"
+      },
+      {
+       "name": "IsHost",
+       "setter": "set(?)"
+      },
+      {
+       "name": "players",
+       "setter": "set(?)"
+      },
+      {
+       "name": "numPlayers",
+       "setter": "set(int?)"
+      }
+     ],
+     "strings": [
+      "numPlayers",
+      "voip",
+      "playerName",
+      "ping",
+      "PlayerId",
+      "IsHost",
+      "players"
+     ],
+     "game_calls": 17
+    },
+    "GetTimers": {
+     "handler": "0x591040",
+     "registrar": "0x59e3e0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "RaceNowTime",
+       "setter": "set(string)"
+      },
+      {
+       "name": "VetoTime",
+       "setter": "set(string)"
+      },
+      {
+       "name": "RaceNowTime",
+       "setter": "set(string)"
+      },
+      {
+       "name": "VetoTime",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "RaceNowTime",
+      "VetoTime"
+     ],
+     "game_calls": 17
+    },
+    "GetTreeID": {
+     "handler": "0x53b5a0",
+     "registrar": "0x59e3e0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 1
+    },
+    "IsPlayerListUpdated": {
+     "handler": "0x53b710",
+     "registrar": "0x59e3e0",
+     "args": [],
+     "result": "bool",
+     "properties": [],
+     "strings": [],
+     "game_calls": 4
+    },
+    "TreeIntroDone": {
+     "handler": "0x53b760",
+     "registrar": "0x59e3e0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "ViewPlayerProfile": {
+     "handler": "0x54b970",
+     "registrar": "0x59e3e0",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdOptions": {
+   "registrar": "0x5942a0",
+   "members": {
+    "GetData": {
+     "handler": "0x5867f0",
+     "registrar": "0x5942a0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "MinusDBLabel",
+       "setter": "set(string)"
+      },
+      {
+       "name": "PlusDBLabel",
+       "setter": "set(string)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(?)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(?)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(?)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(?)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(?)"
+      }
+     ],
+     "strings": [
+      "%d",
+      "%c%s",
+      "MinusDBLabel",
+      "PlusDBLabel",
+      "Data"
+     ],
+     "game_calls": 108
+    },
+    "ValueChanged": {
+     "handler": "0x587ab0",
+     "registrar": "0x5942a0",
+     "args": [
+      "int@0"
+     ],
+     "result": "object",
+     "properties": [
+      {
+       "name": "PercentageLabel",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "%c%s",
+      "PercentageLabel",
+      "InitializeData",
+      "HandleLTrigger",
+      "HandleRTrigger",
+      "DefaultSettings",
+      "ClearKey",
+      "NotInConfigMode",
+      "OptionHighlighted",
+      "OptionSelected"
+     ],
+     "game_calls": 29
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdPCControllerConfig": {
+   "registrar": "0x587ab0",
+   "members": {
+    "ClearKey": {
+     "handler": "0x53d6e0",
+     "registrar": "0x587ab0",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 4
+    },
+    "DefaultSettings": {
+     "handler": "0x53d760",
+     "registrar": "0x587ab0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "HandleLTrigger": {
+     "handler": "0x53d580",
+     "registrar": "0x587ab0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "HandleRTrigger": {
+     "handler": "0x53d5c0",
+     "registrar": "0x587ab0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 4
+    },
+    "InitializeData": {
+     "handler": "0x53d620",
+     "registrar": "0x587ab0",
+     "args": [],
+     "result": "unknown value",
+     "properties": [],
+     "strings": [],
+     "game_calls": 8
+    },
+    "OptionHighlighted": {
+     "handler": "0x5343e0",
+     "registrar": "0x5a4c00",
+     "args": [
+      "int@0"
+     ],
+     "result": "object",
+     "properties": [
+      {
+       "name": "%.6f",
+       "setter": "set(string)"
+      },
+      {
+       "name": "%.6f",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "%.6f"
+     ],
+     "game_calls": 9
+    },
+    "OptionSelected": {
+     "handler": "0x53d780",
+     "registrar": "0x587ab0",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 3
+    },
+    "UpdateControllerConfigScreen": {
+     "handler": "0x57aac0",
+     "registrar": "0x587ab0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "Text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "ID",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "Keyboard",
+       "setter": "set(?)"
+      },
+      {
+       "name": "Text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "ID",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "Data",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "%d",
+       "setter": "set(?)"
+      },
+      {
+       "name": "NumGamePads",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "PadIndexOptions",
+       "setter": "set(?)"
+      },
+      {
+       "name": "SelectedPadIndex",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "SelectedDeviceType",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "InitialPosition",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "Text",
+       "setter": "set(string)"
+      },
+      {
+       "name": "ID",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "Primary",
+       "setter": "set(string)"
+      },
+      {
+       "name": "Secondary",
+       "setter": "set(string)"
+      },
+      {
+       "name": "%d",
+       "setter": "set(?)"
+      },
+      {
+       "name": "length",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "RowsData",
+       "setter": "set(?)"
+      },
+      {
+       "name": "DefaultString",
+       "setter": "set(string)"
+      },
+      {
+       "name": "DoneString",
+       "setter": "set(string)"
+      },
+      {
+       "name": "ClearString",
+       "setter": "set(string)"
+      },
+      {
+       "name": "PrimaryString",
+       "setter": "set(string)"
+      },
+      {
+       "name": "SecondaryString",
+       "setter": "set(string)"
+      },
+      {
+       "name": "TipString",
+       "setter": "set(string)"
+      },
+      {
+       "name": "KeyToBindString",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "%c%s",
+      "Text",
+      "ID",
+      "Data",
+      "Keyboard",
+      "%d",
+      "NumGamePads",
+      "PadIndexOptions",
+      "SelectedPadIndex",
+      "SelectedDeviceType"
+     ],
+     "game_calls": 81
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdPCCountrySelect": {
+   "registrar": "0x72bbb0",
+   "members": {
+    "CountrySelected": {
+     "handler": "0x7243e0",
+     "registrar": "0x72bbb0",
+     "args": [
+      "int@0"
+     ],
+     "result": null,
+     "properties": [],
+     "strings": [
+      "PCMemcardManager"
+     ],
+     "game_calls": 5
+    },
+    "GetCountryList": {
+     "handler": "0x72b6d0",
+     "registrar": "0x72bbb0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "index",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "country",
+       "setter": "set(string)"
+      },
+      {
+       "name": "%d",
+       "setter": "set(?)"
+      },
+      {
+       "name": "length",
+       "setter": "set(int?)"
+      }
+     ],
+     "strings": [
+      "index",
+      "country",
+      "%d",
+      "length"
+     ],
+     "game_calls": 18
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdPCCreateAccount": {
+   "registrar": "0x724270",
+   "members": {
+    "GetYearInfo": {
+     "handler": "0x71f5b0",
+     "registrar": "0x724270",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "min",
+       "setter": "set(int?)"
+      },
+      {
+       "name": "max",
+       "setter": "set(int?)"
+      }
+     ],
+     "strings": [
+      "min",
+      "max"
+     ],
+     "game_calls": 3
+    },
+    "IsCapturingInput": {
+     "handler": "0x71f2c0",
+     "registrar": "0x724270",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdPCForgotPassword": {
+   "registrar": "0x723fb0",
+   "members": {
+    "IsCapturingInput": {
+     "handler": "0x71f2c0",
+     "registrar": "0x723fb0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdPCOnlineLogin": {
+   "registrar": "0x723fb0",
+   "members": {
+    "IsCapturingInput": {
+     "handler": "0x71f2c0",
+     "registrar": "0x723fb0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdPCOnlinePersona": {
+   "registrar": "0x72dd90",
+   "members": {
+    "CreateNewPersona": {
+     "handler": null,
+     "registrar": "0x72dd90"
+    },
+    "GetPersonas": {
+     "handler": null,
+     "registrar": "0x72dd90"
+    },
+    "GetToggleItems": {
+     "handler": null,
+     "registrar": "0x72dd90"
+    },
+    "IsCapturingInput": {
+     "handler": "0x71f2c0",
+     "registrar": "0x72dd90",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    },
+    "PadBack": {
+     "handler": null,
+     "registrar": "0x72dd90"
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": [
+    "PersonaSelected"
+   ]
+  },
+  "cmdPhotoMode": {
+   "registrar": "0x55fe20",
+   "members": {
+    "ForceCameraStop": {
+     "handler": "0x5538a0",
+     "registrar": "0x55fe20",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 2
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdPlayerProfile": {
+   "registrar": "0x59f0d0",
+   "members": {
+    "GetConfig": {
+     "handler": "0x591690",
+     "registrar": "0x59f0d0",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "PlayerName",
+       "setter": "set(string)"
+      },
+      {
+       "name": "CareerCompletion",
+       "setter": "set(string)"
+      },
+      {
+       "name": "BountyLevel",
+       "setter": "set(string)"
+      },
+      {
+       "name": "RankedRaces",
+       "setter": "set(string)"
+      },
+      {
+       "name": "RankedWins",
+       "setter": "set(string)"
+      },
+      {
+       "name": "WinPercent",
+       "setter": "set(string)"
+      },
+      {
+       "name": "WinStreak",
+       "setter": "set(string)"
+      },
+      {
+       "name": "TotalCash",
+       "setter": "set(string)"
+      },
+      {
+       "name": "Achievements",
+       "setter": "set(string)"
+      },
+      {
+       "name": "DisconnectPercent",
+       "setter": "set(string)"
+      },
+      {
+       "name": "CareerCompletion",
+       "setter": "set(string)"
+      },
+      {
+       "name": "BountyLevel",
+       "setter": "set(string)"
+      },
+      {
+       "name": "RankedRaces",
+       "setter": "set(string)"
+      },
+      {
+       "name": "RankedWins",
+       "setter": "set(string)"
+      },
+      {
+       "name": "WinPercent",
+       "setter": "set(string)"
+      },
+      {
+       "name": "WinStreak",
+       "setter": "set(string)"
+      },
+      {
+       "name": "TotalCash",
+       "setter": "set(string)"
+      },
+      {
+       "name": "Achievements",
+       "setter": "set(string)"
+      },
+      {
+       "name": "DisconnectPercent",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "PlayerName",
+      "{0:d}",
+      "CareerCompletion",
+      "BountyLevel",
+      "RankedRaces",
+      "RankedWins",
+      "WinPercent",
+      "WinStreak",
+      "TotalCash",
+      "Achievements"
+     ],
+     "game_calls": 34
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdPostMission": {
+   "registrar": "0x535f40",
+   "members": {},
+   "ambiguous": [],
+   "not_in_exe": [
+    "IsWinner"
+   ]
+  },
+  "cmdPostRaceTransition": {
+   "registrar": "0x54cde0",
+   "members": {
+    "OpenSummary": {
+     "handler": "0x53cc80",
+     "registrar": "0x54cde0",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 4
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": []
+  },
+  "cmdVideoCalibration": {
+   "registrar": "0x587d00",
+   "members": {
+    "ExitScreen": {
+     "handler": "0x53d7f0",
+     "registrar": "0x587d00",
+     "args": [],
+     "result": null,
+     "properties": [],
+     "strings": [],
+     "game_calls": 0
+    },
+    "Step1ScreenData": {
+     "handler": "0x57b370",
+     "registrar": "0x587d00",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "Label",
+       "setter": "set(string)"
+      },
+      {
+       "name": "LabelA",
+       "setter": "set(string)"
+      },
+      {
+       "name": "LabelB",
+       "setter": "set(string)"
+      },
+      {
+       "name": "LabelC",
+       "setter": "set(string)"
+      },
+      {
+       "name": "Label",
+       "setter": "set(string)"
+      },
+      {
+       "name": "LabelA",
+       "setter": "set(string)"
+      },
+      {
+       "name": "LabelB",
+       "setter": "set(string)"
+      },
+      {
+       "name": "LabelC",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "%c%s",
+      "Label",
+      "LabelA",
+      "LabelB",
+      "LabelC"
+     ],
+     "game_calls": 24
+    },
+    "Step2ScreenData": {
+     "handler": "0x57b570",
+     "registrar": "0x587d00",
+     "args": [],
+     "result": "object",
+     "properties": [
+      {
+       "name": "Label",
+       "setter": "set(string)"
+      },
+      {
+       "name": "LabelA",
+       "setter": "set(string)"
+      },
+      {
+       "name": "LabelB",
+       "setter": "set(string)"
+      },
+      {
+       "name": "LabelC",
+       "setter": "set(string)"
+      }
+     ],
+     "strings": [
+      "%c%s",
+      "Label",
+      "LabelA",
+      "LabelB",
+      "LabelC"
+     ],
+     "game_calls": 18
+    }
+   },
+   "ambiguous": [],
+   "not_in_exe": [
+    "Step3ScreenData"
+   ]
+  },
+  "etfStdColorClass": {
+   "registrar": null,
+   "members": {},
+   "not_in_exe": []
+  },
+  "extern": {
+   "registrar": "0x535f40",
+   "members": {},
+   "ambiguous": [],
+   "not_in_exe": [
+    "Platform",
+    "WideScreen"
+   ]
+  },
+  "gCT": {
+   "registrar": "0x535f40",
+   "members": {},
+   "ambiguous": [],
+   "not_in_exe": [
+    "register"
+   ]
+  },
+  "gTransMan": {
+   "registrar": "0x535f40",
+   "members": {},
+   "ambiguous": [],
+   "not_in_exe": [
+    "goBackScreen",
+    "gotoScreen"
+   ]
+  },
+  "gVKB": {
+   "registrar": "0x535f40",
+   "members": {},
+   "ambiguous": [],
+   "not_in_exe": [
+    "finish"
+   ]
+  }
+ }
+}

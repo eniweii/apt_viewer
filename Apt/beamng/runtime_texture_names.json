@@ -1,0 +1,326 @@
+{
+ "fe_hints_tips.picture": [
+  {
+   "name": "HT_Career_EventSelect_",
+   "hash": "0x1104B10C"
+  },
+  {
+   "name": "HT_Career_GPSMapFilters_",
+   "hash": "0xE532AD6B"
+  },
+  {
+   "name": "HT_Career_GPSMap_",
+   "hash": "0x34F953B2"
+  },
+  {
+   "name": "HT_Career_InTheZoneMultiplier_",
+   "hash": "0x934398C5"
+  },
+  {
+   "name": "HT_Career_MasterEvents_",
+   "hash": "0x4CADF76B"
+  },
+  {
+   "name": "HT_Career_PinkSlips_",
+   "hash": "0xC01F90A7"
+  },
+  {
+   "name": "HT_Career_WheelmanLevel_",
+   "hash": "0xEB14DDF3"
+  },
+  {
+   "name": "HT_Career_WheelmanSkills_",
+   "hash": "0x759FD46D"
+  },
+  {
+   "name": "HT_Career_ZonePoints_",
+   "hash": "0xA874D5A3"
+  },
+  {
+   "name": "HT_Customization_Autosculpt_",
+   "hash": "0xE71E81A5"
+  },
+  {
+   "name": "HT_Customization_CarTiers_",
+   "hash": "0xA40A4B8E"
+  },
+  {
+   "name": "HT_Customization_PerformanceMods_",
+   "hash": "0xBF89DFF6"
+  },
+  {
+   "name": "HT_Customization_Vinyls_",
+   "hash": "0xF95F3336"
+  },
+  {
+   "name": "HT_Customization_VisualMods_",
+   "hash": "0x64DCE498"
+  },
+  {
+   "name": "HT_Dashboard_BustEvadeMeter_",
+   "hash": "0x3BF92A00"
+  },
+  {
+   "name": "HT_Dashboard_CooldownMeter_",
+   "hash": "0x7C1A79E2"
+  },
+  {
+   "name": "HT_Dashboard_DamageMeter_",
+   "hash": "0x6F1BF3BC"
+  },
+  {
+   "name": "HT_Dashboard_DashboardDisable_",
+   "hash": "0xD79C34BC"
+  },
+  {
+   "name": "HT_Dashboard_DistanceMeter_",
+   "hash": "0x1F46B148"
+  },
+  {
+   "name": "HT_Dashboard_GPSminimap_",
+   "hash": "0xF8532195"
+  },
+  {
+   "name": "HT_Dashboard_InTheZoneMeter_",
+   "hash": "0x00105711"
+  },
+  {
+   "name": "HT_Dashboard_MainMenu_",
+   "hash": "0xC1E44C3A"
+  },
+  {
+   "name": "HT_Dashboard_NitrousOxide_",
+   "hash": "0x8047034D"
+  },
+  {
+   "name": "HT_Dashboard_RaceNow_",
+   "hash": "0x46F4CC8F"
+  },
+  {
+   "name": "HT_Dashboard_SpeedBreaker_",
+   "hash": "0x3113AB4D"
+  },
+  {
+   "name": "HT_Heroic_360540720_",
+   "hash": "0x1390079D"
+  },
+  {
+   "name": "HT_Heroic_360Brakestand_",
+   "hash": "0xE2A0986A"
+  },
+  {
+   "name": "HT_Heroic_Brakestand_",
+   "hash": "0xC6C80ED1"
+  },
+  {
+   "name": "HT_Heroic_Burnout_",
+   "hash": "0x816E4861"
+  },
+  {
+   "name": "HT_Heroic_CoastingDeceleration_",
+   "hash": "0x46C42959"
+  },
+  {
+   "name": "HT_Heroic_DriftAndNitrousDrift_",
+   "hash": "0xE9E3B6EB"
+  },
+  {
+   "name": "HT_Heroic_JTurn_",
+   "hash": "0x9B266FE5"
+  },
+  {
+   "name": "HT_Heroic_PowerSlide_",
+   "hash": "0x1C647410"
+  },
+  {
+   "name": "HT_Heroic_Reverse360_",
+   "hash": "0xD43FC3E7"
+  },
+  {
+   "name": "HT_Heroic_ReverseDriving_",
+   "hash": "0xF6947461"
+  },
+  {
+   "name": "HT_Police_BustImpound_",
+   "hash": "0x9FC4706E"
+  },
+  {
+   "name": "HT_Police_DisableCops_",
+   "hash": "0xC4C1A15D"
+  },
+  {
+   "name": "HT_Police_GameOver_",
+   "hash": "0x5019A9CA"
+  },
+  {
+   "name": "HT_Police_Heat_",
+   "hash": "0xFF11D256"
+  },
+  {
+   "name": "HT_Police_Hiding_",
+   "hash": "0x1454F127"
+  },
+  {
+   "name": "HT_Police_Pursuit_",
+   "hash": "0xBE1DA630"
+  },
+  {
+   "name": "HT_Police_RoadBlocks_",
+   "hash": "0x4F482E78"
+  },
+  {
+   "name": "HT_Police_SpikeStrips_",
+   "hash": "0x13A1F435"
+  },
+  {
+   "name": "HT_QuickRace_CompetitiveAction_",
+   "hash": "0x3F81E917"
+  },
+  {
+   "name": "HT_QuickRace_MyCars_",
+   "hash": "0x4417B4FF"
+  },
+  {
+   "name": "HT_QuickRace_QuickRaceCustomize_",
+   "hash": "0x5A6CD68B"
+  },
+  {
+   "name": "HT_QuickRace_QuickRace_",
+   "hash": "0x9B432248"
+  },
+  {
+   "name": "HT_XboxLive_CopsNRobbersCops_",
+   "hash": "0x067E1650"
+  },
+  {
+   "name": "HT_XboxLive_CopsNRobbersRobbers_",
+   "hash": "0x1FFF128A"
+  },
+  {
+   "name": "HT_XboxLive_EAAccount_",
+   "hash": "0xACB82E9C"
+  },
+  {
+   "name": "HT_XboxLive_MyCars_",
+   "hash": "0x2889B2F8"
+  },
+  {
+   "name": "HT_XboxLive_NeedforSpeed_",
+   "hash": "0xD433757D"
+  },
+  {
+   "name": "HT_XboxLive_Photomode_",
+   "hash": "0x446A2B38"
+  },
+  {
+   "name": "HT_XboxLive_PremiumContent_",
+   "hash": "0x17255943"
+  },
+  {
+   "name": "HT_XboxLive_SpeedHunters_",
+   "hash": "0xBEC08383"
+  }
+ ],
+ "gameplay.EventIconType": [
+  {
+   "name": "",
+   "hash": "0xFFFFFFFF"
+  },
+  {
+   "name": "cashgrab",
+   "hash": "0x279F88BA"
+  },
+  {
+   "name": "challenge",
+   "hash": "0x316D6102"
+  },
+  {
+   "name": "circuit",
+   "hash": "0xD5B88672"
+  },
+  {
+   "name": "drag",
+   "hash": "0x0026AF3D"
+  },
+  {
+   "name": "encounter",
+   "hash": "0x458D18F2"
+  },
+  {
+   "name": "highwaybattle",
+   "hash": "0x5C8C284C"
+  },
+  {
+   "name": "hotcar",
+   "hash": "0xADB832A0"
+  },
+  {
+   "name": "knockout",
+   "hash": "0x68B64FED"
+  },
+  {
+   "name": "milestonejump",
+   "hash": "0x4982AA0B"
+  },
+  {
+   "name": "multipoint",
+   "hash": "0xFA431F74"
+  },
+  {
+   "name": "outrun",
+   "hash": "0xBE79246C"
+  },
+  {
+   "name": "p2p",
+   "hash": "0x000156F1"
+  },
+  {
+   "name": "pursuitknockout",
+   "hash": "0x0E54B5C9"
+  },
+  {
+   "name": "pursuittag",
+   "hash": "0x5E75BA57"
+  },
+  {
+   "name": "speedtrap",
+   "hash": "0xFE4F74A7"
+  },
+  {
+   "name": "speedtrapjump",
+   "hash": "0xCCF39083"
+  },
+  {
+   "name": "takedown",
+   "hash": "0xC51D6E1C"
+  },
+  {
+   "name": "tollbooth",
+   "hash": "0xB18EDD36"
+  }
+ ],
+ "gameplay.IconModelName": [
+  {
+   "name": "",
+   "hash": "0xFFFFFFFF"
+  },
+  {
+   "name": "DEBUG_CUBE",
+   "hash": "0x1786E724"
+  },
+  {
+   "name": "DEBUG_CYLINDER",
+   "hash": "0x0CDEB47F"
+  },
+  {
+   "name": "DEBUG_SPHERE",
+   "hash": "0x39D8A4CC"
+  }
+ ],
+ "lensflare.Texture_Name": [
+  {
+   "name": "",
+   "hash": "0xFFFFFFFF"
+  }
+ ]
+}

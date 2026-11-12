@@ -1,0 +1,477 @@
+[
+ {
+  "id": 0,
+  "name": "main",
+  "handler": "0x553910"
+ },
+ {
+  "id": 4,
+  "name": "PostRace",
+  "handler": "0x55A520"
+ },
+ {
+  "id": 8,
+  "name": "PostRace",
+  "handler": "0x55A520"
+ },
+ {
+  "id": 5,
+  "name": "PostRace",
+  "handler": "0x55A520"
+ },
+ {
+  "id": 6,
+  "name": "PostMissionWin",
+  "handler": "0x55AB10"
+ },
+ {
+  "id": 7,
+  "name": "PostMissionLoss",
+  "handler": "0x55AB10"
+ },
+ {
+  "id": 9,
+  "name": "LevelUp",
+  "handler": "0x55ABC0"
+ },
+ {
+  "id": 13,
+  "name": "OnlineChyron",
+  "handler": "0x553910"
+ },
+ {
+  "id": 14,
+  "name": "SaveIcon",
+  "handler": "0x553910"
+ },
+ {
+  "id": 15,
+  "name": "SaveIcon_Dialog",
+  "handler": "0x553910"
+ },
+ {
+  "id": 10,
+  "name": "LoadingScreen",
+  "handler": "0x553910"
+ },
+ {
+  "id": 11,
+  "name": "MissionLoadingScreen",
+  "handler": "0x553910"
+ },
+ {
+  "id": 12,
+  "name": "LongLoadingScreen",
+  "handler": "0x553910"
+ },
+ {
+  "id": 34,
+  "name": "ControllerUnplugged",
+  "handler": "0x55AC70"
+ },
+ {
+  "id": 35,
+  "name": "GenericError",
+  "handler": "0x55AEC0"
+ },
+ {
+  "id": 36,
+  "name": "NISOverlay",
+  "handler": "0x5BC780"
+ },
+ {
+  "id": 27,
+  "name": "PCOnlineLoginSelection",
+  "handler": "0x55AFD0"
+ },
+ {
+  "id": 26,
+  "name": "PCOnlineLogin",
+  "handler": "0x55AF60"
+ },
+ {
+  "id": 28,
+  "name": "PCOnlineLogin",
+  "handler": "0x723E60"
+ },
+ {
+  "id": 16,
+  "name": "PCCreateAccount",
+  "handler": "0x7240A0"
+ },
+ {
+  "id": 29,
+  "name": "PCOnlinePersona",
+  "handler": "0x72AFE0"
+ },
+ {
+  "id": 30,
+  "name": "PCForgotPassword",
+  "handler": "0x7242C0"
+ },
+ {
+  "id": 31,
+  "name": "CountrySelection",
+  "handler": "0x72A700"
+ },
+ {
+  "id": 17,
+  "name": "OnlineGameRoom",
+  "handler": "0x566900"
+ },
+ {
+  "id": 18,
+  "name": "OnlineGRSettings",
+  "handler": "0x559460"
+ },
+ {
+  "id": 19,
+  "name": "OnlineTOS",
+  "handler": "0x5669A0"
+ },
+ {
+  "id": 23,
+  "name": "NewsScreen",
+  "handler": "0x5599A0"
+ },
+ {
+  "id": 24,
+  "name": "PlayerProfile",
+  "handler": "0x559A10"
+ },
+ {
+  "id": 25,
+  "name": "PlayerFeedback",
+  "handler": "0x559AA0"
+ },
+ {
+  "id": 20,
+  "name": "MessengerScreen",
+  "handler": "0x559B10"
+ },
+ {
+  "id": 21,
+  "name": "MessengerChat",
+  "handler": "0x559CB0"
+ },
+ {
+  "id": 37,
+  "name": "FontTest",
+  "handler": "0x553910"
+ },
+ {
+  "id": 38,
+  "name": "DebugCarTest",
+  "handler": "0x55EC90"
+ },
+ {
+  "id": 39,
+  "name": "TreeMenu",
+  "handler": "0x556810"
+ },
+ {
+  "id": 40,
+  "name": "TreeMenu_Customize",
+  "handler": "0x556B20"
+ },
+ {
+  "id": 41,
+  "name": "WidgetTest",
+  "handler": "0x553910"
+ },
+ {
+  "id": 42,
+  "name": "WidgetTest2",
+  "handler": "0x553910"
+ },
+ {
+  "id": 43,
+  "name": "Dialog",
+  "handler": "0x556050"
+ },
+ {
+  "id": 44,
+  "name": "ColorPickerTest",
+  "handler": "0x553910"
+ },
+ {
+  "id": 45,
+  "name": "DropdownTest",
+  "handler": "0x553910"
+ },
+ {
+  "id": 47,
+  "name": "ScrollbarTest",
+  "handler": "0x553910"
+ },
+ {
+  "id": 48,
+  "name": "TextListTest",
+  "handler": "0x553910"
+ },
+ {
+  "id": 49,
+  "name": "TickerTest",
+  "handler": "0x553910"
+ },
+ {
+  "id": 50,
+  "name": "ToggleTest",
+  "handler": "0x553910"
+ },
+ {
+  "id": 46,
+  "name": "SliderTest",
+  "handler": "0x553910"
+ },
+ {
+  "id": 51,
+  "name": "ThumbnailTest",
+  "handler": "0x553910"
+ },
+ {
+  "id": 52,
+  "name": "ChyronTest",
+  "handler": "0x553910"
+ },
+ {
+  "id": 53,
+  "name": "TreeTest",
+  "handler": "0x5569C0"
+ },
+ {
+  "id": 54,
+  "name": "StaticItemScrollerTest",
+  "handler": "0x553910"
+ },
+ {
+  "id": 89,
+  "name": "Sung",
+  "handler": "0x553910"
+ },
+ {
+  "id": 90,
+  "name": "Kyla",
+  "handler": "0x553910"
+ },
+ {
+  "id": 91,
+  "name": "Mimi",
+  "handler": "0x553910"
+ },
+ {
+  "id": 92,
+  "name": "Oscar",
+  "handler": "0x553910"
+ },
+ {
+  "id": 94,
+  "name": "Danny",
+  "handler": "0x553910"
+ },
+ {
+  "id": 93,
+  "name": "Alex",
+  "handler": "0x553910"
+ },
+ {
+  "id": 95,
+  "name": "Jesh",
+  "handler": "0x553910"
+ },
+ {
+  "id": 56,
+  "name": "Legal",
+  "handler": "0x558790"
+ },
+ {
+  "id": 57,
+  "name": "LanguageSelect",
+  "handler": "0x558800"
+ },
+ {
+  "id": 59,
+  "name": "SplashScreen",
+  "handler": "0x558720"
+ },
+ {
+  "id": 58,
+  "name": "MovieScreen",
+  "handler": "0x58D500"
+ },
+ {
+  "id": 60,
+  "name": "PCSaveSelectMenu2",
+  "handler": "0x5561E0"
+ },
+ {
+  "id": 61,
+  "name": "PSAScreen",
+  "handler": "0x5588E0"
+ },
+ {
+  "id": 62,
+  "name": "ChallengeSeries",
+  "handler": "0x5B6150"
+ },
+ {
+  "id": 63,
+  "name": "ChallengeSeriesSummary",
+  "handler": "0x5B6610"
+ },
+ {
+  "id": 64,
+  "name": "ChallengeRewardStreet",
+  "handler": "0x553910"
+ },
+ {
+  "id": 65,
+  "name": "ChallengeRewardPro",
+  "handler": "0x553910"
+ },
+ {
+  "id": 66,
+  "name": "ChallengeRewardDominator",
+  "handler": "0x553910"
+ },
+ {
+  "id": 67,
+  "name": "ChallengeSeriesNumPlayers",
+  "handler": "0x5B6720"
+ },
+ {
+  "id": 68,
+  "name": "ChallengeKeyBoardPC",
+  "handler": "0x5B2CA0"
+ },
+ {
+  "id": 69,
+  "name": "CarSelectMenu",
+  "handler": "0x55B580"
+ },
+ {
+  "id": 70,
+  "name": "CarsMenu",
+  "handler": "0x55E890"
+ },
+ {
+  "id": 73,
+  "name": "PinkSlip",
+  "handler": "0x55B630"
+ },
+ {
+  "id": 72,
+  "name": "MyCarsMenu",
+  "handler": "0x55EA30"
+ },
+ {
+  "id": 74,
+  "name": "CarShopMenu",
+  "handler": "0x55E9C0"
+ },
+ {
+  "id": 84,
+  "name": "PurchaseDialog",
+  "handler": "0x55D3B0"
+ },
+ {
+  "id": 78,
+  "name": "PaintMenu",
+  "handler": "0x5A0280"
+ },
+ {
+  "id": 75,
+  "name": "VinylSelectMenu",
+  "handler": "0x5696B0"
+ },
+ {
+  "id": 76,
+  "name": "VinylTransformMenu",
+  "handler": "0x55E6D0"
+ },
+ {
+  "id": 77,
+  "name": "VinylPaintMenu",
+  "handler": "0x55E7F0"
+ },
+ {
+  "id": 79,
+  "name": "AutosculptMenu",
+  "handler": "0x55E480"
+ },
+ {
+  "id": 80,
+  "name": "PerformanceMenu",
+  "handler": "0x55EAE0"
+ },
+ {
+  "id": 81,
+  "name": "PerformanceTuning",
+  "handler": "0x55EB50"
+ },
+ {
+  "id": 82,
+  "name": "PhotoMode",
+  "handler": "0x55FE20"
+ },
+ {
+  "id": 83,
+  "name": "DriverSkill",
+  "handler": "0x55EBF0"
+ },
+ {
+  "id": 85,
+  "name": "Marketing",
+  "handler": "0x553910"
+ },
+ {
+  "id": 86,
+  "name": "DistrictView",
+  "handler": "0x58D260"
+ },
+ {
+  "id": 87,
+  "name": "WorldView",
+  "handler": "0x581840"
+ },
+ {
+  "id": 88,
+  "name": "CustomizeQuickRace",
+  "handler": "0x555E20"
+ },
+ {
+  "id": 3,
+  "name": "Options",
+  "handler": "0x55B040"
+ },
+ {
+  "id": 96,
+  "name": "VideoCalibration",
+  "handler": "0x55B1C0"
+ },
+ {
+  "id": 98,
+  "name": "Credits",
+  "handler": "0x55B0E0"
+ },
+ {
+  "id": 97,
+  "name": "PCControllerConfig",
+  "handler": "0x55B150"
+ },
+ {
+  "id": 99,
+  "name": "HintsTips",
+  "handler": "0x55B230"
+ },
+ {
+  "id": 22,
+  "name": "LeaderboardScreen",
+  "handler": "0x570480"
+ },
+ {
+  "id": 32,
+  "name": "CodeEntry",
+  "handler": "0x559D20"
+ }
+]

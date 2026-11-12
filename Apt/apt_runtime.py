@@ -164,6 +164,12 @@ class MC:
         if name in ("gotoAndStop", "gotoAndPlay"):
             self.goto(args[0] if args else 1.0, play=(name == "gotoAndPlay"))
             return VM.UNDEF
+        if name == "createEmptyMovieClip":
+            number = VM.to_number(args[1]) if len(args) > 1 else 0.0
+            depth = int(number) if number == number else 0
+            mc = MC(self.rt, None, depth, VM.to_str(args[0]) if args else "", M.IDENTITY, 0xFFFFFFFF, self, self.rt.tick)
+            self.children[depth] = mc                 # an empty clip: it draws nothing, but scripts hang handlers (onEnterFrame) on it
+            return mc
         if name == "stop":
             self.playing = False
             return VM.UNDEF
@@ -187,7 +193,11 @@ class MC:
                 self.rt.vm.note("goto unknown label %s" % target)
                 return
         else:
-            fi = int(VM.to_number(target)) - 1
+            number = VM.to_number(target)
+            if number != number:                        # gotoAndPlay(undefined) and the like: Flash stays where it is
+                self.rt.vm.note("goto %s (not a frame number or label): ignored" % VM.to_str(target))
+                return
+            fi = int(number) - 1
         if n == 0:
             return
         fi = min(max(fi, 0), n - 1)
@@ -276,11 +286,15 @@ class MC:
     def render_list(self):
         out = []
         for d, ch in sorted(self.children.items()):
-            if not ch.visible:
+            if not ch.visible or ch.char is None:      # an empty clip has no shape to draw
                 continue
             out.append({"depth": d, "char": ch.char_id, "matrix": ch.matrix(), "scale": ch.cx_scale(), "name": ch.name,
                         "clip": ch.clip, "born": 0, "events": [], "mc": ch})
         return out
+
+
+ENGINE = None                # an apt_engine.Engine (set by the viewer), or None
+TICKS_PER_SECOND = 30.0      # not read from the file: the viewer ticks once per frame and assumes 30 frames per second for getTimer()
 
 
 class Runtime:
@@ -302,6 +316,8 @@ class Runtime:
         self.tick = 0
         self.vm = VM.VM(self.seed)
         self.vm.stubs = dict(self.stubs)
+        if ENGINE is not None:
+            ENGINE.install(self.vm)               # the natives of nfs.exe, fed with game data (apt_engine.py)
         self.vm.hook = self._hook
         self.stub_log = []
         self.errors = {}
@@ -322,6 +338,7 @@ class Runtime:
     def step(self, n=1):
         for _ in range(n):
             self.tick += 1
+            self.vm.now_ms = self.tick * 1000.0 / TICKS_PER_SECOND     # getTimer(); the rate is an assumption (see TICKS_PER_SECOND)
             self.root.advance()
             for mc in list(self.root.walk()):
                 f = mc.vars.get("onEnterFrame")
@@ -382,6 +399,13 @@ class Runtime:
                 else:
                     r = self.vm.call(f, this, args)
                     text = "call %s(%s) -> %s" % (path, ", ".join(VM.to_str(a) for a in args), VM.to_str(r))
+            elif kind == "message":
+                fields = {k: v for k, v in op.items() if k not in ("at", "op")}
+                if ENGINE is None:
+                    text = "message: no engine installed (--engine-data / --engine-map)"
+                else:
+                    ENGINE.post_message(fields)
+                    text = "message %s" % op.get("message")
             elif kind == "goto":
                 mc = self.resolve(path)
                 if hasattr(mc, "goto"):
