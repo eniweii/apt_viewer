@@ -110,6 +110,29 @@ class Resources:
             self._images[key] = info
         return info
 
+    def image_for_hash(self, h):
+        """The texture a runtime-bound image shows (`clip.TextureHash = h`, h the bStringHash of a texture name): same answer shape as image()."""
+        h = int(h) & 0xFFFFFFFF
+        key = "hash|%d" % h
+        info = self._images.get(key)
+        if info is None:
+            info = {"id": -1, "png": None, "texture": None, "pack": None, "image": None, "status": "missing", "note": "no pack has the key 0x%08X" % h}
+            tex = self.tex.by_key.get(h)
+            if tex is not None:
+                info.update(texture=tex.name, pack=os.path.basename(tex.path) + " / " + tex.tpk, note="")
+                try:
+                    info["image"] = fng_tpk.decode(tex)
+                    info["status"] = "found"
+                except fng_tpk.TpkError as e:
+                    info["status"], info["note"] = "undecodable", str(e)
+            else:
+                hits = self.keys.get(h, [])
+                if hits:
+                    info.update(status="dynamic", pack="%s (key %s)" % (hits[0]["file"], hits[0]["hash"]),
+                                note="texture is in a pack that is compressed in place; pixels are not decoded yet")
+            self._images[key] = info
+        return info
+
     def peek(self, movie, image_id):
         """Status of an image without decoding its pixels (for lists)."""
         key = "%s|%d" % (movie.name, image_id)

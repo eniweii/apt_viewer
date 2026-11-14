@@ -39,6 +39,7 @@ import outpaths
 import apt_inspect
 import apt_movie
 import apt_render
+import apt_input
 import apt_resources
 import apt_runtime
 import apt_stub_ui
@@ -132,6 +133,9 @@ class App:
         self.play_btn.pack(side="left", padx=2)
         ttk.Button(bar2, text="Step", width=5, command=self.rt_step).pack(side="left")
         ttk.Button(bar2, text="Reset", width=6, command=self.rt_reset).pack(side="left", padx=2)
+        self.input_var = tk.BooleanVar(value=False)       # keys and mouse go to the movie (the game's pad codes, Flash button events); see apt_input.py
+        self.keys_held = set()
+        ttk.Checkbutton(bar2, text="Input", variable=self.input_var, command=self.on_input_toggle).pack(side="left", padx=6)
         ttk.Label(bar2, text="Space: play/pause   Left/Right: step   Wheel: scroll (Shift: sideways)",
                   foreground="#888").pack(side="left", padx=12)
         self.status = tk.StringVar(value="")
@@ -176,7 +180,9 @@ class App:
         vs.pack(side="right", fill="y")
         self.canvas.pack(fill="both", expand=True)
         self.canvas.bind("<Button-1>", self.on_click)
-        self.canvas.bind("<MouseWheel>", lambda e: self.canvas.yview_scroll(-1 if e.delta > 0 else 1, "units"))
+        self.canvas.bind("<Motion>", self.on_motion)
+        self.canvas.bind("<ButtonRelease-1>", self.on_release)
+        self.canvas.bind("<MouseWheel>", self.on_wheel)
         self.canvas.bind("<Shift-MouseWheel>", lambda e: self.canvas.xview_scroll(-1 if e.delta > 0 else 1, "units"))
         self.canvas_img, self.canvas_size = None, None        # one image item, updated in place
         panes.add(mid, weight=1)
@@ -216,8 +222,10 @@ class App:
         right.add(self.stub_panel, text="Stubs")
         panes.add(right, weight=0)
 
-        root.bind("<Left>", lambda e: self.step(-1))
-        root.bind("<Right>", lambda e: self.step(1))
+        root.bind("<Left>", lambda e: None if self.input_active() else self.step(-1))      # with Input on the keys belong to the movie
+        root.bind("<Right>", lambda e: None if self.input_active() else self.step(1))
+        root.bind_all("<KeyPress>", self.on_key_down)
+        root.bind_all("<KeyRelease>", self.on_key_up)
         root.bind("<space>", self.on_space)
         self.fill_movies()
 
@@ -374,6 +382,9 @@ class App:
             self.move_playhead()
 
     def on_click(self, e):
+        if self.input_active():
+            self.send_mouse("down", e)
+            return
         x, y = self.canvas.canvasx(e.x) / self.scale, self.canvas.canvasy(e.y) / self.scale      # picture pixels
         found = [h for h in self.hits if h[0][0] <= x <= h[0][2] and h[0][1] <= y <= h[0][3]]
         self.canvas.delete("sel")
@@ -465,7 +476,70 @@ class App:
     def on_space(self, e):
         if isinstance(e.widget, (tk.Entry, ttk.Entry, ttk.Combobox, tk.Spinbox, tk.Text)):
             return                                                # typing: leave the key alone
+        if self.input_active():
+            return                                                # Input is on: the keys belong to the movie
         self.toggle_play()
+
+    # ---- input to the movie (Input checkbox): keys as the game's pad codes, the mouse as Flash button events
+    def input_active(self):
+        return self.input_var.get() and self.rt_var.get() and self.rt is not None
+
+    def on_input_toggle(self):
+        if self.input_var.get():
+            if self.rt is None or not self.rt_var.get():
+                self.rt_reset()
+            self.canvas.focus_set()                               # keys go to the picture, not to a button
+        else:
+            self.keys_held.clear()
+
+    def stage_xy(self, e):
+        """A canvas pixel in the movie's own coordinates (zoom and output size undone)."""
+        px, py = self.canvas.canvasx(e.x) / self.scale, self.canvas.canvasy(e.y) / self.scale
+        _w, _h, sx, sy = apt_render.output_geometry(self.movie, 1.0, self.output_size())
+        return px / sx, py / sy
+
+    def send_mouse(self, kind, e, delta=0.0):
+        x, y = self.stage_xy(e)
+        over = self.rt.mouse(kind, x, y, delta)
+        if not self.playing:
+            self.redraw()
+        return over
+
+    def on_motion(self, e):
+        if self.input_active():
+            self.send_mouse("move", e)
+
+    def on_release(self, e):
+        if self.input_active():
+            self.send_mouse("up", e)
+
+    def on_wheel(self, e):
+        if self.input_active():
+            self.send_mouse("wheel", e, 1.0 if e.delta > 0 else -1.0)
+        else:
+            self.canvas.yview_scroll(-1 if e.delta > 0 else 1, "units")
+
+    def on_key_down(self, e):
+        if not self.input_active() or isinstance(e.widget, (tk.Entry, ttk.Entry, ttk.Combobox, tk.Spinbox, tk.Text)):
+            return
+        ev = apt_input.key_event(e.keysym, e.char)
+        if ev is None:
+            return
+        self.keys_held.add(ev[0])
+        self.rt.key(ev[0], True, ev[1])
+        if not self.playing:
+            self.redraw()
+
+    def on_key_up(self, e):
+        if not self.input_active():
+            return
+        ev = apt_input.key_event(e.keysym, e.char)
+        if ev is None or ev[0] not in self.keys_held:
+            return
+        self.keys_held.discard(ev[0])
+        self.rt.key(ev[0], False, ev[1])
+        if not self.playing:
+            self.redraw()
 
     # ---- runtime
     def on_runtime_toggle(self):
@@ -674,6 +748,7 @@ def main():
         apt_runtime.ENGINE = apt_engine.build(a.engine_map, a.lang, a.attrib, a.names, not a.four_three, a.hints_category)
     elif not a.no_engine:
         apt_runtime.ENGINE = apt_engine.build_default(a.engine_data, not a.four_three, a.hints_category)
+    apt_render.LOCALIZE = apt_runtime.ENGINE.localize if apt_runtime.ENGINE is not None and apt_runtime.ENGINE.language is not None else None
     print("engine feed: " + ("off (no apt_engine_map.json found; run apt_tools.py check)" if apt_runtime.ENGINE is None else "on"))
     if apt_runtime.ENGINE is not None:
         for role, found, text in apt_engine.status(apt_engine.find_data(a.engine_data)):

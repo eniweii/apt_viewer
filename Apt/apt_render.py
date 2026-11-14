@@ -85,6 +85,9 @@ def fit_matrix(blk, size):
     return (a * rw, b * rh, c * rw, d * rh, tx * rw, ty * rh)
 
 
+LOCALIZE = None        # callable(text) -> text that resolves `~KEY` strings; the viewer sets it from the engine's language tables (apt_view.py)
+
+
 class Renderer:
     def __init__(self, resources, boxes=False):
         self.res = resources
@@ -96,6 +99,7 @@ class Renderer:
         self.labels = False             # instance name or character id next to the anchor
         self.hits = []
         self.stats = {}
+        self.bound_hash = None            # TextureHash of the nearest clip above that has one
         self._text_cache = {}           # (font, text, align, width, wrap) -> glyph image, kept small
 
     # ---- entry
@@ -156,7 +160,28 @@ class Renderer:
             i += 1
 
     def _object(self, layer, movie, o, m, cx, path, depth, clock, record=True):
-        char = movie.chars.get(o["char"])
+        """Draw one placed object. A clip the game gave a texture (`TextureHash`, see apt_runtime) lends it to the unnamed images below it."""
+        mc = o.get("mc")
+        th = mc.vars.get("TextureHash") if mc is not None else None
+        prev = self.bound_hash
+        if isinstance(th, float) and th == th:
+            self.bound_hash = int(th)
+        try:
+            self._object_draw(layer, movie, o, m, cx, path, depth, clock, record)
+        finally:
+            self.bound_hash = prev
+
+    def _bound(self, im):
+        """The runtime-bound texture instead of an unnamed image (a placeholder), when a clip above has one."""
+        if im["status"] == "unnamed" and self.bound_hash is not None:
+            return self.res.image_for_hash(self.bound_hash)
+        return im
+
+    def _object_draw(self, layer, movie, o, m, cx, path, depth, clock, record=True):
+        mc = o.get("mc")                                    # a clip of the runtime: its own character (the root of a movie that loadMovie brought in has none in `movie`)
+        if mc is not None:
+            movie = mc.ctx.movie                            # an imported character belongs to its library movie
+        char = mc.char if mc is not None and mc.char is not None else movie.chars.get(o["char"])
         mat = mmul(m, o["matrix"])
         oc = argb(o["scale"])
         ccx = (cx[0] * oc[0], cx[1] * oc[1], cx[2] * oc[2], cx[3] * oc[3])
@@ -173,7 +198,7 @@ class Renderer:
         if kind == "Shape":
             self._shape(layer, movie, char, mat, ccx, info, record)
         elif kind == "Text":
-            self._text(layer, movie, char, mat, ccx, info, record)
+            self._text(layer, movie, char, mat, ccx, info, record, mc)
         elif kind == "Sprite":
             if self.anchors or self.labels:
                 ax, ay = mapply(mat, 0, 0)
@@ -183,9 +208,8 @@ class Renderer:
                     d.line((ax, ay - 5, ax, ay + 5), fill=(0, 255, 255, 255))
                 if self.labels:
                     d.text((ax + 6, ay + 2), o["name"] or "#%d" % o["char"], fill=(0, 255, 255, 255))
-            mc = o.get("mc")
             if mc is not None:                              # runtime: the clip keeps its own frame and children
-                self._list(layer, movie, mc.render_list(), mat, ccx, here, depth + 1, mc.frame)
+                self._list(layer, mc.ctx.movie, mc.render_list(), mat, ccx, here, depth + 1, mc.frame)
             else:
                 n = len(char["frames"])
                 sf = max(0, clock - o.get("born", 0))
@@ -209,7 +233,7 @@ class Renderer:
 
     def _bitmap(self, layer, movie, char, mat, cx, info, record):
         """A bitmap character placed directly: the image at its own pixel size (a marker box if it has no pixels)."""
-        im = self.res.image(movie, char["id"])
+        im = self._bound(self.res.image(movie, char["id"]))
         self.stats[im["status"]] = self.stats.get(im["status"], 0) + 1
         info["images"] = [char["id"]]
         w, h = im["image"].size if im["image"] is not None else (32, 32)
@@ -278,7 +302,7 @@ class Renderer:
             region = None
             if blk["image"]:
                 images.append(blk["image"])
-                im = self.res.image(movie, blk["image"])
+                im = self._bound(self.res.image(movie, blk["image"]))
                 self.stats[im["status"]] = self.stats.get(im["status"], 0) + 1
                 if im["image"] is not None:
                     tinv = minv(fit_matrix(blk, im["image"].size) if self.fit_textures else blk["matrix"])
@@ -304,10 +328,13 @@ class Renderer:
         xs, ys = [p[0] for p in pts], [p[1] for p in pts]
         return min(xs), min(ys), max(xs), max(ys)
 
-    def _text(self, layer, movie, char, mat, cx, info, record):
+    def _text(self, layer, movie, char, mat, cx, info, record, mc=None):
         font_char = movie.chars.get(char["font_id"])
         font, sheet = self.res.font_for(font_char["name"] if font_char else None)
-        text = char["text"] or ("{%s}" % char["variable"] if char["variable"] else "")
+        shown = mc.text_value() if mc is not None else None          # what the scripts put in the field, else the initial text
+        text = shown if shown is not None else (char["text"] or ("{%s}" % char["variable"] if char["variable"] else ""))
+        if LOCALIZE is not None:
+            text = LOCALIZE(text)
         text = text.replace("^", "\n").replace("\\n", "\n")          # ^ is a line break in the game strings
         l, t, r, b = char["bounds"]
         corners = [mapply(mat, l, t), mapply(mat, r, t), mapply(mat, r, b), mapply(mat, l, b)]

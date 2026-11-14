@@ -127,7 +127,22 @@ class SkiaRenderer(apt_render.Renderer):
             i += 1
 
     def _object(self, layer, movie, o, m, cx, path, depth, clock, record=True):
-        char = movie.chars.get(o["char"])
+        """Draw one placed object. A clip the game gave a texture (`TextureHash`, see apt_runtime) lends it to the unnamed images below it."""
+        mc = o.get("mc")
+        th = mc.vars.get("TextureHash") if mc is not None else None
+        prev = self.bound_hash
+        if isinstance(th, float) and th == th:
+            self.bound_hash = int(th)
+        try:
+            self._object_draw(layer, movie, o, m, cx, path, depth, clock, record)
+        finally:
+            self.bound_hash = prev
+
+    def _object_draw(self, layer, movie, o, m, cx, path, depth, clock, record=True):
+        mc = o.get("mc")                                    # a clip of the runtime: its own character (the root of a movie that loadMovie brought in has none in `movie`)
+        if mc is not None:
+            movie = mc.ctx.movie                            # an imported character belongs to its library movie
+        char = mc.char if mc is not None and mc.char is not None else movie.chars.get(o["char"])
         mat = mmul(m, o["matrix"])
         oc = argb(o["scale"])
         ccx = (cx[0] * oc[0], cx[1] * oc[1], cx[2] * oc[2], cx[3] * oc[3])
@@ -144,7 +159,7 @@ class SkiaRenderer(apt_render.Renderer):
         if kind == "Shape":
             self._shape(layer, movie, char, mat, ccx, info, record)
         elif kind == "Text":
-            self._text(layer, movie, char, mat, ccx, info, record)
+            self._text(layer, movie, char, mat, ccx, info, record, mc)
         elif kind == "Sprite":
             if self.anchors or self.labels:
                 ax, ay = mapply(mat, 0, 0)
@@ -154,9 +169,8 @@ class SkiaRenderer(apt_render.Renderer):
                     layer.canvas.drawLine(ax, ay - 5, ax, ay + 5, cyan)
                 if self.labels:
                     layer.canvas.drawString(o["name"] or "#%d" % o["char"], ax + 6, ay + 12, self._font, cyan)
-            mc = o.get("mc")
             if mc is not None:
-                self._list(layer, movie, mc.render_list(), mat, ccx, here, depth + 1, mc.frame)
+                self._list(layer, mc.ctx.movie, mc.render_list(), mat, ccx, here, depth + 1, mc.frame)
             else:
                 n = len(char["frames"])
                 sf = max(0, clock - o.get("born", 0))
@@ -189,7 +203,7 @@ class SkiaRenderer(apt_render.Renderer):
             self.hits.append(((x - 6, y - 6, x + 6, y + 6), info))
 
     def _bitmap(self, layer, movie, char, mat, cx, info, record):
-        im = self.res.image(movie, char["id"])
+        im = self._bound(self.res.image(movie, char["id"]))
         self.stats[im["status"]] = self.stats.get(im["status"], 0) + 1
         info["images"] = [char["id"]]
         w, h = im["image"].size if im["image"] is not None else (32, 32)
@@ -241,7 +255,7 @@ class SkiaRenderer(apt_render.Renderer):
             c.clipPath(p, doAntiAlias=True)
             if blk["image"]:
                 images.append(blk["image"])
-                im = self.res.image(movie, blk["image"])
+                im = self._bound(self.res.image(movie, blk["image"]))
                 self.stats[im["status"]] = self.stats.get(im["status"], 0) + 1
                 tinv = minv(apt_render.fit_matrix(blk, im["image"].size) if self.fit_textures else blk["matrix"]) if im["image"] is not None else None
                 if tinv is not None:
@@ -261,11 +275,14 @@ class SkiaRenderer(apt_render.Renderer):
         if record and allpts:
             self.hits.append((self._bbox(allpts), info))
 
-    def _text(self, layer, movie, char, mat, cx, info, record):
+    def _text(self, layer, movie, char, mat, cx, info, record, mc=None):
         c = layer.canvas
         font_char = movie.chars.get(char["font_id"])
         font, sheet = self.res.font_for(font_char["name"] if font_char else None)
-        text = char["text"] or ("{%s}" % char["variable"] if char["variable"] else "")
+        shown = mc.text_value() if mc is not None else None          # what the scripts put in the field, else the initial text
+        text = shown if shown is not None else (char["text"] or ("{%s}" % char["variable"] if char["variable"] else ""))
+        if apt_render.LOCALIZE is not None:
+            text = apt_render.LOCALIZE(text)
         text = text.replace("^", "\n").replace("\\n", "\n")
         l, t, r, b = char["bounds"]
         corners = [mapply(mat, l, t), mapply(mat, r, t), mapply(mat, r, b), mapply(mat, l, b)]

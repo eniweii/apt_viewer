@@ -59,7 +59,7 @@ check("enumerate2 keys (no length)", vm._enum_keys(o) == ["a"])
 import os
 import apt_engine
 
-eng = apt_engine.Engine(os.path.join(os.path.dirname(os.path.abspath(__file__)), "beamng", "apt_engine_map.json"))
+eng = apt_engine.Engine(os.path.join(os.path.dirname(os.path.abspath(__file__)), "game_stuff", "apt_engine_map.json"))
 evm = VM.VM(1)
 eng.install(evm)
 call = lambda obj, member, *args: evm.call(evm.globals.props[obj].props[member], evm.globals.props[obj], list(args))
@@ -81,4 +81,51 @@ check("ambiguous native is installed (GetCarList on CmdFECarLot)", "GetCarList" 
 
 check("GetScreenName: id -> movie name (table of nfs.exe)", call("ScreenMessageTranslator", "GetScreenName", 4.0) == "PostRace" and call("ScreenMessageTranslator", "GetScreenName", 0.0) == "main")
 check("GetScreenName: unknown id -> undefined", call("ScreenMessageTranslator", "GetScreenName", 1234.0) is VM.UNDEF)
+# ~KEY localisation, GetYearInfo, GetLanguageList
+import datetime
+
+
+class FakeLang:
+    table = {"COMMON_BACK": "BACK", "WM_TRI_CITY_BAY": "Tri-City Bay"}
+
+    def text(self, key):
+        return self.table.get(key)
+
+
+loc = apt_engine.Engine(os.path.join(os.path.dirname(os.path.abspath(__file__)), "game_stuff", "apt_engine_map.json"), language=FakeLang())
+check("~KEY is replaced by the string of that name", loc.localize("~COMMON_BACK") == "BACK" and loc.localize("Go ~COMMON_BACK now") == "Go BACK now")
+check("a key in no table stays, text without ~ is untouched", loc.localize("~NO_SUCH_KEY") == "~NO_SUCH_KEY" and loc.localize("plain") == "plain")
+check("two keys in one text", loc.localize("~COMMON_BACK / ~WM_TRI_CITY_BAY") == "BACK / Tri-City Bay")
+year = loc.year_info([])
+check("GetYearInfo: max is this year (at least 2008), min a hundred years before", year == {"min": max(datetime.date.today().year, 2008) - 100, "max": max(datetime.date.today().year, 2008)})
+langs = loc.language_list([])
+check("GetLanguageList: the first 15 rows of the exe's language table", langs is not None and len(langs) == 15 and langs[0] == "ENGLISH" and langs[-1] == "NORWEGIAN" and len(set(langs)) == 15)
+vm_l = VM.VM(1)
+loc.install(vm_l)
+res = vm_l.globals.props["cmdPCCreateAccount"].vm_call("GetYearInfo", [], vm_l)
+check("GetYearInfo reaches the script as an object with min and max", res.vm_get("max") == year["max"] and res.vm_get("min") == year["min"])
+
+# the car lot (needs the data folder: attrib dump and English tables; skipped without them)
+data = apt_engine.build_default(None)
+if data is not None and data.attrib is not None and data.language is not None:
+    stock = data.carlot_stock()
+    check("the shop stock is the 59 cars of car_list.fe_carlist", stock is not None and len(stock) == 59)
+    check("GetRegions: American, European, Japanese as toggle entries", [(r["text"], r["regionEnum"], r["type"]) for r in data.carlot_regions([])] == [("American", 0, "Toggle"), ("European", 1, "Toggle"), ("Japanese", 2, "Toggle")])
+    per = {}
+    for n in (0, 1, 2):
+        data.carlot_update_region([float(n)])
+        per[n] = data.carlot_cars([])
+    check("the three regions together list every stock car once (20 + 27 + 12)", sorted(len(v) for v in per.values()) == [12, 20, 27] and sum(len(v) for v in per.values()) == 59)
+    check("entries carry index (position in the region list) and carName", all(c["index"] == i for v in per.values() for i, c in enumerate(v)) and all(isinstance(c["carName"], str) and c["carName"] for v in per.values() for c in v))
+    names = [c["carName"] for v in per.values() for c in v]
+    check("car names come from the language tables (Audi R8, Plymouth HEMI Cuda, Lexus IS F)", "Audi R8" in names and "Lexus IS F" in names and any("Cuda" in n and "Plymouth" in n for n in names))
+    check("at least 56 of the 59 names resolve (Stingray '67, SLR 722 and GT500 '67 keys are not known)", sum(1 for (car, _r) in stock if data.car_name(car) != car) >= 56)
+    data.carlot_update_region([3.0])
+    check("region 3 holds no shop car", data.carlot_cars([]) == [])
+else:
+    print("SKIP car lot checks: no attrib dump / language tables in the data folder")
+
+# CmdUtil.IsInputNecessary (0x808D10): true when the game has nothing pending, which is the case here
+check("IsInputNecessary answers true, so the root hands keys to the screen", loc.providers[("CmdUtil", "IsInputNecessary")]([]) is True)
+
 sys.exit(0 if ok else 1)

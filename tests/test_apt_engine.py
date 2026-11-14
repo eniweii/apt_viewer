@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 """Checks for apt_data (hashes, language tables) and the VM ops added with apt_engine. Run: python test_apt_engine.py"""
+import os
 import struct
 import sys
+
+_HERE = os.path.dirname(os.path.abspath(__file__))
+for _p in (os.path.join(_HERE, "..", "Apt"), os.path.join(_HERE, "..", "Apt", "game_stuff"), os.path.join(_HERE, "..", "common")):
+    sys.path.insert(0, _p)
 
 import apt_actions as AA
 import apt_data

@@ -20,6 +20,7 @@ is invented: with no stub the read gives undefined, and every such read, call an
 Math.random() comes from a seeded generator (mulberry32). It is a repeatable stand-in, not the game's generator.
 """
 import math
+import sys
 
 import apt_actions as AA
 
@@ -43,11 +44,7 @@ def from_json(v, name=""):
     if isinstance(v, (int, float)):
         return float(v)
     if isinstance(v, list):
-        o = Obj(name="Array")
-        for i, x in enumerate(v):
-            o.props[str(i)] = from_json(x, "%s.%d" % (name, i))
-        o.props["length"] = float(len(v))
-        return o
+        return Arr([from_json(x, "%s.%d" % (name, i)) for i, x in enumerate(v)])
     if isinstance(v, dict):
         o = Obj(name=name)
         for k, x in v.items():
@@ -76,11 +73,59 @@ class Rng:
         return ((t ^ (t >> 14)) & 0xFFFFFFFF) / 4294967296.0
 
 
+class CIProps(dict):
+    """A property table whose names ignore case, as in the game's script engine (Flash 6 and older): `screen.InitGui()` finds `InitGUI`, `mc.Screen`
+    finds `screen`. The first spelling stored is the one kept and enumerated. Evidence: postrace.big sets `var screen` and the root reads `mc.Screen`."""
+    __slots__ = ("_lc",)
+
+    def __init__(self, items=None):
+        dict.__init__(self)
+        self._lc = {}
+        for k, v in dict(items or {}).items():
+            self[k] = v
+
+    def _real(self, k):
+        return self._lc.get(k.lower(), k) if isinstance(k, str) else k
+
+    def __getitem__(self, k):
+        return dict.__getitem__(self, self._real(k))
+
+    def __setitem__(self, k, v):
+        dict.__setitem__(self, self._lc.setdefault(k.lower(), k) if isinstance(k, str) else k, v)
+
+    def __delitem__(self, k):
+        real = self._real(k)
+        dict.__delitem__(self, real)
+        if isinstance(real, str):
+            self._lc.pop(real.lower(), None)
+
+    def __contains__(self, k):
+        return dict.__contains__(self, self._real(k))
+
+    def get(self, k, default=None):
+        return dict.get(self, self._real(k), default)
+
+    def pop(self, k, *default):
+        real = self._real(k)
+        if isinstance(real, str) and dict.__contains__(self, real):
+            self._lc.pop(real.lower(), None)
+        return dict.pop(self, real, *default)
+
+    def setdefault(self, k, default=None):
+        if k not in self:
+            self[k] = default
+        return self[k]
+
+    def clear(self):
+        dict.clear(self)
+        self._lc.clear()
+
+
 class Obj:
     """A plain script object (with a prototype chain)."""
 
     def __init__(self, proto=None, name=""):
-        self.props, self.proto, self.name = {}, proto, name
+        self.props, self.proto, self.name = CIProps(), proto, name
 
     def vm_get(self, name):
         o = self
@@ -106,6 +151,51 @@ class Obj:
         return "[object %s]" % (self.name or "Object")
 
 
+ARRAY_PROTO = Obj(name="Array")        # the methods are put in by apt_builtins
+
+
+class Arr(Obj):
+    """A script Array: the elements are in `items`, the methods come from ARRAY_PROTO (apt_builtins)."""
+
+    def __init__(self, items=None):
+        Obj.__init__(self, proto=ARRAY_PROTO, name="Array")
+        self.items = list(items) if items else []
+
+    def vm_get(self, name):
+        if name.lower() == "length":
+            return float(len(self.items))
+        if name.isdigit():
+            i = int(name)
+            return self.items[i] if i < len(self.items) else UNDEF
+        return Obj.vm_get(self, name)
+
+    def vm_set(self, name, value, vm=None, offset=None):
+        if name.lower() == "length":
+            n = to_number(value)
+            n = int(n) if n == n and 0 <= n < 1e7 else 0
+            del self.items[n:]
+            self.items.extend([UNDEF] * (n - len(self.items)))
+        elif name.isdigit() and int(name) < 10000000:
+            i = int(name)
+            self.items.extend([UNDEF] * (i + 1 - len(self.items)))
+            self.items[i] = value
+        else:
+            self.props[name] = value
+
+    def __repr__(self):
+        return ",".join("" if x is UNDEF or x is None else to_str(x) for x in self.items)
+
+
+def call_apply(f, name, args, vm):
+    """f.call(thisObj, a, b) and f.apply(thisObj, [a, b])."""
+    this = args[0] if args else UNDEF
+    if name == "call":
+        rest = list(args[1:])
+    else:
+        rest = list(args[1].items) if len(args) > 1 and isinstance(args[1], Arr) else []
+    return vm.call(f, this, rest)
+
+
 class SuperProxy:
     """`super` inside a class function: calling it runs the superclass constructor, super.name(...) the superclass method, both on the same this."""
 
@@ -126,7 +216,8 @@ class Func:
     def __init__(self, insns, params, flags, nregs, dictionary, scope, offset, name=""):
         self.insns, self.params, self.flags, self.nregs = insns, params, flags, nregs
         self.dictionary, self.scope, self.offset, self.name = dictionary, scope, offset, name
-        self.props = {"prototype": Obj(name="prototype")}
+        self.props = CIProps({"prototype": Obj(name="prototype")})
+        self.closure = None                    # Env of the call that defined this function
 
     # functions are objects too (LoadingScreen.prototype)
     def vm_get(self, name):
@@ -139,6 +230,8 @@ class Func:
         return name in self.props
 
     def vm_call(self, name, args, vm):
+        if name.lower() in ("call", "apply"):
+            return call_apply(self, name.lower(), args, vm)
         return vm.missing_call("function", name, args, "call function.%s" % name)
 
     def __repr__(self):
@@ -146,11 +239,28 @@ class Func:
 
 
 class Native:
-    def __init__(self, fn, name=""):
-        self.fn, self.name = fn, name
+    """A function done in Python: fn(vm, this, args). With `construct(vm, args)` it is also a class (`new Array()`); `props` are its static members."""
+
+    def __init__(self, fn, name="", construct=None, props=None):
+        self.fn, self.name, self.construct = fn, name, construct
+        self.props = CIProps(props)
 
     def vm_get(self, name):
-        return UNDEF
+        return self.props.get(name, UNDEF)
+
+    def vm_set(self, name, value, vm=None, offset=None):
+        self.props[name] = value
+
+    def vm_has(self, name):
+        return name in self.props
+
+    def vm_call(self, name, args, vm):
+        f = self.props.get(name, UNDEF)
+        if isinstance(f, (Func, Native)):
+            return vm.call(f, self, args)
+        if name.lower() in ("call", "apply"):
+            return call_apply(self, name.lower(), args, vm)
+        return vm.missing_call(self.name or "native", name, args, "call %s.%s (not defined)" % (self.name or "native", name))
 
 
 def to_number(v):
@@ -195,10 +305,30 @@ def truthy(v):
     return bool(v)
 
 
+def _math_guard(fn, rounding):
+    def run(vm, this, a):
+        try:
+            return fn(vm, this, a)
+        except OverflowError:
+            return to_number(a[0]) if rounding and a else float("inf")
+        except ValueError:
+            return to_number(a[0]) if rounding and a else float("nan")
+    return run
+
+
+class Env:
+    """The local variables of an enclosing function call, kept by a function defined inside it (`var callbackThis = this; setInterval(function () { callbackThis.f(); })`)."""
+    __slots__ = ("locals", "outer")
+
+    def __init__(self, locals_, outer):
+        self.locals, self.outer = locals_, outer
+
+
 class Frame:
     def __init__(self, this, scope, dictionary, locals_=None):
         self.this, self.scope, self.dictionary = this, scope, dictionary
         self.locals = locals_
+        self.outer = None                       # Env chain of the function this call belongs to
         self.regs = [UNDEF] * 256
         self.stack = []
 
@@ -232,9 +362,13 @@ class VM:
             "pow": Native(lambda vm, this, a: math.pow(to_number(a[0]), to_number(a[1])), "Math.pow"),
             "atan2": Native(lambda vm, this, a: math.atan2(to_number(a[0]), to_number(a[1])), "Math.atan2"),
             "PI": math.pi})
+        for _n, _nat in math_obj.props.items():          # Math on NaN, infinity or out of range answers NaN/infinity like the player, it does not raise
+            if isinstance(_nat, Native) and _n != "random":
+                _nat.fn = _math_guard(_nat.fn, _n in ("round", "floor", "ceil"))
         self.globals.props["Math"] = math_obj
         self.globals.props["_global"] = self.globals
         self.globals.props["ASSetPropFlags"] = Native(lambda vm, this, a: UNDEF, "ASSetPropFlags")
+        apt_builtins.install(self)
         self.steps = 0
 
     def note(self, text):
@@ -275,7 +409,8 @@ class VM:
         if not isinstance(f, Func):
             return UNDEF
         self.call_counts[f.offset] = self.call_counts.get(f.offset, 0) + 1
-        fr = Frame(this, f.scope, f.dictionary, {})
+        fr = Frame(this, f.scope, f.dictionary, CIProps())
+        fr.outer = f.closure
         reg, fl = 1, f.flags
         for bit, val in ((0x01, this), (0x04, args), (0x10, self._super_for(f, this)), (0x40, self.root), (0x80, getattr(this, "parent", UNDEF)),
                          (0x100, self.globals)):
@@ -293,16 +428,30 @@ class VM:
 
     # ---- variables
     def get_var(self, fr, name):
-        if name == "this":
+        if "." in name and not name.startswith("."):                  # eval("_root.OVERLAY_1"): a path, not a variable name
+            head, *rest = name.split(".")
+            v = self.get_var(fr, head)
+            for part in rest:
+                if v is UNDEF or v is None:
+                    return UNDEF
+                v = self.get_member(v, part)
+            return v
+        low = name.lower()
+        if low == "this":
             return fr.this
-        if name == "_root":
+        if low == "_root":
             return self.root
-        if name == "_global":
+        if low == "_global":
             return self.globals
-        if name == "_parent":
+        if low == "_parent":
             return getattr(fr.this, "parent", UNDEF)
         if fr.locals is not None and name in fr.locals:
             return fr.locals[name]
+        env = fr.outer
+        while env is not None:
+            if name in env.locals:
+                return env.locals[name]
+            env = env.outer
         sc = fr.scope
         if sc is not None and hasattr(sc, "vm_get_var"):
             v = sc.vm_get_var(name)
@@ -324,6 +473,12 @@ class VM:
         if fr.locals is not None and name in fr.locals:
             fr.locals[name] = value
             return
+        env = fr.outer
+        while env is not None:
+            if name in env.locals:
+                env.locals[name] = value
+                return
+            env = env.outer
         sc = fr.scope
         if sc is None:
             self.globals.props[name] = value
@@ -335,7 +490,7 @@ class VM:
     def get_member(self, obj, name):
         if hasattr(obj, "vm_get"):
             return obj.vm_get(name)
-        if isinstance(obj, str) and name == "length":
+        if isinstance(obj, str) and name.lower() == "length":
             return float(len(obj))
         return UNDEF
 
@@ -373,6 +528,13 @@ class VM:
             self.steps = 0                      # the step limit counts one top-level run, not the whole movie
         try:
             return self._run(insns, fr)
+        except IndexError:                      # a pop from an empty stack: the stream is stopped and listed, the viewer goes on
+            tb = sys.exc_info()[2]
+            while tb.tb_next:
+                tb = tb.tb_next
+            pc = tb.tb_frame.f_locals.get("pc")
+            where = "0x%X" % insns[pc].offset if isinstance(pc, int) and 0 <= pc < len(insns) and hasattr(insns[pc], "offset") else "?"
+            raise Unsupported("stack underflow at %s (the stream starts with an operation that needs a value)" % where)
         finally:
             self.depth -= 1
 
@@ -542,6 +704,8 @@ class VM:
                     inst = Obj(proto=ctor.props.get("prototype"), name=cname)
                     self.call(ctor, inst, args)
                     st.append(inst)
+                elif isinstance(ctor, Native) and ctor.construct is not None:
+                    st.append(ctor.construct(self, args))
                 else:
                     self.note("new %s (not defined in the movie)" % cname)
                     self.external("new", cname, args)
@@ -555,11 +719,7 @@ class VM:
                 st.append(o)
             elif op == 0x42:
                 cnt = int(to_number(st.pop()))
-                o = Obj(name="Array")
-                for i in range(cnt):
-                    o.props[str(i)] = st.pop()
-                o.props["length"] = float(cnt)
-                st.append(o)
+                st.append(Arr([st.pop() for _ in range(cnt)]))
             elif op in (0x8E, 0x9B):
                 name = ins.args[0][1]
                 params = []
@@ -574,6 +734,7 @@ class VM:
                     parts = ins.note.replace(",", "").split()
                     nregs, flags = int(parts[1]), int(parts[3], 16)
                 f = Func(ins.body, params, flags, nregs, fr.dictionary, fr.scope, ins.offset, name)
+                f.closure = Env(fr.locals, fr.outer) if fr.locals is not None else fr.outer
                 if name:
                     self.set_var(fr, name, f, ins.offset)
                 else:
@@ -609,7 +770,7 @@ class VM:
                 self.note("trace: %s" % to_str(st.pop()))
             elif op == 0x69:
                 sup, sub = st.pop(), st.pop()
-                if isinstance(sup, Func) and isinstance(sub, Func):
+                if isinstance(sub, Func) and (isinstance(sup, Func) or (isinstance(sup, Native) and "prototype" in sup.props)):
                     proto = Obj(proto=sup.props.get("prototype"), name=sub.name)
                     proto.props["constructor"] = sup            # what super() calls from the subclass
                     sub.props["prototype"] = proto
@@ -652,6 +813,8 @@ class VM:
                     inst = Obj(proto=ctor.props.get("prototype"), name=ctor.name)
                     self.call(ctor, inst, args)
                     st.append(inst)
+                elif isinstance(ctor, Native) and ctor.construct is not None:
+                    st.append(ctor.construct(self, args))
                 else:
                     self.note("new %s.%s (not defined in the movie)" % (to_str(obj), to_str(name)))
                     self.external("new", "%s.%s" % (to_str(obj), to_str(name)), args)
@@ -668,14 +831,16 @@ class VM:
         while o is not None:
             if o is f.props.get("prototype") or any(v is f for v in o.props.values()):
                 ctor = o.props.get("constructor")
-                return SuperProxy(this, o.proto, ctor) if isinstance(ctor, Func) else UNDEF
+                return SuperProxy(this, o.proto, ctor) if isinstance(ctor, (Func, Native)) else UNDEF
             o = o.proto
         return UNDEF
 
     def _enum_keys(self, obj):
         """The names for (x in obj): own and inherited properties, no `length` of an array and no internal names."""
         keys, o = [], obj
-        while isinstance(o, Obj):
+        while isinstance(o, Obj) and o is not ARRAY_PROTO:          # the built-in methods are not enumerable
+            if isinstance(o, Arr):
+                keys.extend(str(i) for i in range(len(o.items)) if str(i) not in keys)
             for k in o.props:
                 if k not in keys and k not in ("length", "constructor") and not k.startswith("__"):
                     keys.append(k)
@@ -691,6 +856,10 @@ class VM:
             self.note("call of a value that is not a function")
             return UNDEF
         name = to_str(name)
+        if isinstance(obj, (str, float)):
+            handled, value = apt_builtins.primitive_call(self, obj, name, args)
+            if handled:
+                return value
         if hasattr(obj, "vm_call"):
             self._event("call", (name, obj))
             return obj.vm_call(name, args, self)
@@ -704,3 +873,6 @@ class VM:
     def _event(self, kind, data):
         if self.hook is not None:
             self.hook(kind, data)
+
+
+import apt_builtins  # noqa: E402  (after everything above: apt_builtins imports this module)

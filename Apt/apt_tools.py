@@ -4,10 +4,10 @@ The tools around the apt viewer in one place.
 
   python apt_tools.py check                          what the engine feed needs and what is missing (paths, counts)
   python apt_tools.py census --ui <UI folder>        run every movie headless and list the natives the screens call (and which are fed)
-  python apt_tools.py engine-map --ui <UI folder>    remake beamng/apt_engine_map.json from nfs.exe (needs pefile + capstone, and nfs.exe in the data folder)
+  python apt_tools.py engine-map --ui <UI folder>    remake game_stuff/apt_engine_map.json from nfs.exe (needs pefile + capstone, and nfs.exe in the data folder)
   python apt_tools.py runtime-images --ui <UI folder>   runtime-bound images (placeholders and their TextureHash bindings)
   python apt_tools.py decompile <movie.big>          the decompiled scripts of one movie
-  python apt_tools.py exe-addresses                  remake beamng/EXE_ADDRESSES.md and apt_exe_addresses.json from nfs.exe (pefile + capstone)
+  python apt_tools.py exe-addresses                  remake game_stuff/EXE_ADDRESSES.md and apt_exe_addresses.json from nfs.exe (pefile + capstone)
 
 The engine data folder is Apt/engine_data (--data to use another): see engine_data/README.txt.
 """
@@ -18,7 +18,7 @@ import os
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-for p in (HERE, os.path.join(HERE, "beamng"), os.path.join(HERE, "..", "common")):
+for p in (HERE, os.path.join(HERE, "game_stuff"), os.path.join(HERE, "..", "common")):
     if p not in sys.path:
         sys.path.insert(0, p)
 
@@ -69,7 +69,7 @@ def cmd_engine_map(a):
     exe = a.exe or paths["exe"]
     if not exe:
         sys.exit("nfs.exe not found: put it in %s or use --exe" % paths["dir"])
-    out = a.out or os.path.join(HERE, "beamng", "apt_engine_map.json")
+    out = a.out or os.path.join(HERE, "game_stuff", "apt_engine_map.json")
     argv = ["engine_map.py", exe, a.ui, out]
     if paths["attrib"] and paths["names"]:
         argv += [paths["attrib"], paths["names"]]
@@ -81,8 +81,8 @@ def cmd_runtime_images(a):
     import apt_engine
     import runtime_images
     paths = apt_engine.find_data(a.data)
-    out = a.out or os.path.join(HERE, "beamng")
-    argv = ["runtime_images.py", a.ui, os.path.join(HERE, "apt_report.json"), paths["map"] or os.path.join(HERE, "beamng", "apt_engine_map.json")]
+    out = a.out or os.path.join(HERE, "game_stuff")
+    argv = ["runtime_images.py", a.ui, os.path.join(HERE, "apt_report.json"), paths["map"] or os.path.join(HERE, "game_stuff", "apt_engine_map.json")]
     if paths["attrib"] and paths["names"]:
         argv += [paths["attrib"], paths["names"]]
     else:
@@ -99,7 +99,7 @@ def cmd_exe_addresses(a):
     exe = a.exe or paths["exe"]
     if not exe:
         sys.exit("nfs.exe not found: put it in %s or use --exe" % paths["dir"])
-    sys.argv = ["exe_addresses.py", exe, paths["map"] or os.path.join(HERE, "beamng", "apt_engine_map.json"), os.path.join(HERE, "beamng")]
+    sys.argv = ["exe_addresses.py", exe, paths["map"] or os.path.join(HERE, "game_stuff", "apt_engine_map.json"), os.path.join(HERE, "game_stuff")]
     exe_addresses.main()
 
 

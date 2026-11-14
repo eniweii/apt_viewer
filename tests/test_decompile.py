@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """Synthetic checks for apt_decompile control flow (loops, break, continue, else). Run: python test_decompile.py"""
+import os
 import sys
+_HERE = os.path.dirname(os.path.abspath(__file__))
+for _p in (os.path.join(_HERE, "..", "Apt"), os.path.join(_HERE, "..", "Apt", "game_stuff"), os.path.join(_HERE, "..", "common")):
+    sys.path.insert(0, _p)
+
 import apt_actions as AA
 import apt_decompile as D
 

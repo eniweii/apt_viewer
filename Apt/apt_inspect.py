@@ -255,10 +255,10 @@ def history_lines(rt, c, limit=12):
     runs = []
     for f in range(len(par.frames)):
         try:
-            objs, _bg, _lb = rt.movie.display_list(par.frames, f)
+            objs, _bg, _lb = par.ctx.movie.display_list(par.frames, f)
         except Exception:
             return []
-        m = next((o["matrix"] for o in objs if o["depth"] == c.depth and o["char"] == c.char_id), None)
+        m = next((o["matrix"] for o in objs if o["depth"] == c.depth and o["char"] == c.placed_id), None)
         key = None if m is None else tuple(round(v, 3) for v in m)
         if runs and runs[-1][2] == key:
             runs[-1][1] = f + 1
@@ -283,7 +283,7 @@ def contents_lines(rt, chain, limit=10):
             continue
         out += ["", "contents of %s at frame %d/%d [file]:" % (c.path().split("/")[-1], c.frame + 1, max(1, len(c.frames)))]
         for o in objs[:limit]:
-            ch = rt.movie.chars.get(o["char"])
+            ch = c.ctx.movie.chars.get(o["char"])
             out.append("  depth %-3d char %-4d %-7s %s" % (o["depth"], o["char"], ch["type"] if ch else "import", _fmt_m(o["matrix"])))
         if len(objs) > limit:
             out.append("  ... %d more" % (len(objs) - limit))
@@ -321,7 +321,8 @@ def inspector_text(rt, info, assign):
     lines.append("world matrix (parent x local, worldX = a*x + c*y + tx):")
     world = _compose(chain)
     lines.append("  " + _fmt_m(world))
-    ch = rt.movie.chars.get(info["char"])
+    mc_hit = info.get("mc")
+    ch = mc_hit.char if mc_hit is not None and mc_hit.char is not None else rt.movie.chars.get(info["char"])
     if ch is not None and ch["type"] == "Shape":
         lines += shape_lines(ch, world)
     shown = 0
