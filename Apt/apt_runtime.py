@@ -42,9 +42,9 @@ def mmul(p, c):
 class MC:
     """A clip instance (sprite or other placed character)."""
 
-    def __init__(self, rt, char, depth, name, matrix, scale, parent, born_tick):
+    def __init__(self, rt, char, depth, name, matrix, scale, parent, born_tick, bias=0):
         self.rt, self.char, self.depth, self.name, self.parent = rt, char, depth, name, parent
-        self.placed, self.placed_scale = tuple(matrix), scale
+        self.placed, self.placed_scale, self.placed_bias = tuple(matrix), scale, bias
         self.children = {}
         self.vars = VM.CIProps()
         self.frame = 0
@@ -119,11 +119,13 @@ class MC:
         a = int(round(min(max(self.alpha, 0.0), 100.0) * 2.55))
         return (a << 24) | (self.placed_scale & 0xFFFFFF)
 
-    def set_placed(self, matrix=None, scale=None):
+    def set_placed(self, matrix=None, scale=None, bias=None):
         if matrix is not None:
             self.placed = tuple(matrix)
         if scale is not None:
             self.placed_scale = scale
+        if bias is not None:
+            self.placed_bias = bias
 
     # ---- script access (the protocol of apt_vm)
     def vm_get(self, name):
@@ -286,8 +288,8 @@ class MC:
                 return iid
         return None
 
-    def _new_child(self, char_id, name, depth, matrix, scale, init):
-        o = {"depth": depth, "char": char_id, "matrix": matrix, "scale": scale, "name": name, "clip": M.NO_CLIP, "events": [], "born": self.frame}
+    def _new_child(self, char_id, name, depth, matrix, scale, init, bias=0):
+        o = {"depth": depth, "char": char_id, "matrix": matrix, "scale": scale, "bias": bias, "name": name, "clip": M.NO_CLIP, "events": [], "born": self.frame}
         mc = self.rt.make_child(self, o)
         self.children[depth] = mc
         if isinstance(init, VM.Obj):
@@ -314,7 +316,7 @@ class MC:
         number = VM.to_number(args[1])
         if number != number:
             return VM.UNDEF
-        return self.parent._new_child(self.placed_id, VM.to_str(args[0]), int(number), self.matrix(), self.cx_scale(), args[2] if len(args) > 2 else None)
+        return self.parent._new_child(self.placed_id, VM.to_str(args[0]), int(number), self.matrix(), self.cx_scale(), args[2] if len(args) > 2 else None, self.placed_bias)
 
     def swap_depths(self, args):
         """swapDepths(depth or clip): the clip takes that depth, a clip that is there goes to the depth this one had."""
@@ -493,7 +495,7 @@ class MC:
         for o in objs:
             old = self.children.get(o["depth"])
             if old is not None and old.placed_id == o["char"]:
-                old.set_placed(None if old.tp is not None else o["matrix"], o["scale"])
+                old.set_placed(None if old.tp is not None else o["matrix"], o["scale"], o.get("bias", 0))
                 old.name = o["name"] or old.name
                 keep[o["depth"]] = old
             else:
@@ -535,15 +537,16 @@ class MC:
         if old is not None and flags & M.F_MOVE and not (flags & M.F_CHAR and c["char"] != old.placed_id):
             if flags & M.F_MATRIX and old.tp is None:
                 old.set_placed(matrix=c["matrix"])
-            if flags & M.F_CXFORM and old.alpha is None:
-                old.set_placed(scale=c["scale"])
+            if flags & M.F_CXFORM:
+                old.set_placed(scale=c["scale"] if old.alpha is None else None, bias=c["bias"])
             if flags & M.F_NAME:
                 old.name = c["name"]
             return None
         if not flags & M.F_CHAR:
             return None
         o = {"depth": d, "char": c["char"], "matrix": c["matrix"] if flags & M.F_MATRIX else M.IDENTITY,
-             "scale": c["scale"] if flags & M.F_CXFORM else 0xFFFFFFFF, "name": c["name"] if flags & M.F_NAME else "",
+             "scale": c["scale"] if flags & M.F_CXFORM else 0xFFFFFFFF, "bias": c["bias"] if flags & M.F_CXFORM else 0,
+             "name": c["name"] if flags & M.F_NAME else "",
              "clip": c["clip"], "events": c["events"], "born": self.frame}
         mc = self.rt.make_child(self, o)
         self.children[d] = mc
@@ -579,7 +582,7 @@ class MC:
         for d, ch in sorted(self.children.items()):
             if not ch.visible or ch.char is None:      # an empty clip has no shape to draw
                 continue
-            out.append({"depth": d, "char": ch.placed_id, "matrix": ch.matrix(), "scale": ch.cx_scale(), "name": ch.name,
+            out.append({"depth": d, "char": ch.placed_id, "matrix": ch.matrix(), "scale": ch.cx_scale(), "bias": ch.placed_bias, "name": ch.name,
                         "clip": ch.clip, "born": 0, "events": [], "mc": ch})
         return out
 
@@ -941,7 +944,7 @@ class Runtime:
             got = self.import_char(parent.ctx, o["char"])
             if got is not None:
                 ctx, char = got
-        mc = MC(self, char, o["depth"], o["name"], o["matrix"], o["scale"], parent, self.tick)
+        mc = MC(self, char, o["depth"], o["name"], o["matrix"], o["scale"], parent, self.tick, o.get("bias", 0))
         mc.ctx, mc.placed_id, mc.events_ctx = ctx, o["char"], parent.ctx
         mc.clip = o.get("clip", M.NO_CLIP)
         mc.events = [(f, k, p) for (f, k, p) in (o.get("events") or [])]

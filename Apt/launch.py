@@ -98,6 +98,14 @@ def skia_installed():
         return False
 
 
+def glfw_installed():
+    try:
+        import glfw  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
 class Launcher:
     def __init__(self, root):
         self.root = root
@@ -179,10 +187,13 @@ class Launcher:
         self.vars["renderer"] = tk.StringVar(value=self.s["renderer"])
         renderer_row = ttk.Frame(box)
         renderer_row.grid(row=5, column=1, sticky="ew", padx=4, pady=2)
-        ttk.Combobox(renderer_row, textvariable=self.vars["renderer"], values=("auto", "skia", "pillow"),
+        ttk.Combobox(renderer_row, textvariable=self.vars["renderer"], values=("auto", "skia", "skia-gpu", "pillow"),
                      width=9, state="readonly").pack(side="left")
         ttk.Label(renderer_row,
                   text="skia installed" if skia_installed() else "skia not installed (pip install skia-python); Pillow will be used",
+                  foreground="#666").pack(side="left", padx=8)
+        ttk.Label(renderer_row,
+                  text="skia-gpu: glfw installed" if glfw_installed() else "skia-gpu needs: pip install glfw",
                   foreground="#666").pack(side="left", padx=8)
         box.columnconfigure(1, weight=1)
 

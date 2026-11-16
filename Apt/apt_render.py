@@ -14,7 +14,7 @@ What is drawn
   clipDepth   objects above the mask object, up to the clip depth, are cut to the mask alpha.
   Missing     magenta (no pack has it), cyan (dynamic pack, not decoded), orange (no name entry), red (undecodable).
   Not drawn   buttons, morphs, static text, video, actions, timeline playback. Imported characters are marked.
-Colour transform: scale only (ARGB), the bias is ignored.
+Colour transform: scale and bias (both ARGB), out = in * scale + bias, composed down the tree the way Flash does (an object's own first, then its parents').
 """
 import math
 
@@ -60,6 +60,24 @@ def mapply(m, x, y):
 
 def argb(v):
     return ((v >> 16) & 255) / 255.0, ((v >> 8) & 255) / 255.0, (v & 255) / 255.0, ((v >> 24) & 255) / 255.0
+
+
+# A colour transform down the tree: multipliers r g b a, then the additive offsets r g b a (0..1).
+CX_IDENTITY = (1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0)
+NO_ADD = (0.0, 0.0, 0.0, 0.0)
+
+
+def cx_compose(cx, scale, bias):
+    """The transform of an object inside its parents: its own scale and bias first, then the parents' (out = (in * s + b) * ps + pb)."""
+    s, b = argb(scale), argb(bias)
+    pa = cx_add(cx)
+    return (cx[0] * s[0], cx[1] * s[1], cx[2] * s[2], cx[3] * s[3],
+            b[0] * cx[0] + pa[0], b[1] * cx[1] + pa[1], b[2] * cx[2] + pa[2], b[3] * cx[3] + pa[3])
+
+
+def cx_add(cx):
+    """The additive part (a four-number multiplier-only tuple has none)."""
+    return cx[4:8] if len(cx) >= 8 else NO_ADD
 
 
 def mapped_extent(blk):
@@ -109,7 +127,7 @@ class Renderer:
         r, g, b, a = argb(bg) if bg is not None else (0.2, 0.2, 0.2, 1.0)
         canvas = Image.new("RGBA", (w, h), (int(r * 255), int(g * 255), int(b * 255), 255))
         self.hits, self.stats = [], {}
-        self._list(canvas, movie, objs, (sx, 0, 0, sy, 0, 0), (1, 1, 1, 1), [], 0, frame)
+        self._list(canvas, movie, objs, (sx, 0, 0, sy, 0, 0), CX_IDENTITY, [], 0, frame)
         if self.grid:
             self._grid(canvas, sx, sy)
         return canvas, self.hits, labels
@@ -130,7 +148,7 @@ class Renderer:
         r, g, b, _a = argb(rt.bg) if rt.bg is not None else (0.2, 0.2, 0.2, 1.0)
         canvas = Image.new("RGBA", (w, h), (int(r * 255), int(g * 255), int(b * 255), 255))
         self.hits, self.stats = [], {}
-        self._list(canvas, movie, rt.render_list(), (sx, 0, 0, sy, 0, 0), (1, 1, 1, 1), [], 0, rt.root.frame)
+        self._list(canvas, movie, rt.render_list(), (sx, 0, 0, sy, 0, 0), CX_IDENTITY, [], 0, rt.root.frame)
         if self.grid:
             self._grid(canvas, sx, sy)
         return canvas, self.hits
@@ -183,8 +201,7 @@ class Renderer:
             movie = mc.ctx.movie                            # an imported character belongs to its library movie
         char = mc.char if mc is not None and mc.char is not None else movie.chars.get(o["char"])
         mat = mmul(m, o["matrix"])
-        oc = argb(o["scale"])
-        ccx = (cx[0] * oc[0], cx[1] * oc[1], cx[2] * oc[2], cx[3] * oc[3])
+        ccx = cx_compose(cx, o["scale"], o.get("bias", 0))
         here = path + ["%s#%d" % (o["name"] or "obj", o["char"])]
         info = {"char": o["char"], "name": o["name"], "path": " > ".join(here), "movie": movie.name}
         if char is None:
@@ -246,7 +263,7 @@ class Renderer:
                 region = Image.new("RGBA", (rw, rh), (0, 0, 0, 0))
                 ImageDraw.Draw(region).polygon([(x - bx, y - by) for x, y in pts], fill=STATUS_COLORS.get(im["status"], (255, 0, 255, 150)))
             if region is not None:
-                layer.alpha_composite(self._tint(region, cx), (bx, by))
+                layer.alpha_composite(self._tint(region, cx[:4], cx_add(cx)), (bx, by))
         if self.boxes:
             ImageDraw.Draw(layer).polygon(pts, outline=(120, 255, 120, 255))
         if record:
@@ -260,12 +277,16 @@ class Renderer:
         return img.transform((w, h), Image.AFFINE, data, Image.BILINEAR)
 
     @staticmethod
-    def _tint(region, rgba):
-        if min(rgba) >= 0.999:                              # identity colour transform: nothing to do
+    def _tint(region, rgba, add=NO_ADD):
+        if min(rgba) >= 0.999 and not any(add):             # identity colour transform: nothing to do
             return region
         r, g, b, a = region.split()
-        f = lambda ch, k: ch if k >= 0.999 else ch.point(lambda v: int(v * k))
-        return Image.merge("RGBA", (f(r, rgba[0]), f(g, rgba[1]), f(b, rgba[2]), f(a, rgba[3])))
+
+        def f(ch, k, o):
+            if o:                                           # out = in * k + o
+                return ch.point(lambda v: min(255, max(0, int(v * k + o * 255.0))))
+            return ch if k >= 0.999 else ch.point(lambda v: int(v * k))
+        return Image.merge("RGBA", (f(r, rgba[0], add[0]), f(g, rgba[1], add[1]), f(b, rgba[2], add[2]), f(a, rgba[3], add[3])))
 
     def _region(self, layer, pts):
         xs, ys = [p[0] for p in pts], [p[1] for p in pts]
@@ -300,6 +321,7 @@ class Renderer:
             tint = (((c >> 24) & 255) / 255.0, ((c >> 16) & 255) / 255.0, ((c >> 8) & 255) / 255.0, (c & 255) / 255.0)
             tint = tuple(tint[k] * cx[k] for k in range(4))
             region = None
+            add = cx_add(cx)
             if blk["image"]:
                 images.append(blk["image"])
                 im = self._bound(self.res.image(movie, blk["image"]))
@@ -311,10 +333,10 @@ class Renderer:
                 if region is None:
                     col = STATUS_COLORS.get(im["status"], (255, 0, 255, 150))
                     region = Image.new("RGBA", (w, h), col)
-                    tint = (1, 1, 1, cx[3])
+                    tint, add = (1, 1, 1, cx[3]), NO_ADD
             else:
                 region = Image.new("RGBA", (w, h), (255, 255, 255, 255))
-            region = self._tint(region, tint)
+            region = self._tint(region, tint, add)
             region.putalpha(ImageChops.multiply(region.getchannel("A"), mask))
             layer.alpha_composite(region, (bx, by))
         info["images"] = images
@@ -362,7 +384,8 @@ class Renderer:
             region = self._sample(img, mimg, bx, by, w, h)
             if region is not None:
                 c = argb(char["color"])
-                region = self._tint(region, (c[0] * cx[0], c[1] * cx[1], c[2] * cx[2], c[3] * cx[3]))
+                ca = cx_add(cx)                             # no alpha offset on text: the glyph box would show
+                region = self._tint(region, (c[0] * cx[0], c[1] * cx[1], c[2] * cx[2], c[3] * cx[3]), (ca[0], ca[1], ca[2], 0.0))
                 layer.alpha_composite(region, (bx, by))
         if self.boxes:
             ImageDraw.Draw(layer).polygon(corners, outline=(120, 255, 120, 255))

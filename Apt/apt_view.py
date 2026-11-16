@@ -54,7 +54,15 @@ RESOLUTIONS = ["Movie", "640x480", "800x600", "1024x768", "1280x720", "1600x900"
 
 
 def make_renderer(res, backend="auto"):
-    """skia when installed (much faster), Pillow otherwise or when asked."""
+    """skia when installed (much faster), Pillow otherwise or when asked. skia-gpu only when asked (OpenGL, needs glfw)."""
+    if backend == "skia-gpu":
+        try:
+            import apt_render_skia_gpu
+            return apt_render_skia_gpu.SkiaGpuRenderer(res)
+        except ImportError as exc:
+            sys.exit("--renderer skia-gpu needs: pip install skia-python glfw (%s)" % exc)
+        except RuntimeError as exc:
+            sys.exit("--renderer skia-gpu could not start: %s. Use --renderer skia instead." % exc)
     if backend in ("auto", "skia"):
         try:
             import apt_render_skia
@@ -116,6 +124,9 @@ class App:
         ttk.Checkbutton(bar, text="Boxes", variable=self.boxes_var, command=self.redraw).pack(side="left", padx=10)
         self.loop_var = tk.BooleanVar(value=False)
         ttk.Checkbutton(bar, text="Loop sprites", variable=self.loop_var, command=self.redraw).pack(side="left", padx=6)
+        self.fast_var = tk.BooleanVar(value=False)
+        if getattr(self.renderer, "backend", "pillow") == "skia":
+            ttk.Checkbutton(bar, text="Fast images", variable=self.fast_var, command=self.redraw).pack(side="left", padx=6)
         self.grid_var, self.anchor_var, self.label_vis_var = tk.BooleanVar(), tk.BooleanVar(), tk.BooleanVar()
         for text, var in (("Grid", self.grid_var), ("Anchors", self.anchor_var), ("Names", self.label_vis_var)):
             ttk.Checkbutton(bar, text=text, variable=var, command=self.redraw).pack(side="left", padx=3)
@@ -340,6 +351,7 @@ class App:
         size = self.output_size()
         self.renderer.boxes = self.boxes_var.get()
         self.renderer.loop_sprites = self.loop_var.get()
+        self.renderer.fast_images = self.fast_var.get()      # Skia only: faster, not pixel exact
         self.renderer.grid, self.renderer.anchors, self.renderer.labels = self.grid_var.get(), self.anchor_var.get(), self.label_vis_var.get()
         if self.rt_var.get() and self.rt is not None:
             img, self.hits = self.renderer.render_runtime(self.rt, 1.0, size)
@@ -733,7 +745,7 @@ def main():
     ap.add_argument("--cache", default="apt_cache")
     ap.add_argument("--overrides", default="apt_overrides.json")
     ap.add_argument("--stubs", default="apt_stubs.json", help="what the game would give a screen (stub values and a scenario)")
-    ap.add_argument("--renderer", choices=("auto", "skia", "pillow"), default="auto", help="drawing backend (auto: skia if installed)")
+    ap.add_argument("--renderer", choices=("auto", "skia", "skia-gpu", "pillow"), default="auto", help="drawing backend (auto: skia if installed; skia-gpu: Skia on OpenGL, needs glfw, never chosen by auto)")
     ap.add_argument("--engine-map", default=None, help="apt_engine_map.json: install the natives of nfs.exe and feed them with game data (apt_engine.py)")
     ap.add_argument("--lang", default=None, help="folder with English_Global.bin, English_Frontend.bin, English_InGame.bin")
     ap.add_argument("--attrib", default=None, help="attrib dump (UndercoverVLT_Dumper json)")

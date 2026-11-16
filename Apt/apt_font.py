@@ -135,7 +135,7 @@ def render_text(font, sheet, text, align=0, box_width=None, wrap=False):
     width = max([w for w, _r in lines] + [box_width or 0, 1])
     out = Image.new("RGBA", (int(width) + 4, font.line_height * len(lines) + 4), (0, 0, 0, 0))
     for n, (w, row) in enumerate(lines):
-        shift = 0 if align == 0 else (width - w) // 2 if align == 1 else width - w
+        shift = 0 if align == 0 else width - w if align == 1 else (width - w) // 2     # 0 left, 1 right, 2 centre (as in Flash)
         for g, x in row:
             _page, x0, y0, x1, y1, gw, gh, _adv, xo, yo = g
             if gw <= 0 or gh <= 0:

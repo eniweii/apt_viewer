@@ -20,7 +20,7 @@ def engine():
     """The engine feed from Apt/engine_data (what the viewer builds); sets apt_runtime.ENGINE."""
     import apt_engine
     import apt_runtime
-    apt_runtime.ENGINE = apt_engine.build_default(None)
+    apt_runtime.ENGINE = apt_engine.build_default(os.environ.get("APT_ENGINE_DATA") or None)     # APT_ENGINE_DATA: a folder with nfs.exe, the language .bin files, hashes_main.txt, the attrib dump
     if apt_runtime.ENGINE is None:
-        sys.exit("no engine feed: check Apt/engine_data (python Apt/apt_tools.py check)")
+        sys.exit("no engine feed: check Apt/engine_data or APT_ENGINE_DATA (python Apt/apt_tools.py check)")
     return apt_runtime.ENGINE

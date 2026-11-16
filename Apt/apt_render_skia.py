@@ -7,8 +7,14 @@ Skia draws in compiled code, so a busy screen costs much less than with Pillow. 
   Shape       fill triangles are a clip path, the image is drawn with the block matrix; solid blocks use the block colour
   Text        the Pillow glyph image from apt_font, drawn with the text matrix
   clipDepth   objects above the mask object, up to the clip depth, are drawn in a layer, then cut with the mask (DstIn)
-  Colour transform: scale only (ARGB), the bias is ignored, as in apt_render.py
+  Colour transform: scale and bias (ARGB), as in apt_render.py: out = in * scale + bias, a Skia colour matrix with offsets
   Hits and stats are recorded the same way (hits come from the same bounding boxes)
+  Speed: a normal draw whose final alpha rounds to zero (below half a step of 8 bits) is not drawn; it changes no pixel.
+         Hits and stats are still recorded. Mask objects (record=False) are always drawn: a zero-alpha mask still cuts.
+  Fast images (renderer.fast_images, off by default, "Fast images" in the viewer): not pixel exact, up to a few steps of 255.
+         Textures are kept premultiplied in the surface format (Skia then blits instead of converting every pixel), an alpha-only
+         tint is the paint alpha instead of a colour matrix, and a large stretched draw with a colour tint uses a copy of the
+         texture tinted once at its own size (these two only when the draw is axis-aligned; rotated draws keep the colour matrix). With it off the output is the same as without these three changes.
 Install: pip install skia-python
 """
 import numpy as np
@@ -21,6 +27,7 @@ import apt_render
 from apt_render import argb, mapply, minv, mmul
 
 SAMPLING = skia.SamplingOptions(skia.FilterMode.kLinear)
+SKIP_ALPHA = 0.5 / 255.0       # below this a normal draw adds nothing to an 8-bit surface
 RGBA = skia.ColorType.kRGBA_8888_ColorType
 UNPREMUL = skia.AlphaType.kUnpremul_AlphaType
 
@@ -31,10 +38,15 @@ def _matrix(m):
     return skia.Matrix.MakeAll(a, c, tx, b, d, ty, 0, 0, 1)
 
 
-def _tint_filter(rgba):
-    if min(rgba) >= 0.999:
+TINT_COPY_MIN_AREA = 200000     # fast images: a stretched draw below this many device pixels keeps the colour matrix
+TINT_COPY_RATIO = 8             # ... and so does one that covers fewer than this many times the texture pixels
+TINT_COPY_BYTES = 64 * 1024 * 1024
+
+
+def _tint_filter(rgba, add=apt_render.NO_ADD):
+    if min(rgba) >= 0.999 and not any(add):
         return None
-    return skia.ColorFilters.Matrix([rgba[0], 0, 0, 0, 0, 0, rgba[1], 0, 0, 0, 0, 0, rgba[2], 0, 0, 0, 0, 0, rgba[3], 0])
+    return skia.ColorFilters.Matrix([rgba[0], 0, 0, 0, add[0], 0, rgba[1], 0, 0, add[1], 0, 0, rgba[2], 0, add[2], 0, 0, 0, rgba[3], add[3]])
 
 
 class Layer:
@@ -49,10 +61,16 @@ class SkiaRenderer(apt_render.Renderer):
 
     def __init__(self, resources, boxes=False):
         super().__init__(resources, boxes)
+        self.fast_images = False        # see the module note: premultiplied textures, paint alpha, tinted copies (not pixel exact)
         self._sk_images = {}            # id(Pillow image) -> (Pillow image, skia image); the Pillow image is kept so the id stays valid
+        self._sk_fast = {}              # the same for fast images: premultiplied, in the surface format
+        self._tint_cache = {}           # (id(Pillow image), r, g, b) -> (Pillow image, tinted skia image)
+        self._tint_bytes = 0
         self._font = skia.Font(skia.Typeface("Arial"), 10)
 
     def _sk(self, pil):
+        if self.fast_images:
+            return self._sk_premul(pil)
         hit = self._sk_images.get(id(pil))
         if hit is None:
             if len(self._sk_images) > 2000:
@@ -60,6 +78,60 @@ class SkiaRenderer(apt_render.Renderer):
             rgba = pil if pil.mode == "RGBA" else pil.convert("RGBA")
             hit = self._sk_images[id(pil)] = (pil, skia.Image.fromarray(np.asarray(rgba), RGBA, UNPREMUL))
         return hit[1]
+
+    def _sk_premul(self, pil):
+        """Fast images: the texture premultiplied in the surface format, made once by Skia itself."""
+        hit = self._sk_fast.get(id(pil))
+        if hit is None:
+            if len(self._sk_fast) > 2000:
+                self._sk_fast.clear()
+                self._tint_cache.clear()
+                self._tint_bytes = 0
+            rgba = pil if pil.mode == "RGBA" else pil.convert("RGBA")
+            raw = skia.Image.fromarray(np.asarray(rgba), RGBA, UNPREMUL)
+            surf = skia.Surface(raw.width(), raw.height())
+            surf.getCanvas().drawImage(raw, 0, 0)
+            hit = self._sk_fast[id(pil)] = (pil, surf.makeImageSnapshot())
+        return hit[1]
+
+    @staticmethod
+    def _axis_aligned(c):
+        """Scale and translate only. Skia blits those fast without a colour matrix; with rotation or skew the matrix is the faster path."""
+        m = c.getTotalMatrix()
+        return m.getSkewX() == 0 and m.getSkewY() == 0
+
+    def _paint(self, tint, c, add=apt_render.NO_ADD):
+        """The paint for a tint (r, g, b, a scale, plus the additive offsets). Fast images: an alpha-only tint on an axis-aligned draw is the paint alpha, no colour matrix."""
+        if self.fast_images and not any(add) and min(tint) < 0.999 and min(tint[0], tint[1], tint[2]) >= 0.999 and self._axis_aligned(c):
+            p = skia.Paint()
+            p.setAlphaf(tint[3])
+            return p
+        return skia.Paint(ColorFilter=_tint_filter(tint, add))
+
+    def _shape_image(self, c, pil, tint, cover, add=apt_render.NO_ADD):
+        """Draw a shape block's image. Fast images: a large stretched draw with a colour tint uses a copy of the texture tinted
+        once (cached by the exact tint), then only the alpha is a paint; everything else is _paint."""
+        sk = self._sk(pil)
+        if self.fast_images and not any(add) and min(tint[0], tint[1], tint[2]) < 0.999 and max(tint[0], tint[1], tint[2]) <= 1.0 and self._axis_aligned(c):
+            area = c.getDeviceClipBounds()
+            area = min(area.width() * area.height(), cover)             # what the block really covers, not just its bounding box
+            px = sk.width() * sk.height()
+            if area >= TINT_COPY_MIN_AREA and area >= TINT_COPY_RATIO * px:
+                key = (id(pil), tint[0], tint[1], tint[2])
+                hit = self._tint_cache.get(key)
+                if hit is None:
+                    if self._tint_bytes + 4 * px > TINT_COPY_BYTES:
+                        self._tint_cache.clear()
+                        self._tint_bytes = 0
+                    surf = skia.Surface(sk.width(), sk.height())
+                    surf.getCanvas().drawImage(sk, 0, 0, skia.SamplingOptions(), skia.Paint(ColorFilter=_tint_filter((tint[0], tint[1], tint[2], 1.0))))
+                    hit = self._tint_cache[key] = (pil, surf.makeImageSnapshot())
+                    self._tint_bytes += 4 * px
+                p = skia.Paint()
+                p.setAlphaf(tint[3])
+                c.drawImage(hit[1], 0, 0, SAMPLING, p)
+                return
+        c.drawImage(sk, 0, 0, SAMPLING, self._paint(tint, c, add))
 
     # ---- entry
     def _surface(self, movie, scale, bg, size=None):
@@ -78,7 +150,7 @@ class SkiaRenderer(apt_render.Renderer):
         objs, bg, labels = movie.display_list(movie.frames, frame)
         surface, layer, sx, sy = self._surface(movie, scale, bg, size)
         self.hits, self.stats = [], {}
-        self._list(layer, movie, objs, (sx, 0, 0, sy, 0, 0), (1, 1, 1, 1), [], 0, frame)
+        self._list(layer, movie, objs, (sx, 0, 0, sy, 0, 0), apt_render.CX_IDENTITY, [], 0, frame)
         if self.grid:
             self._grid(layer, sx, sy)
         return self._to_pil(surface), self.hits, labels
@@ -86,7 +158,7 @@ class SkiaRenderer(apt_render.Renderer):
     def render_runtime(self, rt, scale=1.0, size=None):
         surface, layer, sx, sy = self._surface(rt.movie, scale, rt.bg, size)
         self.hits, self.stats = [], {}
-        self._list(layer, rt.movie, rt.render_list(), (sx, 0, 0, sy, 0, 0), (1, 1, 1, 1), [], 0, rt.root.frame)
+        self._list(layer, rt.movie, rt.render_list(), (sx, 0, 0, sy, 0, 0), apt_render.CX_IDENTITY, [], 0, rt.root.frame)
         if self.grid:
             self._grid(layer, sx, sy)
         return self._to_pil(surface), self.hits
@@ -144,8 +216,7 @@ class SkiaRenderer(apt_render.Renderer):
             movie = mc.ctx.movie                            # an imported character belongs to its library movie
         char = mc.char if mc is not None and mc.char is not None else movie.chars.get(o["char"])
         mat = mmul(m, o["matrix"])
-        oc = argb(o["scale"])
-        ccx = (cx[0] * oc[0], cx[1] * oc[1], cx[2] * oc[2], cx[3] * oc[3])
+        ccx = apt_render.cx_compose(cx, o["scale"], o.get("bias", 0))
         here = path + ["%s#%d" % (o["name"] or "obj", o["char"])]
         info = {"char": o["char"], "name": o["name"], "path": " > ".join(here), "movie": movie.name}
         if char is None:
@@ -212,7 +283,8 @@ class SkiaRenderer(apt_render.Renderer):
         c.save()
         c.concat(_matrix(mat))
         if im["image"] is not None:
-            c.drawImage(self._sk(im["image"]), 0, 0, SAMPLING, skia.Paint(ColorFilter=_tint_filter(cx)))
+            if not (record and cx[3] + apt_render.cx_add(cx)[3] < SKIP_ALPHA):
+                c.drawImage(self._sk(im["image"]), 0, 0, SAMPLING, self._paint(cx[:4], c, apt_render.cx_add(cx)))
         else:
             col = apt_render.STATUS_COLORS.get(im["status"], (255, 0, 255, 150))
             c.drawRect(skia.Rect(0, 0, w, h), skia.Paint(Color=skia.ColorSetARGB(int(col[3] * cx[3]), col[0], col[1], col[2])))
@@ -238,6 +310,7 @@ class SkiaRenderer(apt_render.Renderer):
         c.save()
         c.concat(_matrix(mat))                          # blocks are in shape space
         for blk in blocks:
+            local_area = 0.0
             p = skia.Path()
             for tri in blk["triangles"]:
                 (x0, y0), (x1, y1), (x2, y2) = tri
@@ -248,9 +321,12 @@ class SkiaRenderer(apt_render.Renderer):
                 p.lineTo(x2, y2)
                 p.close()
                 allpts += [mapply(mat, x, y) for x, y in tri]
+                local_area += abs((x1 - x0) * (y2 - y0) - (x2 - x0) * (y1 - y0)) * 0.5
             col = blk["color"]
             tint = (((col >> 24) & 255) / 255.0, ((col >> 16) & 255) / 255.0, ((col >> 8) & 255) / 255.0, (col & 255) / 255.0)
             tint = tuple(tint[k] * cx[k] for k in range(4))
+            add = apt_render.cx_add(cx)
+            skip = record and tint[3] + add[3] < SKIP_ALPHA               # invisible: bookkeeping only, no drawing
             c.save()
             c.clipPath(p, doAntiAlias=True)
             if blk["image"]:
@@ -260,12 +336,13 @@ class SkiaRenderer(apt_render.Renderer):
                 tinv = minv(apt_render.fit_matrix(blk, im["image"].size) if self.fit_textures else blk["matrix"]) if im["image"] is not None else None
                 if tinv is not None:
                     c.concat(_matrix(tinv))                                 # image pixels -> shape space
-                    c.drawImage(self._sk(im["image"]), 0, 0, SAMPLING, skia.Paint(ColorFilter=_tint_filter(tint)))
+                    if not skip:
+                        self._shape_image(c, im["image"], tint, abs(mat[0] * mat[3] - mat[1] * mat[2]) * local_area, add)
                 else:
                     sc = apt_render.STATUS_COLORS.get(im["status"], (255, 0, 255, 150))
                     c.drawPaint(skia.Paint(Color=skia.ColorSetARGB(int(sc[3] * cx[3]), sc[0], sc[1], sc[2])))
-            else:
-                c.drawPaint(skia.Paint(Color4f=skia.Color4f(tint[0], tint[1], tint[2], tint[3])))
+            elif not skip:
+                c.drawPaint(skia.Paint(Color4f=skia.Color4f(tint[0] + add[0], tint[1] + add[1], tint[2] + add[2], tint[3] + add[3])))
             c.restore()
         c.restore()
         info["images"] = images
@@ -308,7 +385,9 @@ class SkiaRenderer(apt_render.Renderer):
         tint = (col[0] * cx[0], col[1] * cx[1], col[2] * cx[2], col[3] * cx[3])
         c.save()
         c.concat(_matrix(mimg))
-        c.drawImage(self._sk(img), 0, 0, SAMPLING, skia.Paint(ColorFilter=_tint_filter(tint)))
+        if not (record and tint[3] < SKIP_ALPHA):
+            ca = apt_render.cx_add(cx)                                  # no alpha offset on text: the glyph box would show
+            c.drawImage(self._sk(img), 0, 0, SAMPLING, self._paint(tint, c, (ca[0], ca[1], ca[2], 0.0)))
         c.restore()
         if self.boxes:
             self._outline(c, corners, skia.ColorSetARGB(255, 120, 255, 120))
