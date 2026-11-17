@@ -42,11 +42,14 @@ section headers "Screen loading", "Runtime textures and text", "Data natives", "
 InitGUI, OnEnterComplete; POP destructs; keys reach HandleInput and the game natives; mouse gives Flash button events.
 
 ## Open, in the order the user cares about
-1. **Tree data** (next conversation: populate and drive the Main tree and the Cars tree; he supplies game screenshots, compare with `shots.py <UI> TreeMenu --push --runtime N --game <his file>`). TreeMenu / TreeMenu_Customize show only "WIDGET TEST SCREENS"; the menus (hints and tips, paint, customize) get to their screens through the tree. Natives called and unfed:
-   `MenuTree.Busy` (0x806560), `MenuTree.GetTreeData` (0x80BAF0), `MenuTree.GetMessage` (0x558670), `MenuTree.IsMessageAvailable` (0x5393D0, the SAME handler as ScreenMessageTranslator's,
-   which tests the same queue and processing byte), `CustMainMenu.GetTreeID` (0x5367D0), `cmdFECars.GetButtonInfo` (0x550770; strings "true", "false", "RT"). The tree content has to come from
-   the game as messages on a queue of its own; nothing in the attrib dump is tree-shaped (classes with tree/menu/node: none). Start by disassembling the three MenuTree handlers and the consumers
-   (treemenu.big, treemenu_customize.big, hintstips.big) with `exe_disasm.py` and `python Apt/apt_tools.py decompile <big>`.
+1. **Tree data** (round 4: model and Main/Cars levels done, see `EXE_TREE_NOTES.txt`). The menu tree is the slot table of nfs.exe (0xCB9140, rows `[item id, group, label hash, 0, 0]`), read by
+   `Engine._tree_groups` from the committed exe tables; an item opens the group with its own id, other items are leaves. `MenuTree.GetTreeData/Busy`, `MainMenu.GetPauseTreeID` (0x27),
+   `CustMainMenu.GetTreeID` (0x35) and the events `OnOptionSelected/OnTreePadRight/OnPadBack/OnPadLeft` are fed (tests in test_apt_engine.py). Two viewer gaps found on the way and fixed:
+   a clip as a string is its target path (`MC.__str__`, AutoSizeText finds its fields with `eval(this._parent + "." + name)`) and `textWidth` (`Runtime.text_measure`, set by apt_view and shots).
+   Leaves Paint (PaintMenu) and the 7 Hints and Tips topics (HintsTips, real hint pages) push their screens (TREE_SCREEN_LEAVES, pairs ASSUMED). Next: `cmdFEVisualPaint.GetSlotInfo` and the colour wheel
+   data for PaintMenu (the region toggle shows `~Trunk` where the game shows "All Regions"), the other leaves (GPS Map, Garage, Shop, Vinyls, Photo Mode ...), Performance (group 0x8F) and the other
+   groups were not compared with screenshots, `textHeight` is not provided, the Main list hides Exit (ASSUMED), levels open on the second item (ASSUMED from his screenshots),
+   and the lookback labels differ from the game in his images 2 and 3: he confirms the paths are right and the game's labels wrong, so it is an exe quirk (see the notes).
 2. Other natives without data (`native_gaps.py`): game state (my cars, challenge, loading event data, dialogs, messenger, player profile, video calibration, option rows) and the online ones
    (server data: stay missing). Feed by scenario/stubs only.
 3. The engine map (apt_engine_map.json) is built from helper calls, not full decompilation: its signature of `IsInputNecessary` is wrong (it belongs to the next function). Trust it as a list of

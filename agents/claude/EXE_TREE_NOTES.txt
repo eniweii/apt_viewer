@@ -1,0 +1,42 @@
+Menu trees of nfs.exe (NFS Undercover, the exe in stuffpart3) - what is proven, what is assumed
+================================================================================================
+
+Proven (disassembly + the data)
+-------------------------------
+* Table: VA 0xCB9140, 254 rows of 20 bytes, little-endian u32 x5: [item id, group, label hash, 0, 0].
+  The label hash is a bStringHash key of the language tables (English_Frontend.bin). The first rows (groups 7 and 8) have hash 0 and are not items.
+  A group is one level of a tree; its rows in table order are the items in the order the tree shows them.
+  The Main list is group 0x11: Cars 0x21, GPS Map 0x24, Driver Skills 0x25, Challenge Series 0x34, Photo Mode 0x2B, Quick Race 0x22, Online 0x32, Options 0x2D, then 0x36 (no text found).
+  An item whose id is also a group id opens that group (Options 0x2D, Online 0x32, Aftermarket 0x92 ...). The others are leaves (screens, actions).
+* Code-built items: 0x5897BD / 0x589819 build node(0x8E, "Visuals" 0xA56C372E) and node(0x8F, "Performance" 0x28A85C99). Groups 0x8E (Paint 0x91, Vinyls 0x90, Aftermarket 0x92) and
+  0x8F (0xAB, 0xAC, 0xAF) exist in the table, so Cars level 0x8B = Garage 0x8C, Shop 0x8D (table) + Visuals 0x8E, Performance 0x8F (code). Node = ctor 0x548210(id, text, data=-1, -1).
+* MainMenu.GetPauseTreeID (handler 0x5367C0) returns 0x27; CustMainMenu.GetTreeID (0x5367D0) returns 0x35. The tree id is the id of an exe-side screen object (FindScreen).
+* MenuTree.GetTreeData (0x80BAF0): FindScreen(arg0); if the byte at +0x84 is 0 it answers undefined, else clears it and builds the answer at 0x808EC0:
+  {maItems: [{text, Enabled, id, data} ...], length, selected, mbScreenMode}. So the script only slides when the game has put new data in.
+* NFS_Tree (nfs_tree.big): on Enter/Right it calls EventTranslator.OnOptionSelected(id, data) / OnTreePadRight, then GetTreeData; on success it pushes the old item's text onto the lookbacks
+  (maLookbackData.push(r3.text), r3 = the item that was highlighted) and slides. UpdateLookbacks also writes maItems[selected].text of the cache into the newest lookback slot.
+
+Confirmed by him (2026-11-16): the item PATHS in his images 2 and 3 are the real ones (Cars > Visuals > Aftermarket); only the LABELS the game shows are wrong. So the ids
+reach the exe's event handler correctly and the text that comes back with the items (or the lookback text) is what is off.
+
+Leaf screens (viewer, ASSUMED pairs: the exe decides in the event handler 0x54A9C0, event type 14, which has no id table)
+------------------------------------------------------------------------------------------------------------------------
+0x91 Paint -> PaintMenu (78); Hints and Tips topics 0xD5-0xDB -> HintsTips (99), topic = fe_hints_tips collection in the order hud, pursuits, career, heroicdriving, online, quickrace,
+customization. The tree goes to screen mode (mbScreenMode, one item = the leaf, which is what fills the newest lookback). Hints and Tips (group 0x42) hangs under Options (0x2D);
+its label hash 0x824E664E is in no language table, the viewer uses the text of his screenshot. Five Online labels are unresolved too (see TREE_LABELS in apt_engine.py).
+PaintMenu then needs cmdFEVisualPaint.GetSlotInfo (0x54F1E0): an object with id, text, type, numeric keys and length (the car's paint regions, "All Regions" first).
+
+Observed in the game (his screenshots), not explained
+-----------------------------------------------------
+* Every level opens with the SECOND item highlighted (Main: GPS Map, Cars: Shop, Visuals' list: Vinyls, Aftermarket's list: Hood). The viewer feeds selected = 1 for that (assumption).
+* Lookbacks: after Cars > (Visuals) the game shows "Shop", and after Aftermarket it shows "Shop | Performance", where the viewer, running the same scripts on the table data, shows
+  "Visuals | Aftermarket". The scripts take the lookback text from the item that was highlighted, so either the highlighted item was not the one he meant (selected is 1 whatever he pressed?)
+  or the text the exe sends is not the text of the item. Not decided. To decide it, I need the exact keys he pressed for images 2 and 3, or a trace of the arguments of
+  OnOptionSelected (id) at those moments (the ids tell which item the game thinks it was: 0x8D Shop, 0x8E Visuals, 0x8F Performance, 0x92 Aftermarket).
+  If the ids are right and only the text is wrong, the fix for an .asi is in how the node text is written (0x536620 / the text resolver 0x575D60 returns a pointer from 0x5584F0).
+  If the ids are wrong, it is in what the exe does with `selected`.
+
+Viewer assumptions (marked ASSUMED in apt_engine.py)
+----------------------------------------------------
+Roots 0x27 -> group 0x11 and 0x35 -> group 0x8B; Exit (0x36) hidden; all items enabled; mbScreenMode false; levels open on index 1; back selects the item we came from;
+visible items of the Cars level are the table rows followed by the two code-built ones.

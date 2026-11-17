@@ -43,6 +43,12 @@ class Engine:
         self.loaded = []                      # CmdScreenManagement.MovieClipLoaded(name, level) calls
         self.main_screen_loaded = False
         self.carlot_region = 0                # CmdFECarLot.UpdateRegion: the region the shop lists
+        self.tree_groups = self._tree_groups()  # menu tree levels from the slot table of nfs.exe: group id -> [(item id, label hash)]
+        self.screen_ids = {v.lower(): k for k, v in self.screens.items()}      # screen name (lower case) -> id
+        self.trees = {}                       # tree id -> {"stack": [[group, selected index]], "pending": bool}; see the tree section below
+        self.active_tree = None               # the tree the UI asked data for last: OnOptionSelected & co carry no tree id, ASSUMED one tree on screen at a time
+        if self.tree_groups:                  # MainMenu is an object of the TreeMenu script; the exe registers GetPauseTreeID for it (0x556880) but the map has no name for it
+            self.members.setdefault("MainMenu", []).append("GetPauseTreeID")
         self.providers = {
             ("CmdUtil", "GetWidescreen"): self.get_widescreen,
             ("cmdChyron", "IsWidescreen"): lambda args: bool(self.options["widescreen"]),
@@ -63,6 +69,15 @@ class Engine:
             ("CmdUtil", "IsInputNecessary"): lambda args: True,
             ("EventTranslator", "OnScreenTick"): lambda args: VM.UNDEF,
             ("ScreenMessageTranslator", "GetMessage"): lambda args: self.queue.pop(0) if self.queue else None,
+            ("MainMenu", "GetPauseTreeID"): lambda args: TREE_ID_PAUSE,
+            ("CustMainMenu", "GetTreeID"): lambda args: TREE_ID_CUSTOMIZE,
+            ("MenuTree", "GetTreeData"): self.tree_data,
+            ("MenuTree", "Busy"): self.tree_busy,
+            ("EventTranslator", "OnOptionSelected"): self.tree_open,
+            ("EventTranslator", "OnTreePadRight"): self.tree_open,
+            ("EventTranslator", "OnPadBack"): self.tree_back,
+            ("EventTranslator", "OnPadLeft"): self.tree_back,
+            ("EventTranslator", "OnOptionHighlighted"): lambda args: self.event("OnOptionHighlighted", args),
             ("cmdFEHintsTipsScreen", "GetToggleData"): self.hints_toggle_data,
             ("cmdFEHintsTipsScreen", "GetPageData"): self.hints_page_data,
         }
@@ -74,6 +89,7 @@ class Engine:
         self.queue = []                                         # a reset of the movie starts with no message
         self.processing, self.events, self.loaded, self.main_screen_loaded = True, [], [], False
         self.carlot_region = 0
+        self.trees, self.active_tree = {}, None
         for obj, members in self.members.items():
             o = VM.Obj(name="_global." + obj)
             for member in members:
@@ -227,6 +243,103 @@ class Engine:
         """Object with widescreen: 1 for 16x9, 0 for 4x3 (the handler in nfs.exe sets exactly this one property; the value is the viewer option)."""
         return {"widescreen": 1 if self.options["widescreen"] else 0}
 
+    # ---- menu trees (MenuTree.GetTreeData and the events of NFS_Tree): the levels come from the slot table of nfs.exe
+    def _tree_groups(self):
+        """The slot table (0xCB9140, 254 rows) is the table of the tree menus. Row: [item id, group, label hash, 0, 0]; a group is one level of a tree,
+        its rows are the items in the order the tree shows them (checked against the game: group 0x11 is the Main list Cars ... Options, 0x8E is
+        Paint, Vinyls, Aftermarket, 0x92 is Body ... Exhaust). The first three rows (group 7 and 8, no label) are not items. An item opens the group
+        with its own id when there is one (0x2D Options -> group 0x2D, 0x92 Aftermarket -> group 0x92); the other items are leaves, where the game
+        does something else (pushes a screen)."""
+        table = self.exe_tables.get("slot table")
+        groups = {}
+        for item, group, label, _, _ in (table or {}).get("entries", ()):
+            if int(label, 16):
+                groups.setdefault(int(group, 0), []).append((int(item, 0), int(label, 16)))
+        return groups
+
+    def tree_items(self, group):
+        """Items of a level: the rows of the table plus the ones the code adds. Visuals (0x8E) and Performance (0x8F) are built in code (0x5897BD,
+        0x589819: node(id, text of the label hash)); that they come after the table rows of the Cars level is ASSUMED from the game's order."""
+        rows = list(self.tree_groups.get(group, ())) + list(TREE_CODE_ITEMS.get(group, ()))
+        return [r for r in rows if r[0] not in TREE_HIDDEN_ITEMS]
+
+    def _first_selected(self, group):
+        """Index highlighted when a level opens. ASSUMED 1 (the second item) from the game: Main starts on GPS Map, Cars on Shop, Visuals on Vinyls, Aftermarket on Hood."""
+        return 1 if len(self.tree_items(group)) > 1 else 0
+
+    def _tree(self, tree_id):
+        t = self.trees.get(tree_id)
+        if t is None and tree_id in TREE_ROOTS and self.tree_groups:
+            t = self.trees[tree_id] = {"stack": [[TREE_ROOTS[tree_id], self._first_selected(TREE_ROOTS[tree_id]), None]], "pending": True}      # the exe sets the screen's data flag (+0x84) when it builds the tree
+        return t
+
+    @staticmethod
+    def _int_arg(args, i):
+        n = VM.to_number(args[i]) if len(args) > i else float("nan")
+        return int(n) if n == n and abs(n) < 1e9 else None
+
+    def tree_data(self, args):
+        """GetTreeData (0x80BAF0): undefined unless the game has new data (flag +0x84), which the call clears; else {maItems, length, selected, mbScreenMode},
+        each item {text, Enabled, id, data} as built at 0x808EC0 (data is -1 for the items seen). ASSUMED: every item is enabled, mbScreenMode is false."""
+        tree_id = self._int_arg(args, 0)
+        t = self._tree(tree_id) if tree_id is not None else None
+        if t is None or not t["pending"]:
+            return None
+        t["pending"] = False
+        self.active_tree = tree_id
+        group, selected, screen_label = t["stack"][-1]
+        rows = [(group, screen_label)] if screen_label is not None else self.tree_items(group)      # a screen level has one item, the leaf: its text is the newest lookback
+        items = [{"text": self._label(h), "Enabled": True, "id": i, "data": -1} for i, h in rows]
+        return {"maItems": items, "length": len(items), "selected": selected, "mbScreenMode": screen_label is not None}
+
+    def _label(self, label_hash):
+        text = self.language.text(label_hash) if self.language else None
+        return text if text is not None else TREE_LABELS.get(label_hash, "0x%08X" % label_hash)
+
+    def tree_busy(self, args):
+        tree_id = self._int_arg(args, 0)
+        t = self._tree(tree_id) if tree_id is not None else None
+        if t is not None:
+            t["busy"] = len(args) > 1 and VM.truthy(args[1])
+        return VM.UNDEF
+
+    def tree_open(self, args):
+        """OnOptionSelected / OnTreePadRight (id, data): an item with a group of its own opens it (the script then asks for the data again and slides).
+        A leaf in TREE_SCREEN_LEAVES pushes its screen and the tree goes to screen mode (the list gives way to the screen, the lookbacks stay).
+        Other leaves only go to the event log: what the game does there is not known yet."""
+        self.event("OnOptionSelected", args)
+        t = self.trees.get(self.active_tree)
+        item = self._int_arg(args, 0)
+        if t is None or item is None:
+            return VM.UNDEF
+        here = self.tree_items(t["stack"][-1][0]) if t["stack"][-1][2] is None else []
+        index = next((n for n, (i, _) in enumerate(here) if i == item), None)
+        if index is None:
+            return VM.UNDEF
+        if item in self.tree_groups:
+            t["stack"][-1][1] = index
+            t["stack"].append([item, self._first_selected(item), None])
+            t["pending"] = True
+        elif item in TREE_SCREEN_LEAVES and self.screen_ids.get(TREE_SCREEN_LEAVES[item][0].lower()) is not None:
+            name, category = TREE_SCREEN_LEAVES[item]
+            if category:
+                self.options["hints_category"] = category
+            t["stack"][-1][1] = index
+            t["stack"].append([item, 0, here[index][1]])
+            t["pending"] = True
+            self.post_message({"message": "PUSH", "screenId": self.screen_ids[name.lower()], "level": TREE_SCREEN_LEVEL})
+        return VM.UNDEF
+
+    def tree_back(self, args):
+        """OnPadBack / OnPadLeft: one level up, with the item we came from selected (ASSUMED). At the top the game leaves the screen: not done here."""
+        self.event("OnPadBack", args)
+        t = self.trees.get(self.active_tree)
+        if t is not None and len(t["stack"]) > 1:
+            if t["stack"].pop()[2] is not None:
+                self.post_message({"message": "POP", "level": TREE_SCREEN_LEVEL})
+            t["pending"] = True
+        return VM.UNDEF
+
     def _hints(self):
         """The items of the hints category in use: [{subject, text, picture}] from attrib fe_hints_tips and the string tables.
         ASSUMED: the game shows one category at a time and the toggle options are its subjects in order (ID = index)."""
@@ -260,6 +373,14 @@ class Engine:
 
 
 LOADER_LEVEL, LOADER_LEVEL_MAX = 400, 450                      # the two constants returned by the handlers at 0x806540 and 0x806550
+TREE_ID_PAUSE, TREE_ID_CUSTOMIZE = 0x27, 0x35                  # returned by the handlers at 0x5367C0 (MainMenu.GetPauseTreeID) and 0x5367D0 (CustMainMenu.GetTreeID)
+TREE_ROOTS = {TREE_ID_PAUSE: 0x11, TREE_ID_CUSTOMIZE: 0x8B}    # first level of each tree: ASSUMED from the game's Main list (career, group 0x11) and the Cars list (0x8B)
+TREE_CODE_ITEMS = {0x8B: ((0x8E, 0xA56C372E), (0x8F, 0x28A85C99))}    # Visuals, Performance
+TREE_HIDDEN_ITEMS = (0x36,)                                    # Exit: ASSUMED hidden on PC, the game's Main list has 8 items and ends with Options
+TREE_SCREEN_LEAVES = {0x91: ("PaintMenu", None)}               # leaf item id -> (screen it pushes, hints category); the exe does this in the event handler 0x54A9C0, the pairs are ASSUMED from the item and screen names
+TREE_SCREEN_LEAVES.update({0xD5 + n: ("HintsTips", c) for n, c in enumerate(("hints_hud", "hints_pursuits", "hints_career", "hints_heroicdriving", "hints_online", "hints_quickrace", "hints_customization"))})    # Hints and Tips topics, in the order of the table and of the 7 collections of fe_hints_tips
+TREE_LABELS = {0x824E664E: "Hints and Tips"}                   # labels whose hash is in none of the language tables: the text is the one in his game screenshot (ASSUMED); 0x3C26D196, 0x7D975F9D, 0x9B1EB517, 0xCB3AA30C, 0xD0C6E951 (Online levels) are still unknown
+TREE_SCREEN_LEVEL = 10                                         # level (OVERLAY_n) a leaf screen is pushed to: ASSUMED, any free one
 UI_EVENTS_ENABLING = ("OnEnterComplete", "OnExitComplete", "OnScreenDestructed")
 UI_EVENTS = UI_EVENTS_ENABLING + ("OnScreenConstructed", "OnScreenDestructing")
 

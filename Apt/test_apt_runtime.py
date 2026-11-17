@@ -186,6 +186,6 @@ for sid, name in sorted(eng.screens.items()):
         continue
     if not (rt.load_log and rt.load_log[-1][2]) or rt.errors:
         bad.append((name, "load" if not (rt.load_log and rt.load_log[-1][2]) else "errors %d" % len(rt.errors)))
-check("all %d screens with a movie file load and run 80 ticks without exception or script error (%s)" % (len(eng.screens) - len(missing), ", ".join(bad[:4]) or "none bad"), not bad)
+check("all %d screens with a movie file load and run 80 ticks without exception or script error (%s)" % (len(eng.screens) - len(missing), ", ".join(str(b) for b in bad[:4]) or "none bad"), not bad)
 
 sys.exit(0 if ok else 1)

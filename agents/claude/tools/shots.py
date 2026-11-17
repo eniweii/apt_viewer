@@ -141,9 +141,12 @@ def make_runtime():
         if a.movie.lower() not in ids:
             sys.exit("no screen %r in the exe's table (%s ...)" % (a.movie, ", ".join(sorted(eng.screens.values())[:8])))
         movie = apt_movie.load(os.path.join(ui, "root.big"))
-        return movie, apt_runtime.Runtime(movie, scenario=[{"at": 6, "op": "message", "message": "PUSH", "screenId": ids[a.movie.lower()], "level": 1}])
-    movie = apt_movie.load(os.path.join(ui, a.movie + ".big" if not a.movie.endswith(".big") else a.movie))
-    return movie, apt_runtime.Runtime(movie)
+        rt = apt_runtime.Runtime(movie, scenario=[{"at": 6, "op": "message", "message": "PUSH", "screenId": ids[a.movie.lower()], "level": 1}])
+    else:
+        movie = apt_movie.load(os.path.join(ui, a.movie + ".big" if not a.movie.endswith(".big") else a.movie))
+        rt = apt_runtime.Runtime(movie)
+    rt.text_measure = apt_render.text_measure(res)
+    return movie, rt
 
 
 def make_renderer():

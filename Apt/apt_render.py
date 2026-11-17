@@ -106,6 +106,18 @@ def fit_matrix(blk, size):
 LOCALIZE = None        # callable(text) -> text that resolves `~KEY` strings; the viewer sets it from the engine's language tables (apt_view.py)
 
 
+def text_measure(res):
+    """Hook for Runtime.text_measure: textWidth of a text field, from the same glyph advances the renderer draws with. None: font not found."""
+    def measure(movie, char, text):
+        font_char = movie.chars.get(char["font_id"])
+        font, _sheet = res.font_for(font_char["name"] if font_char else None)
+        if font is None:
+            return None
+        scale = char["height"] / font.nominal if char["height"] > 0 else 1.0
+        return apt_font.text_width(font, text.replace("^", "\n").replace("\\n", "\n")) * scale
+    return measure
+
+
 class Renderer:
     def __init__(self, resources, boxes=False):
         self.res = resources

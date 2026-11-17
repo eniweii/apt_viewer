@@ -88,6 +88,10 @@ class MC:
             n = n.parent
         return "/".join(reversed(parts))
 
+    def __str__(self):
+        """What a script gets from a clip used as a string: its target path. AutoSizeText finds its text fields with eval(this._parent + "." + name)."""
+        return self.path().replace("/", ".")
+
     # ---- transform
     def _decomposed(self):
         a, b, c, d, tx, ty = self.placed
@@ -154,6 +158,11 @@ class MC:
                 return ch
         if name in self.vars:
             return self.vars[name]
+        if low == "textwidth" and self.char is not None and self.char["type"] == "Text" and self.rt.text_measure is not None:
+            shown = self.text_value()                 # AutoSizeText cuts a label when this is wider than its field
+            width = self.rt.text_measure(self.ctx.movie, self.char, shown if shown is not None else (self.char["text"] or ""))
+            if width is not None:
+                return float(width)
         if low in ("text", "htmltext") and self.char is not None and self.char["type"] == "Text":
             return self.char["text"]                  # a text field that was not set shows its initial text
         return self.proto.vm_get(name) if self.proto is not None else VM.UNDEF
@@ -644,6 +653,7 @@ class Runtime:
         self.vm.hook = self._hook
         self.stub_log = []
         self.errors = {}
+        self.text_measure = None               # (movie, text char, text) -> width in pixels, set by whoever has the fonts (apt_render.text_measure); None: textWidth stays undefined
         self.current = None
         self.libs_ready = set()                   # library movies whose init actions have run in this VM
         self.mouse_x = self.mouse_y = 0.0         # the pointer on the stage (see mouse())

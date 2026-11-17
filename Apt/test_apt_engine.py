@@ -128,4 +128,40 @@ else:
 # CmdUtil.IsInputNecessary (0x808D10): true when the game has nothing pending, which is the case here
 check("IsInputNecessary answers true, so the root hands keys to the screen", loc.providers[("CmdUtil", "IsInputNecessary")]([]) is True)
 
+# menu trees: the slot table of nfs.exe (rows [item id, group, label hash]) feeds MenuTree.GetTreeData
+if data is not None and data.language is not None and data.tree_groups:
+    tree = lambda call, *a: data.providers[call]([float(x) for x in a])
+    first = tree(("MenuTree", "GetTreeData"), 0x27)
+    check("the pause tree starts with the Main list: Cars, GPS Map, Driver Skills, Challenge Series, Photo Mode, Quick Race, Online, Options", first is not None and [i["text"] for i in first["maItems"]] == ["Cars", "GPS Map", "Driver Skills", "Challenge Series", "Photo Mode", "Quick Race", "Online", "Options"])
+    check("GetTreeData answers once per change, then undefined (the flag at +0x84 is cleared)", tree(("MenuTree", "GetTreeData"), 0x27) is None)
+    check("items carry text, Enabled, id and data; length and selected are set", set(first["maItems"][0]) == {"text", "Enabled", "id", "data"} and first["length"] == 8 and first["selected"] == 1)   # the game opens every level on its second item
+    cars = tree(("MenuTree", "GetTreeData"), 0x35)
+    check("the customize tree starts with Garage, Shop, Visuals, Performance (the last two are built in code)", [i["text"] for i in cars["maItems"]] == ["Garage", "Shop", "Visuals", "Performance"])
+    tree(("EventTranslator", "OnOptionSelected"), 0x8E)
+    opened = tree(("MenuTree", "GetTreeData"), 0x35)
+    check("a new level opens with the second item selected (Vinyls)", opened["selected"] == 1)
+    check("selecting Visuals opens Paint, Vinyls, Aftermarket", [i["text"] for i in opened["maItems"]] == ["Paint", "Vinyls", "Aftermarket"])
+    tree(("EventTranslator", "OnOptionSelected"), 0x92)
+    check("selecting Aftermarket opens Body ... Exhaust", [i["text"] for i in tree(("MenuTree", "GetTreeData"), 0x35)["maItems"]] == ["Body", "Hood", "All Wheels", "Front Wheels", "Rear Wheels", "Spoiler", "Exhaust"])
+    tree(("EventTranslator", "OnPadBack"))
+    back = tree(("MenuTree", "GetTreeData"), 0x35)
+    check("back returns to the level above with the item we came from selected", [i["text"] for i in back["maItems"]] == ["Paint", "Vinyls", "Aftermarket"] and back["selected"] == 2)
+    tree(("EventTranslator", "OnOptionSelected"), 0x8D)
+    check("a leaf (Shop) opens nothing", tree(("MenuTree", "GetTreeData"), 0x35) is None)
+    # leaves that push a screen: Paint (0x91) under Visuals, the Hints and Tips topics (0xD5 ...) under Options > Hints and Tips (group 0x42)
+    data.queue.clear()
+    tree(("EventTranslator", "OnPadBack")); tree(("MenuTree", "GetTreeData"), 0x35); tree(("EventTranslator", "OnPadBack")); tree(("MenuTree", "GetTreeData"), 0x35)
+    tree(("EventTranslator", "OnOptionSelected"), 0x8E); tree(("MenuTree", "GetTreeData"), 0x35)
+    tree(("EventTranslator", "OnOptionSelected"), 0x91)
+    paint = tree(("MenuTree", "GetTreeData"), 0x35)
+    check("selecting Paint pushes PaintMenu and puts the tree in screen mode with Paint as its one item", [m.get("screenId") for m in data.queue] == [78.0] or [m.get("screenId") for m in data.queue] == [78])
+    check("the screen level answers mbScreenMode true and one item", paint["mbScreenMode"] is True and [i["text"] for i in paint["maItems"]] == ["Paint"])
+    tree(("EventTranslator", "OnPadBack"))
+    check("back from a screen level posts POP for the level the screen was pushed to", data.queue[-1].get("level") == 10 and data.queue[-1]["message"] == apt_data.bstring_hash("POP"))
+    check("the label whose hash is in no language table is the one of his screenshot (Hints and Tips)", data._label(0x824E664E) == "Hints and Tips")
+    check("the 7 Hints and Tips topics map to the 7 fe_hints_tips collections", len({c for n, (name, c) in apt_engine.TREE_SCREEN_LEAVES.items() if name == "HintsTips"}) == 7)
+    check("non-number arguments are ignored", tree(("MenuTree", "GetTreeData")) is None and tree(("MenuTree", "Busy")) is not False)
+else:
+    print("SKIP menu tree checks: no language tables in the data folder")
+
 sys.exit(0 if ok else 1)

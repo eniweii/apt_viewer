@@ -127,6 +127,11 @@ def _layout(font, text, wrap_width=None):
     return lines
 
 
+def text_width(font, text):
+    """Width of the widest line in font pixels (what a script reads as textWidth, before the scale to the field height)."""
+    return max((w for w, _ in _layout(font, text)), default=0)
+
+
 def render_text(font, sheet, text, align=0, box_width=None, wrap=False):
     """RGBA image (white glyphs) of text at the nominal font size. box_width (font pixels) is used for alignment and wrapping."""
     if not HAVE_PIL:
