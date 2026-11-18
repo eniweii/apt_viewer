@@ -156,7 +156,7 @@ class SkiaRenderer(apt_render.Renderer):
         return self._to_pil(surface), self.hits, labels
 
     def render_runtime(self, rt, scale=1.0, size=None):
-        surface, layer, sx, sy = self._surface(rt.movie, scale, rt.bg, size)
+        surface, layer, sx, sy = self._surface(rt.stage, scale, rt.bg, size)
         self.hits, self.stats = [], {}
         self._list(layer, rt.movie, rt.render_list(), (sx, 0, 0, sy, 0, 0), apt_render.CX_IDENTITY, [], 0, rt.root.frame)
         if self.grid:

@@ -156,7 +156,7 @@ class Renderer:
     def render_runtime(self, rt, scale=1.0, size=None):
         """Draw the current state of an apt_runtime.Runtime."""
         movie = rt.movie
-        w, h, sx, sy = output_geometry(movie, scale, size)
+        w, h, sx, sy = output_geometry(rt.stage, scale, size)
         r, g, b, _a = argb(rt.bg) if rt.bg is not None else (0.2, 0.2, 0.2, 1.0)
         canvas = Image.new("RGBA", (w, h), (int(r * 255), int(g * 255), int(b * 255), 255))
         self.hits, self.stats = [], {}

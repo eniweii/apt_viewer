@@ -623,14 +623,85 @@ class Ctx:
         return self._exports.get(char_id, [])
 
 
+HOST_NONE, HOST_SCREEN = None, "screen"     # how a Runtime is hosted: by the movie's own root (root.big, library and support movies) or by root.big for a screen movie
+
+
+def _root_big(movie):
+    """root.big next to `movie` (the game's script environment), or None."""
+    folder = os.path.dirname(os.path.abspath(movie.path)) if getattr(movie, "path", None) else None
+    if folder and os.path.isdir(folder):
+        for f in os.listdir(folder):
+            if f.lower() == "root.big":
+                return os.path.join(folder, f)
+    return None
+
+
+def host_mode(movie):
+    """How the viewer should run `movie`: HOST_SCREEN for a screen of the game (a name in the exe's screen table, not root) when root.big is next to it, else
+    HOST_NONE. A screen is only meant to run in an overlay of root.big: its scripts use what root's main timeline defines (INPUTCODE, ObjectToArray, gEH and
+    its screen stack, the update manager) and root's NFSEventHandler and NFS_ScreenManager are what feed it keys and messages."""
+    if ENGINE is None:
+        return HOST_NONE
+    name = os.path.basename(getattr(movie, "name", "") or "").lower()
+    name = name[:-4] if name.endswith(".big") else name
+    if name == "root" or name not in {v.lower() for v in ENGINE.screens.values()}:
+        return HOST_NONE
+    return HOST_SCREEN if _root_big(movie) else HOST_NONE
+
+
 ENGINE = None                # an apt_engine.Engine (set by the viewer), or None
 TICKS_PER_SECOND = 30.0      # not read from the file: the viewer ticks once per frame and assumes 30 frames per second for getTimer()
 
 
+class ScreenHost:
+    """Runs a screen movie the way the game does, without the person pushing it through root.big by hand (a Runtime with host=HOST_SCREEN). The virtual root is
+    root.big itself, loaded from the UI folder: its own scripts are the game's input contract (NFSEventHandler: key-up is code + 1000, CmdUtil.IsInputNecessary,
+    the current screen's HandleInput(code, controller), BaseHandleInput as the fallback) and the screen manager (PUSH, POP, LEAVE, overlays OVERLAY_<level>,
+    the destruct callback). Nothing of that is copied into Python, so it cannot drift and no screen is special-cased; what the game's side must answer stays
+    with the engine's providers and stubs. The host only starts the screen: a PUSH of it into OVERLAY_<level>, as the game's own queue would carry it."""
+
+    def __init__(self, rt, screen_movie):
+        self.rt = rt
+        self.screen_movie = screen_movie
+        self.level = 1
+        self.base = None                    # the overlay clip the screen of the viewer is in (None until root has created it)
+
+    def screen_id(self):
+        name = os.path.splitext(os.path.basename(self.screen_movie.path))[0].lower() if getattr(self.screen_movie, "path", None) else self.screen_movie.name.lower()
+        return next((i for i, n in ENGINE.screens.items() if n.lower() == name), None)
+
+    def start(self):
+        ENGINE.post_message({"message": "PUSH", "screenId": self.screen_id(), "level": self.level})
+
+    def overlay(self, level):
+        mc = self.rt.root.vm_get("OVERLAY_%d" % int(level))
+        return mc if isinstance(mc, MC) and not mc.removed else None
+
+    def screens(self):
+        """[(level, overlay clip, screen)] of the overlays that hold a screen, lowest level first."""
+        names = [c.name for c in list(self.rt.root.children.values()) if c.name and not c.removed]
+        out = []
+        for n in sorted(int(k[8:]) for k in names if k.lower().startswith("overlay_") and k[8:].isdigit()):
+            mc = self.overlay(n)
+            screen = mc.vm_get("Screen") if mc is not None else None
+            if isinstance(screen, VM.Obj):
+                out.append((n, mc, screen))
+        return out
+
+    def current_screen(self):
+        found = self.screens()
+        return found[-1][2] if found else None
+
+
 class Runtime:
-    def __init__(self, movie, seed=1, stubs=None, scenario=None, ui_dir=None):
-        self.movie = movie
+    def __init__(self, movie, seed=1, stubs=None, scenario=None, ui_dir=None, host=HOST_NONE):
         self.ui_dir = ui_dir or (os.path.dirname(os.path.abspath(movie.path)) if getattr(movie, "path", None) else None)   # where loadMovie looks
+        root_path = _root_big(movie) if host == HOST_SCREEN and ENGINE is not None else None
+        self.host = ScreenHost(self, movie) if root_path else None      # HOST_SCREEN: `movie` is a screen, root.big is the movie that runs and starts it
+        self.stage = movie                     # whose size the picture has: the screen's (1280x720, the game's view) when hosted, not root.big's 854x480
+        if self.host:
+            movie = M.load(root_path)
+        self.movie = movie
         self.seed = seed
         self.stubs = dict(stubs or {})            # name -> JSON value, see apt_vm.from_json
         self.scenario = list(scenario or [])      # what the game does: [{"at": tick, "op": set|call|goto, ...}]
@@ -672,6 +743,8 @@ class Runtime:
                 if c["op"] == "initaction" and fi == 0:
                     self.exec_stream(c["ptr"], self.root, "init sprite %d" % c["sprite"])
         self.root.start()
+        if self.host:
+            self.host.start()
         self.run_scenario(0)
 
     def step(self, n=1):
@@ -713,6 +786,8 @@ class Runtime:
         parts = path.split(".")
         if parts[0] == "_root":
             o = self.root
+            if self.host and len(parts) > 1 and self.vm.get_member(o, parts[1]) is VM.UNDEF:
+                o = self.host.overlay(self.host.level) or o      # hosted: stubs written for the screen as _root.x mean its overlay
         elif parts[0] == "_global":
             o = self.vm.globals
         else:

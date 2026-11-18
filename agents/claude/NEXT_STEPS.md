@@ -42,6 +42,7 @@ section headers "Screen loading", "Runtime textures and text", "Data natives", "
 InitGUI, OnEnterComplete; POP destructs; keys reach HandleInput and the game natives; mouse gives Flash button events.
 
 ## Open, in the order the user cares about
+0. **Standalone screens** (done): a screen picked on its own in the viewer runs in root.big's overlay (`ScreenHost`, see APT_DECOMPILER_NOTES.md "Standalone screens"); the Input checkbox and the arrow/Return/BackSpace keys drive it with the game's own scripts. `engine` unchanged. Not done: sound (`playSound` is not defined without a sound system), the screen below a pushed one is only reactivated by what the game sends.
 1. **Tree data** (round 4: model and Main/Cars levels done, see `EXE_TREE_NOTES.txt`). The menu tree is the slot table of nfs.exe (0xCB9140, rows `[item id, group, label hash, 0, 0]`), read by
    `Engine._tree_groups` from the committed exe tables; an item opens the group with its own id, other items are leaves. `MenuTree.GetTreeData/Busy`, `MainMenu.GetPauseTreeID` (0x27),
    `CustMainMenu.GetTreeID` (0x35) and the events `OnOptionSelected/OnTreePadRight/OnPadBack/OnPadLeft` are fed (tests in test_apt_engine.py). Two viewer gaps found on the way and fixed:

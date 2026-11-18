@@ -106,11 +106,11 @@ def calls(rt):
     return {k: v["count"] for k, v in rt.vm.externals.items()}
 
 
-def press(rt, code):
+def press(rt, code, wait=2):
     before = calls(rt)
     rt.key(code, True)
     rt.key(code, False)
-    rt.step(2)
+    rt.step(wait)
     return [k.replace("_global.", "") for k, v in rt.vm.externals.items() if v["count"] > before.get(k, 0)]
 
 
@@ -127,6 +127,88 @@ check("keys did not raise script errors", not rt.errors)
 if "CarShopMenu" in ids and eng.attrib is not None:
     rt = run([push(6, "CarShopMenu")], 120)
     check("CarShopMenu: Down -> CarHighlighted, Accept -> CarSelected", "CmdFECarLot.CarHighlighted()" in press(rt, 40) and "CmdFECarLot.CarSelected()" in press(rt, 302))
+
+# standalone screens: a screen movie picked on its own runs in root.big's overlay (ScreenHost starts it); keys, PUSH and POP are the game's own scripts
+import apt_vm as VM
+
+
+def movie(name):
+    return apt_movie.load(os.path.join(ui, name.lower() + ".big"))
+
+
+def hosted(name, ops=(), ticks=120):
+    mv = movie(name)
+    rt = apt_runtime.Runtime(mv, scenario=list(ops), host=apt_runtime.host_mode(mv))
+    rt.step(ticks)
+    return rt
+
+
+check("host_mode: root and library/support movies run as they are, a screen of the exe's table runs hosted",
+      apt_runtime.host_mode(movie("root")) is None and apt_runtime.host_mode(movie("nfs_tree")) is None and apt_runtime.host_mode(movie("treemenu")) == apt_runtime.HOST_SCREEN)
+check("a root-based Runtime has no host and keeps root's Key listener", apt_runtime.Runtime(root).host is None and len(run([], 5).vm.key_listeners) == 1)
+
+rt = hosted("TreeMenu")
+base = rt.root.vm_get("OVERLAY_1")
+check("hosted TreeMenu: root.big runs and the screen is in OVERLAY_1, no script error", base is not None and rt.movie.name == "root.big" and base.ctx.movie.name == "treemenu.big" and not rt.errors)
+check("hosted: the game's own NFSEventHandler is the Key listener and INPUTCODE is root's table", len(rt.vm.key_listeners) == 1 and rt.vm.globals.vm_get("INPUTCODE").vm_get("NEXT") == 302.0)
+check("hosted: the current screen is the screen of the overlay and the screen is up (processing on)", rt.host.current_screen() is base.vm_get("Screen") and base.vm_get("Screen") is not None and eng.processing)
+check("hosted TreeMenu: Down -> OnOptionHighlighted, Accept -> OnOptionSelected, Back -> OnPadBack",
+      "EventTranslator.OnOptionHighlighted()" in press(rt, 40, 40) and "EventTranslator.OnOptionSelected()" in press(rt, 302, 40) and "EventTranslator.OnPadBack()" in press(rt, 303, 40))
+
+rt = hosted("TreeMenu", ticks=60)
+screen = rt.root.vm_get("OVERLAY_1").vm_get("Screen")
+orig, seen = screen.vm_get("HandleInput"), []
+screen.props["HandleInput"] = VM.Native(lambda vm, this, args: seen.append([int(a) for a in args]) or vm.call(orig, this, args), "HandleInput")
+rt.key(38, True)
+held = rt.vm.globals.props["Key"].vm_call("isDown", [38.0], rt.vm) is True
+rt.key(38, False)
+check("hosted: a held key is down until released; the release reaches HandleInput as code + 1000 with controller 0", held and seen == [[38, 0], [1038, 0]])
+screen.props["HandleInput"] = VM.Native(lambda vm, this, args: False, "HandleInput")
+got = press(rt, 302, 10) + press(rt, 303, 10) + press(rt, 301, 10)
+check("hosted: when HandleInput is not true the base turns the code into OnPadAccept / OnPadBack / OnPadStart",
+      all(("EventTranslator.%s()" % e) in got for e in ("OnPadAccept", "OnPadBack", "OnPadStart")))
+
+old = eng.providers[("CmdUtil", "IsInputNecessary")]
+eng.providers[("CmdUtil", "IsInputNecessary")] = lambda args: False
+rt = hosted("TreeMenu", ticks=60)
+got = press(rt, 40, 40)
+eng.providers[("CmdUtil", "IsInputNecessary")] = old
+check("hosted: no key reaches the screen while CmdUtil.IsInputNecessary() is false", "EventTranslator.OnOptionHighlighted()" not in got)
+
+rt = hosted("TreeMenu", [msg(60, "PUSH", screenId=ids["PostRace"], level=2)], 160)
+top = rt.root.vm_get("OVERLAY_2")
+check("hosted PUSH: PostRace goes into OVERLAY_2 above the screen, which stays", top is not None and top.ctx.movie.name == "postrace.big" and rt.host.overlay(1) is not None and not rt.errors)
+got = press(rt, 40, 40)
+check("hosted PUSH: the pushed screen is current and Down reaches it (OnPadDown, not OnOptionHighlighted)",
+      rt.host.current_screen() is top.vm_get("Screen") and "EventTranslator.OnPadDown()" in got and "EventTranslator.OnOptionHighlighted()" not in got)
+eng.post_message({"message": "LEAVE", "level": 2})       # the game closes a screen with LEAVE (DisableInput pops it from gEH's stack), then POP
+rt.step(40)
+eng.post_message({"message": "POP", "level": 2})
+rt.step(60)
+check("hosted POP: the overlay is gone, the screen below is current again and processing is back on (OnScreenDestructed)",
+      rt.host.overlay(2) is None and rt.host.current_screen() is rt.host.overlay(1).vm_get("Screen") and eng.processing and not rt.errors)
+check("hosted POP: keys reach the screen below again", "EventTranslator.OnOptionHighlighted()" in press(rt, 40, 40))
+
+import tempfile
+import apt_render
+import apt_resources
+renderer = apt_render.Renderer(apt_resources.Resources([], cache_dir=tempfile.mkdtemp(), override_file=os.path.join(tempfile.mkdtemp(), "o.json")))
+rt = hosted("TreeMenu", ticks=60)
+check("hosted: the picture has the screen's size (1280x720), not root.big's 854x480; a root-based Runtime keeps its own",
+      rt.stage.width == 1280 and rt.movie.width == 854 and renderer.render_runtime(rt)[0].size == (1280, 720))
+check("a root-based Runtime's stage is its own movie", (lambda r: r.stage is r.movie)(run([], 5)))
+
+rt = hosted("PostRace")
+check("hosted PostRace: Down -> OnPadDown, Accept -> OnButtonPressed, Back -> OnPadBack",
+      "EventTranslator.OnPadDown()" in press(rt, 40, 40) and "EventTranslator.OnButtonPressed()" in press(rt, 302, 40) and "EventTranslator.OnPadBack()" in press(rt, 303, 40))
+box_clip = next(c for c in clips(rt.root.vm_get("OVERLAY_1")) if c.name == "mContainerAnimation")
+gb = box_clip.global_box()
+rt.mouse("move", (gb[0] + gb[2]) / 2, (gb[1] + gb[3]) / 2)
+check("hosted PostRace: the existing mouse handling finds clips in the overlay and raises nothing", not rt.errors)
+if "CarShopMenu" in ids and eng.attrib is not None:
+    rt = hosted("CarShopMenu")
+    check("hosted CarShopMenu: Down -> CarHighlighted, Accept -> CarSelected", "CmdFECarLot.CarHighlighted()" in press(rt, 40, 40) and "CmdFECarLot.CarSelected()" in press(rt, 302, 40))
+    check("hosted CarShopMenu: the car list got its data from the game's helpers (20 cars)", rt.host.overlay(1).vm_get("centerMover").vm_get("mCarList").vm_get("maItemData").vm_get("length") == 20)
 
 # mouse: Flash button events on a real clip, _xmouse, hitTest
 rt = run([push(6, "PostRace")], 120)

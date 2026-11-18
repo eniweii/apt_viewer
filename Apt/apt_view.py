@@ -573,7 +573,8 @@ class App:
         self.playing = False
         self.play_btn.configure(text="Play")
         cfg = self.stub_store.get(self.movie.name)
-        self.rt = apt_runtime.Runtime(self.movie, seed, cfg["stubs"], cfg["scenario"] if self.stub_panel.run_var.get() else [])
+        self.rt = apt_runtime.Runtime(self.movie, seed, cfg["stubs"], cfg["scenario"] if self.stub_panel.run_var.get() else [],
+                                      host=apt_runtime.host_mode(self.movie))      # a screen of the game runs in a host that does what root.big does around it
         self.rt.text_measure = apt_render.text_measure(self.res)
         self.rt_var.set(True)
         self.redraw()
